@@ -82,30 +82,62 @@ const readC = (rel) => {
 const fileSha = (rel) => sha256(readC(rel))
 
 // ───────────────────────── 课程库（不入库，打包前核对） ─────────────────────────
-// 库文件由维护者用 --db-source <文件> 或环境变量 HOMESTAY_DB 指定；SHA-256 必须等于 content/kit/checksums.txt 的 db_file_sha256。
+// 两种模式：
+//   本地默认模式：库文件由维护者用 --db-source <文件> 或环境变量 HOMESTAY_DB 指定；SHA-256 必须等于 content/kit/checksums.txt 的 db_file_sha256。
+//                 生成总包与离线包，并把总包/离线包的字节数与 SHA-256 写入 release-manifest.json（入库）。
+//   发布模式（CI）：--release-assets <tag> 或环境变量 RELEASE_ASSETS_TAG。没有库，不生成总包/离线包；
+//                 下载页的总包与离线包按钮指向 GitHub Release 附件，字节数与 SHA-256 只读 release-manifest.json。
 const argv = process.argv.slice(2)
-const argIdx = argv.indexOf('--db-source')
-const dbSource = (argIdx >= 0 ? argv[argIdx + 1] : null) || process.env.HOMESTAY_DB
+const argOf = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined }
+const RELEASE_TAG = argOf('--release-assets') || process.env.RELEASE_ASSETS_TAG || ''
+const RELEASE_MODE = Boolean(RELEASE_TAG)
+const LOCAL_TAG = argOf('--tag') || 'v1'
+const REPO_SLUG = process.env.RELEASE_REPO || 'cloudzun/ai-team-coding'
+const MATERIALS_FILE = 'ai-team-coding-materials.zip'
+const OFFLINE_FILE = 'ai-team-coding-offline.zip'
+const releaseUrl = (tag, file) => `https://github.com/${REPO_SLUG}/releases/download/${tag}/${file}`
+const MANIFEST_PATH = path.join(ROOT, 'release-manifest.json')
+// content/ 指纹：路径 + 每个文件的 SHA-256。manifest 记录它，CI 用它确认总包没有落后于 content/。
+const CONTENT_DIGEST = sha256(Buffer.from(contentFiles.map((f) => `${f}\0${fileSha(f)}`).join('\n')))
 const ckText = readC('kit/checksums.txt').toString('utf8')
 const ckv = (k) => (ckText.match(new RegExp('^' + k + '\\s*=\\s*(.+)$', 'm')) || [])[1]?.trim()
 const DB_EXPECT = { sha: ckv('db_file_sha256'), bytes: Number(ckv('db_bytes')), content: ckv('db_content_sha256'), rel: ckv('db_relpath') }
 if (!DB_EXPECT.sha || !DB_EXPECT.bytes) { console.error('checksums.txt 缺 db_file_sha256 / db_bytes'); process.exit(1) }
-if (!dbSource) {
-  console.error('缺课程库：请用 --db-source <库文件路径> 或环境变量 HOMESTAY_DB 指定（由维护者提供，库不入库）。')
-  console.error('例：npm run build -- --db-source <homestay.db 的路径>')
-  process.exit(1)
-}
-if (!fs.existsSync(dbSource)) { console.error('课程库文件不存在（--db-source / HOMESTAY_DB 指向的路径）'); process.exit(1) }
-const dbBuf = fs.readFileSync(dbSource)
-const dbSha = sha256(dbBuf)
-if (dbSha !== DB_EXPECT.sha || dbBuf.length !== DB_EXPECT.bytes) {
-  console.error('课程库校验失败：与 checksums.txt 不符')
-  console.error('  期望 db_file_sha256 = ' + DB_EXPECT.sha + '，db_bytes = ' + DB_EXPECT.bytes)
-  console.error('  实际 SHA-256        = ' + dbSha + '，字节数 = ' + dbBuf.length)
-  process.exit(1)
-}
 const DB_ZIP_PATH = 'v2/kit/' + (DB_EXPECT.rel || 'db/homestay.db')
-console.log('课程库校验：SHA-256 与 checksums.txt 的 db_file_sha256 一致（' + dbBuf.length.toLocaleString('en-US') + ' 字节）')
+let dbBuf = null
+let dbSha = null
+let MANIFEST = null
+if (RELEASE_MODE) {
+  if (!fs.existsSync(MANIFEST_PATH)) { console.error('发布模式需要 release-manifest.json（由本地带库构建生成并入库）'); process.exit(1) }
+  MANIFEST = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))
+  const mm = MANIFEST.materials || {}
+  const oo = MANIFEST.offline || {}
+  if (MANIFEST.tag !== RELEASE_TAG) { console.error(`发布模式 tag=${RELEASE_TAG}，但 release-manifest.json 的 tag=${MANIFEST.tag}`); process.exit(1) }
+  if (!(mm.file === MATERIALS_FILE && mm.bytes > 0 && /^[0-9a-f]{64}$/.test(mm.sha256) && Array.isArray(mm.entries) && mm.entries.length && mm.db_path === DB_ZIP_PATH)) { console.error('release-manifest.json 的 materials 项不完整'); process.exit(1) }
+  if (!(oo.file === OFFLINE_FILE && oo.bytes > 0 && /^[0-9a-f]{64}$/.test(oo.sha256))) { console.error('release-manifest.json 的 offline 项不完整'); process.exit(1) }
+  if (MANIFEST.content_digest !== CONTENT_DIGEST) {
+    console.error('release-manifest.json 已落后于 content/（内容指纹不一致）：请在本地带库重新构建，重新生成并提交 manifest，再把新的总包与离线包更新到 Release。')
+    process.exit(1)
+  }
+  console.log(`发布模式：tag=${RELEASE_TAG}，总包与离线包指向 GitHub Release，数值取自 release-manifest.json（内容指纹一致）`)
+} else {
+  const dbSource = argOf('--db-source') || process.env.HOMESTAY_DB
+  if (!dbSource) {
+    console.error('缺课程库：请用 --db-source <库文件路径> 或环境变量 HOMESTAY_DB 指定（由维护者提供，库不入库）。')
+    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v1')
+    process.exit(1)
+  }
+  if (!fs.existsSync(dbSource)) { console.error('课程库文件不存在（--db-source / HOMESTAY_DB 指向的路径）'); process.exit(1) }
+  dbBuf = fs.readFileSync(dbSource)
+  dbSha = sha256(dbBuf)
+  if (dbSha !== DB_EXPECT.sha || dbBuf.length !== DB_EXPECT.bytes) {
+    console.error('课程库校验失败：与 checksums.txt 不符')
+    console.error('  期望 db_file_sha256 = ' + DB_EXPECT.sha + '，db_bytes = ' + DB_EXPECT.bytes)
+    console.error('  实际 SHA-256        = ' + dbSha + '，字节数 = ' + dbBuf.length)
+    process.exit(1)
+  }
+  console.log('课程库校验：SHA-256 与 checksums.txt 的 db_file_sha256 一致（' + dbBuf.length.toLocaleString('en-US') + ' 字节）')
+}
 
 // ───────────────────────── Markdown 预处理 ─────────────────────────
 // 1) 围栏外剥 HTML 注释  2) 围栏与行内代码外，把 **…** 直接转成 <strong>（中文标点邻接时 CommonMark 不认加粗）
@@ -550,8 +582,14 @@ for (const p of PACKS) {
 }
 
 // 总包：9 个分包的全部文件合并 + 课程库，统一 v2/ 前缀（库解开后在 v2/kit/db/homestay.db）
-const ALL = { id: 'all', file: 'ai-team-coding-materials.zip', title: '全部学员材料（一次下载）' }
-{
+const ALL = { id: 'all', file: MATERIALS_FILE, title: '全部学员材料（一次下载）' }
+if (RELEASE_MODE) {
+  // CI：没有库，不生成总包；数值取自 release-manifest.json
+  const mm = MANIFEST.materials
+  ALL.bytes = mm.bytes; ALL.sha = mm.sha256; ALL.entries = mm.entries; ALL.fileCount = mm.entries.length - 1
+  ALL.href = releaseUrl(RELEASE_TAG, MATERIALS_FILE)
+} else {
+  ALL.href = `downloads/${MATERIALS_FILE}`
   const names = new Set()
   const entries = []
   for (const p of PACKS) for (const f of p.files) if (!names.has(f)) { names.add(f); entries.push({ name: 'v2/' + f, data: readC(f) }) }
@@ -578,6 +616,9 @@ const ALL = { id: 'all', file: 'ai-team-coding-materials.zip', title: '全部学
 <td class="hash"><code>${p.sha}</code></td>
 </tr>
 <tr class="files-row"><td colspan="5"><details><summary>列出 ${p.entries.length} 个文件</summary><table class="files"><thead><tr><th>文件（zip 内路径）</th><th class="num">字节数</th></tr></thead><tbody>${p.entries.map((e) => `<tr><td><code>${esc(e.name)}</code></td><td class="num">${fmtBytes(e.bytes)}</td></tr>`).join('')}</tbody></table></details></td></tr>`).join('\n')
+  const offlineLine = RELEASE_MODE
+    ? `<p class="dl-all-o">离线包：<a href="${esc(releaseUrl(RELEASE_TAG, OFFLINE_FILE))}" download>${esc(OFFLINE_FILE)}</a>（${fmtBytes(MANIFEST.offline.bytes)} 字节，SHA-256 <code>${MANIFEST.offline.sha256}</code>）。含全部页面与总包，解压后双击 <code>start.cmd</code> 即可离线打开。</p>`
+    : ''
   const body = `<article class="doc dldoc">
 <p class="crumb"><a href="index.html">首页</a> / 下载</p>
 <h1>下载<small>课程材料</small></h1>
@@ -586,7 +627,8 @@ const ALL = { id: 'all', file: 'ai-team-coding-materials.zip', title: '全部学
 <p class="dl-all-k">一次下载全部</p>
 <h2 id="all-h">${esc(ALL.title)}</h2>
 <p class="dl-all-s">下面 9 个分包的全部内容合并，再加上课程库。解开后课程库在 <code>${esc(DB_ZIP_PATH)}</code>。</p>
-<p class="dl-all-f"><a class="btn btn-a" href="downloads/${esc(ALL.file)}" download>下载 ${esc(ALL.file)}</a></p>
+<p class="dl-all-f"><a class="btn btn-a" href="${esc(ALL.href)}" download>下载 ${esc(ALL.file)}${RELEASE_MODE ? '（GitHub Release）' : ''}</a></p>
+${offlineLine}
 <dl class="dl-all-m">
 <div><dt>字节数</dt><dd>${fmtBytes(ALL.bytes)}</dd></div>
 <div><dt>文件数</dt><dd>${ALL.fileCount} 个材料文件 + 课程库 1 个</dd></div>
@@ -649,16 +691,21 @@ for (const f of htmlFiles) {
   const sc = (html.match(/<\/strong>/g) || []).length
   if (so !== sc) fail(`${f}：<strong> 不成对 ${so}/${sc}`)
   if (html.includes('<!--')) fail(`${f}：残留 HTML 注释`)
-  if (/<a [^>]*href="https?:\/\//.test(html)) fail(`${f}：有外链（站点应离线可用）`)
+  const extLinks = (html.match(/<a [^>]*href="https?:\/\/[^"]*"/g) || []).map((s) => s.replace(/^.*href="|"$/g, ''))
+  const allowedExt = RELEASE_MODE ? new Set([releaseUrl(RELEASE_TAG, MATERIALS_FILE), releaseUrl(RELEASE_TAG, OFFLINE_FILE)]) : new Set()
+  for (const u of extLinks) if (!allowedExt.has(u)) fail(`${f}：有外链 ${u}`)
 }
 const demoSrc = fs.readFileSync(path.join(CONTENT, 'demo/8环演示.html'))
 if (sha256(demoSrc) !== sha256(fs.readFileSync(path.join(DIST, 'demo/index.html')))) fail('演示页与源文件不一致')
-for (const p of [...PACKS, ALL]) if (!fs.existsSync(path.join(DIST, 'downloads', p.file))) fail(`缺下载包 ${p.file}`)
+for (const p of RELEASE_MODE ? PACKS : [...PACKS, ALL]) if (!fs.existsSync(path.join(DIST, 'downloads', p.file))) fail(`缺下载包 ${p.file}`)
+if (RELEASE_MODE && fs.existsSync(path.join(DIST, 'downloads', MATERIALS_FILE))) fail('发布模式下 dist 里不应有总包')
 for (const lab of reportLabs) for (const s of lab.slices) if (s.hits !== 1) fail(`实验 ${lab.id} 切片 ${s.label} 命中 ${s.hits}`)
 
 fs.mkdirSync(BUILD_DIR, { recursive: true })
 fs.writeFileSync(path.join(BUILD_DIR, 'report.json'), JSON.stringify({
   pages: htmlFiles, labs: reportLabs, packs: packReport,
+  mode: RELEASE_MODE ? 'release' : 'local', tag: RELEASE_MODE ? RELEASE_TAG : null,
+  release_urls: RELEASE_MODE ? { materials: releaseUrl(RELEASE_TAG, MATERIALS_FILE), offline: releaseUrl(RELEASE_TAG, OFFLINE_FILE) } : null,
   materials: { file: ALL.file, bytes: ALL.bytes, sha256: ALL.sha, count: ALL.entries.length, db_path: DB_ZIP_PATH, db_sha256: dbSha },
   chapters: chapters.map((c) => ({ id: c.id, rel: c.rel, sha256: c.sha, out: c.out })),
 }, null, 2))
@@ -669,13 +716,26 @@ if (errors.length) {
   process.exit(1)
 }
 
-// ───────────────────────── 离线包 ─────────────────────────
-fs.rmSync(RELEASE, { recursive: true, force: true })
-fs.mkdirSync(RELEASE, { recursive: true })
-const offEntries = walk(DIST).sort().map((f) => ({ name: f, data: fs.readFileSync(path.join(DIST, f)) }))
-offEntries.push({ name: 'start.cmd', data: fs.readFileSync(path.join(ROOT, 'scripts/start.cmd')) })
-const offZip = makeZip(offEntries)
-fs.writeFileSync(path.join(RELEASE, 'ai-team-coding-offline.zip'), offZip)
-
-console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，离线包 ${fmtBytes(offZip.length)} 字节`)
-console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 16 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
+// ───────────────────────── 离线包与发布清单（仅本地带库模式） ─────────────────────────
+if (RELEASE_MODE) {
+  console.log(`构建完成（发布模式 ${RELEASE_TAG}）：${htmlFiles.length} 页，${PACKS.length} 个下载包；总包与离线包不在 dist 里，下载按钮指向 GitHub Release`)
+  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 16 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
+} else {
+  fs.rmSync(RELEASE, { recursive: true, force: true })
+  fs.mkdirSync(RELEASE, { recursive: true })
+  const offEntries = walk(DIST).sort().map((f) => ({ name: f, data: fs.readFileSync(path.join(DIST, f)) }))
+  offEntries.push({ name: 'start.cmd', data: fs.readFileSync(path.join(ROOT, 'scripts/start.cmd')) })
+  const offZip = makeZip(offEntries)
+  fs.writeFileSync(path.join(RELEASE, OFFLINE_FILE), offZip)
+  // release-manifest.json：入库的小清单，CI 发布模式只读它（不含时间戳，重复构建结果一致）
+  const manifest = {
+    tag: LOCAL_TAG,
+    repo: REPO_SLUG,
+    content_digest: CONTENT_DIGEST,
+    materials: { file: ALL.file, bytes: ALL.bytes, sha256: ALL.sha, db_path: DB_ZIP_PATH, entries: ALL.entries },
+    offline: { file: OFFLINE_FILE, bytes: offZip.length, sha256: sha256(offZip) },
+  }
+  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n')
+  console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，总包 ${fmtBytes(ALL.bytes)} 字节，离线包 ${fmtBytes(offZip.length)} 字节；已写 release-manifest.json（tag=${LOCAL_TAG}）`)
+  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 16 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
+}

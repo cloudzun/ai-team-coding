@@ -1,0 +1,62 @@
+﻿name: Pages
+
+# push 到 main 时：npm ci -> 发布模式 build -> 门禁 -> 部署 Pages。
+# 发布模式不需要课程库：总包与离线包是 Release 附件（tag v1），数值取自入库的 release-manifest.json。
+# 一次性前提（需仓库所有者在网页上做）：Settings -> Pages -> Source 选 “GitHub Actions”。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (release mode, no course DB needed)
+        run: node scripts/build.mjs --release-assets v1
+
+      - name: QA gate
+        run: python scripts/qa_pages.py local
+
+      - name: Sensitive scan
+        run: python scripts/scan_sensitive.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

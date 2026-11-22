@@ -1,0 +1,734 @@
+{
+  "tag": "v1",
+  "repo": "cloudzun/ai-team-coding",
+  "content_digest": "b36a646e5f50aa8f4727daadb0bfb4a435f17875214be259e82ef8f3a2b475a2",
+  "materials": {
+    "file": "ai-team-coding-materials.zip",
+    "bytes": 12100433,
+    "sha256": "171afde1e788ca2953250508c789594c07159597b7d64b344757abb416ae7948",
+    "db_path": "v2/kit/db/homestay.db",
+    "entries": [
+      {
+        "name": "v2/checkpoints/stage1/.gitignore",
+        "bytes": 47
+      },
+      {
+        "name": "v2/checkpoints/stage1/README.md",
+        "bytes": 11957
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/__init__.py",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/main.py",
+        "bytes": 3012
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/queries.py",
+        "bytes": 16394
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/css/dashboard.css",
+        "bytes": 6105
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/js/chart_export.js",
+        "bytes": 8825
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/js/dashboard.js",
+        "bytes": 25521
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/vendor/ECHARTS-LICENSE.txt",
+        "bytes": 12212
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/vendor/ECHARTS-NOTICE.txt",
+        "bytes": 172
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/static/vendor/echarts.min.js",
+        "bytes": 1030900
+      },
+      {
+        "name": "v2/checkpoints/stage1/app/templates/index.html",
+        "bytes": 5850
+      },
+      {
+        "name": "v2/checkpoints/stage1/data/.gitkeep",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage1/docs/指标口径表.md",
+        "bytes": 3957
+      },
+      {
+        "name": "v2/checkpoints/stage1/docs/运营手册.md",
+        "bytes": 3532
+      },
+      {
+        "name": "v2/checkpoints/stage1/requirements.txt",
+        "bytes": 260
+      },
+      {
+        "name": "v2/checkpoints/stage2/.env.example",
+        "bytes": 1043
+      },
+      {
+        "name": "v2/checkpoints/stage2/.gitignore",
+        "bytes": 47
+      },
+      {
+        "name": "v2/checkpoints/stage2/README.md",
+        "bytes": 17743
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/__init__.py",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/__init__.py",
+        "bytes": 1098
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/context.py",
+        "bytes": 17338
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/format.py",
+        "bytes": 6762
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/llm.py",
+        "bytes": 7475
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/pipeline.py",
+        "bytes": 51332
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/ask/trace.py",
+        "bytes": 8361
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/config.py",
+        "bytes": 3572
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/gcj.py",
+        "bytes": 2588
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/main.py",
+        "bytes": 6951
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/queries.py",
+        "bytes": 21999
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/sqlguard.py",
+        "bytes": 9460
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/css/ask.css",
+        "bytes": 5997
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/css/dashboard.css",
+        "bytes": 6246
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/css/map.css",
+        "bytes": 3106
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/js/ask.js",
+        "bytes": 10423
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/js/chart_export.js",
+        "bytes": 8825
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/js/dashboard.js",
+        "bytes": 29314
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/js/map.js",
+        "bytes": 17883
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/vendor/ECHARTS-LICENSE.txt",
+        "bytes": 12212
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/vendor/ECHARTS-NOTICE.txt",
+        "bytes": 172
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/static/vendor/echarts.min.js",
+        "bytes": 1030900
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/templates/_ask.html",
+        "bytes": 2481
+      },
+      {
+        "name": "v2/checkpoints/stage2/app/templates/index.html",
+        "bytes": 7677
+      },
+      {
+        "name": "v2/checkpoints/stage2/data/.gitkeep",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage2/docs/指标口径表.md",
+        "bytes": 3957
+      },
+      {
+        "name": "v2/checkpoints/stage2/docs/运营手册.md",
+        "bytes": 3532
+      },
+      {
+        "name": "v2/checkpoints/stage2/requirements.txt",
+        "bytes": 260
+      },
+      {
+        "name": "v2/checkpoints/stage3/.env.example",
+        "bytes": 1607
+      },
+      {
+        "name": "v2/checkpoints/stage3/.gitignore",
+        "bytes": 89
+      },
+      {
+        "name": "v2/checkpoints/stage3/README.md",
+        "bytes": 11066
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/__init__.py",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/agent/__init__.py",
+        "bytes": 3475
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/agent/llm_gate.py",
+        "bytes": 2113
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/agent/rules.py",
+        "bytes": 9485
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/agent/runner.py",
+        "bytes": 20108
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/agent/tools.py",
+        "bytes": 5718
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/__init__.py",
+        "bytes": 1098
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/context.py",
+        "bytes": 17338
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/format.py",
+        "bytes": 6762
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/llm.py",
+        "bytes": 7486
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/pipeline.py",
+        "bytes": 51243
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ask/trace.py",
+        "bytes": 8361
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/config.py",
+        "bytes": 5250
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/gcj.py",
+        "bytes": 2570
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/main.py",
+        "bytes": 7943
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/ops_store.py",
+        "bytes": 18415
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/queries.py",
+        "bytes": 26391
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/sqlguard.py",
+        "bytes": 9460
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/css/agent.css",
+        "bytes": 7522
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/css/ask.css",
+        "bytes": 5997
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/css/dashboard.css",
+        "bytes": 6246
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/css/map.css",
+        "bytes": 3505
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/js/agent.js",
+        "bytes": 16377
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/js/ask.js",
+        "bytes": 10423
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/js/dashboard.js",
+        "bytes": 29008
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/js/map.js",
+        "bytes": 20639
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/vendor/ECHARTS-LICENSE.txt",
+        "bytes": 12212
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/vendor/ECHARTS-NOTICE.txt",
+        "bytes": 172
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/static/vendor/echarts.min.js",
+        "bytes": 1030900
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/templates/_agent.html",
+        "bytes": 3180
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/templates/_ask.html",
+        "bytes": 2481
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/templates/index.html",
+        "bytes": 8214
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/tools/__init__.py",
+        "bytes": 91
+      },
+      {
+        "name": "v2/checkpoints/stage3/app/tools/metrics.py",
+        "bytes": 8050
+      },
+      {
+        "name": "v2/checkpoints/stage3/docs/指标口径表.md",
+        "bytes": 3957
+      },
+      {
+        "name": "v2/checkpoints/stage3/docs/运营手册.md",
+        "bytes": 3532
+      },
+      {
+        "name": "v2/checkpoints/stage3/requirements.txt",
+        "bytes": 260
+      },
+      {
+        "name": "v2/checkpoints/stage4/.env.example",
+        "bytes": 1607
+      },
+      {
+        "name": "v2/checkpoints/stage4/.gitignore",
+        "bytes": 89
+      },
+      {
+        "name": "v2/checkpoints/stage4/README.md",
+        "bytes": 23524
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/__init__.py",
+        "bytes": 0
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/agent/__init__.py",
+        "bytes": 3475
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/agent/llm_gate.py",
+        "bytes": 2113
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/agent/rules.py",
+        "bytes": 9485
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/agent/runner.py",
+        "bytes": 20108
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/agent/tools.py",
+        "bytes": 5718
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/__init__.py",
+        "bytes": 1098
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/context.py",
+        "bytes": 17338
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/format.py",
+        "bytes": 6762
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/llm.py",
+        "bytes": 7486
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/pipeline.py",
+        "bytes": 51243
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ask/trace.py",
+        "bytes": 8361
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/config.py",
+        "bytes": 5250
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/gcj.py",
+        "bytes": 2570
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/main.py",
+        "bytes": 7943
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/ops_store.py",
+        "bytes": 18415
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/queries.py",
+        "bytes": 26802
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/sqlguard.py",
+        "bytes": 9460
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/css/agent.css",
+        "bytes": 7522
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/css/ask.css",
+        "bytes": 5997
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/css/dashboard.css",
+        "bytes": 6246
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/css/map.css",
+        "bytes": 3505
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/js/agent.js",
+        "bytes": 16377
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/js/ask.js",
+        "bytes": 10423
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/js/dashboard.js",
+        "bytes": 29008
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/js/map.js",
+        "bytes": 20639
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/vendor/ECHARTS-LICENSE.txt",
+        "bytes": 12212
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/vendor/ECHARTS-NOTICE.txt",
+        "bytes": 172
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/static/vendor/echarts.min.js",
+        "bytes": 1030900
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/templates/_agent.html",
+        "bytes": 3180
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/templates/_ask.html",
+        "bytes": 2481
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/templates/index.html",
+        "bytes": 8214
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/tools/__init__.py",
+        "bytes": 91
+      },
+      {
+        "name": "v2/checkpoints/stage4/app/tools/metrics.py",
+        "bytes": 8050
+      },
+      {
+        "name": "v2/checkpoints/stage4/docs/指标口径表.md",
+        "bytes": 3957
+      },
+      {
+        "name": "v2/checkpoints/stage4/docs/运营手册.md",
+        "bytes": 3532
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/client.js",
+        "bytes": 34092
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/cordis.patch.yml",
+        "bytes": 84
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/icon.svg",
+        "bytes": 439
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/index.js",
+        "bytes": 43042
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/locale/en.json",
+        "bytes": 522
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/locale/zh.json",
+        "bytes": 498
+      },
+      {
+        "name": "v2/checkpoints/stage4/dsh-plugin/package.json",
+        "bytes": 733
+      },
+      {
+        "name": "v2/checkpoints/stage4/requirements.txt",
+        "bytes": 260
+      },
+      {
+        "name": "v2/kit/.gitignore",
+        "bytes": 181
+      },
+      {
+        "name": "v2/kit/README.md",
+        "bytes": 5200
+      },
+      {
+        "name": "v2/kit/checksums.txt",
+        "bytes": 1206
+      },
+      {
+        "name": "v2/kit/db/.gitkeep",
+        "bytes": 125
+      },
+      {
+        "name": "v2/kit/db/homestay.db",
+        "bytes": 39538688
+      },
+      {
+        "name": "v2/kit/student-pack/指标口径表.md",
+        "bytes": 3957
+      },
+      {
+        "name": "v2/kit/student-pack/运营手册.md",
+        "bytes": 3483
+      },
+      {
+        "name": "v2/kit/tools/gen-board.mjs",
+        "bytes": 11753
+      },
+      {
+        "name": "v2/kit/交付约定_单元三.md",
+        "bytes": 4337
+      },
+      {
+        "name": "v2/kit/交付约定_单元二.md",
+        "bytes": 3944
+      },
+      {
+        "name": "v2/kit/交付约定_单元四.md",
+        "bytes": 3656
+      },
+      {
+        "name": "v2/kit/导出契约.md",
+        "bytes": 4960
+      },
+      {
+        "name": "v2/kit/表结构说明.md",
+        "bytes": 9557
+      },
+      {
+        "name": "v2/lab/fixtures/u2/README.md",
+        "bytes": 5026
+      },
+      {
+        "name": "v2/lab/fixtures/u2/bad_answers.jsonl",
+        "bytes": 3921
+      },
+      {
+        "name": "v2/lab/fixtures/u2/good_answers.jsonl",
+        "bytes": 4745
+      },
+      {
+        "name": "v2/lab/fixtures/u3/README.md",
+        "bytes": 3384
+      },
+      {
+        "name": "v2/lab/fixtures/u3/bad_ops.db",
+        "bytes": 20480
+      },
+      {
+        "name": "v2/lab/fixtures/u4/README.md",
+        "bytes": 1690
+      },
+      {
+        "name": "v2/lab/fixtures/u4/bad_card.json",
+        "bytes": 857
+      },
+      {
+        "name": "v2/lab/fixtures/u4/good_card.json",
+        "bytes": 857
+      },
+      {
+        "name": "v2/lab/sample/README.md",
+        "bytes": 4376
+      },
+      {
+        "name": "v2/lab/sample/index.html",
+        "bytes": 10695
+      },
+      {
+        "name": "v2/lab/sample/index_swapped.html",
+        "bytes": 11187
+      },
+      {
+        "name": "v2/lab/sample/sample_expected.json",
+        "bytes": 3632
+      },
+      {
+        "name": "v2/lab/templates/ref_sql写法_单元一.md",
+        "bytes": 22069
+      },
+      {
+        "name": "v2/lab/templates/事实卡查询模板.sql",
+        "bytes": 7103
+      },
+      {
+        "name": "v2/lab/templates/人眼抽查记录表_单元一.md",
+        "bytes": 2753
+      },
+      {
+        "name": "v2/lab/templates/任务书模板.md",
+        "bytes": 5596
+      },
+      {
+        "name": "v2/lab/templates/任务书自查清单.md",
+        "bytes": 3856
+      },
+      {
+        "name": "v2/lab/templates/关键决策卡_单元一.md",
+        "bytes": 2998
+      },
+      {
+        "name": "v2/lab/templates/判据清单模板_单元一.md",
+        "bytes": 3612
+      },
+      {
+        "name": "v2/lab/templates/判据筛查清单.md",
+        "bytes": 3226
+      },
+      {
+        "name": "v2/lab/templates/口号改写对比卡.md",
+        "bytes": 3673
+      },
+      {
+        "name": "v2/lab/templates/数据事实卡模板.md",
+        "bytes": 6450
+      },
+      {
+        "name": "v2/lab/templates/示范任务书_单元一.md",
+        "bytes": 8877
+      },
+      {
+        "name": "v2/lab/templates/示范需求_单元一.md",
+        "bytes": 9301
+      },
+      {
+        "name": "v2/lab/templates/结业汇报模板.md",
+        "bytes": 1807
+      },
+      {
+        "name": "v2/lab/templates/需求清单模板.md",
+        "bytes": 5814
+      },
+      {
+        "name": "v2/lab/tools/chart_check.py",
+        "bytes": 48344
+      },
+      {
+        "name": "v2/lab/tools/db_fingerprint.py",
+        "bytes": 4471
+      },
+      {
+        "name": "v2/lab/tools/env_check.py",
+        "bytes": 17324
+      },
+      {
+        "name": "v2/lab/tools/u2_check.py",
+        "bytes": 47625
+      },
+      {
+        "name": "v2/lab/tools/u3_check.py",
+        "bytes": 28978
+      },
+      {
+        "name": "v2/lab/tools/u4_check.py",
+        "bytes": 32592
+      }
+    ]
+  },
+  "offline": {
+    "file": "ai-team-coding-offline.zip",
+    "bytes": 13893777,
+    "sha256": "a3e6a123882d45dc629e569de5d9e61320b2b666e42a409b4a793f3c7650524a"
+  }
+}

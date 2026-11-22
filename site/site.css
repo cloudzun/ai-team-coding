@@ -308,3 +308,7 @@ td code, th code { white-space: nowrap; }
 .dl-all .files td { border-color: var(--navy-line); }
 .dl-all .files code { color: #c2cddc; background: none; }
 @media (max-width: 520px) { .dl-all { padding: 16px 14px; } .dl-all-m { grid-template-columns: 1fr; } }
+
+.dl-all-o { margin: 0 0 12px; font-size: 14px; color: #c2cddc; overflow-wrap: anywhere; }
+.dl-all-o a { color: var(--amber2); }
+.dl-all-o code { font-size: 12px; }

@@ -91,6 +91,9 @@ def main():
         print("dist/ 不存在，先 npm run build")
         return 1
     report = json.loads(REPORT.read_text(encoding="utf-8"))
+    mode = report.get("mode", "local")  # local = 带库本地构建；release = CI 发布模式
+    release_urls = set((report.get("release_urls") or {}).values())
+    print(f"构建模式：{mode}" + (f"（tag {report['tag']}）" if mode == "release" else ""))
 
     # 1 路由自动发现
     htmls = sorted(p.relative_to(DIST).as_posix() for p in DIST.rglob("*.html"))
@@ -123,6 +126,8 @@ def main():
             if val.startswith(("data:", "mailto:", "javascript:")):
                 continue
             if re.match(r"^[a-z][a-z0-9+.-]*:", val, re.I):
+                if mode == "release" and val in release_urls:
+                    continue
                 bad("外链", f"{rel}: {val}")
                 continue
             if val.startswith("/"):
@@ -236,48 +241,80 @@ def main():
                     bad("zip 禁入文件", f"{p['file']}: {n}")
     if not any(p.startswith("下载") or p.startswith("zip") for p in problems):
         ok("下载包", f"{len(report['packs'])} 个，zip 完好、带 v2/ 前缀、无禁入文件、页面列出字节数与 SHA-256")
-    # 总包：9 个分包全部内容 + 课程库；库的 SHA-256 与 checksums.txt 一致
-    m = report["materials"]
-    ckt = (CONTENT / "kit" / "checksums.txt").read_text(encoding="utf-8")
-    db_expect = re.search(r"^db_file_sha256\s*=\s*(\S+)", ckt, re.M).group(1)
-    mz = DIST / "downloads" / m["file"]
-    if not mz.exists():
-        bad("总包", f"缺 {m['file']}")
+    if mode == "local":
+        # 总包：9 个分包全部内容 + 课程库；库的 SHA-256 与 checksums.txt 一致
+        m = report["materials"]
+        ckt = (CONTENT / "kit" / "checksums.txt").read_text(encoding="utf-8")
+        db_expect = re.search(r"^db_file_sha256\s*=\s*(\S+)", ckt, re.M).group(1)
+        mz = DIST / "downloads" / m["file"]
+        if not mz.exists():
+            bad("总包", f"缺 {m['file']}")
+        else:
+            if sha256(mz) != m["sha256"] or mz.stat().st_size != m["bytes"]:
+                bad("总包", "与构建报告不一致")
+            if m["sha256"] not in dl or f"{m['bytes']:,}" not in dl:
+                bad("总包", "下载页没有列出总包的 SHA-256 / 字节数")
+            if f"downloads/{m['file']}" not in dl:
+                bad("总包", "下载页没有总包链接")
+            if dl.find("pack-all") > dl.find("id=\"packs\""):
+                bad("总包", "“一次下载全部”应在分包表之上")
+            with zipfile.ZipFile(mz) as z:
+                names = z.namelist()
+                if z.testzip() is not None:
+                    bad("总包", "zip 损坏")
+                expect = set()
+                for p in report["packs"]:
+                    with zipfile.ZipFile(DIST / "downloads" / p["file"]) as pz:
+                        expect.update(pz.namelist())
+                dbp = m["db_path"]
+                missing = sorted(expect - set(names))
+                extra = sorted(set(names) - expect - {dbp})
+                if missing or extra:
+                    bad("总包内容", f"缺 {missing[:3]} 多 {extra[:3]}")
+                if dbp != "v2/kit/db/homestay.db" or dbp not in names:
+                    bad("总包库路径", f"库应在 v2/kit/db/homestay.db，实际 {dbp}")
+                else:
+                    h = hashlib.sha256(z.read(dbp)).hexdigest()
+                    if h != db_expect:
+                        bad("总包库校验", f"库 SHA-256 {h} ≠ checksums.txt {db_expect}")
+                for n in names:
+                    if not n.startswith("v2/"):
+                        bad("总包前缀", n)
+                    if forbid.search(n) or (n.endswith(".db") and n not in ("v2/lab/fixtures/u3/bad_ops.db", dbp)):
+                        bad("总包禁入文件", n)
+            if not any(p.startswith("总包") for p in problems):
+                ok("总包", f"{m['file']} {m['bytes']:,} 字节；含 9 个分包全部内容 + 库（v2/kit/db/homestay.db，SHA-256 = checksums.txt 的 db_file_sha256）；页面置顶")
     else:
-        if sha256(mz) != m["sha256"] or mz.stat().st_size != m["bytes"]:
-            bad("总包", "与构建报告不一致")
-        if m["sha256"] not in dl or f"{m['bytes']:,}" not in dl:
-            bad("总包", "下载页没有列出总包的 SHA-256 / 字节数")
-        if f"downloads/{m['file']}" not in dl:
-            bad("总包", "下载页没有总包链接")
-        if dl.find("pack-all") > dl.find("id=\"packs\""):
-            bad("总包", "“一次下载全部”应在分包表之上")
-        with zipfile.ZipFile(mz) as z:
-            names = z.namelist()
-            if z.testzip() is not None:
-                bad("总包", "zip 损坏")
-            expect = set()
-            for p in report["packs"]:
-                with zipfile.ZipFile(DIST / "downloads" / p["file"]) as pz:
-                    expect.update(pz.namelist())
-            dbp = m["db_path"]
-            missing = sorted(expect - set(names))
-            extra = sorted(set(names) - expect - {dbp})
-            if missing or extra:
-                bad("总包内容", f"缺 {missing[:3]} 多 {extra[:3]}")
-            if dbp != "v2/kit/db/homestay.db" or dbp not in names:
-                bad("总包库路径", f"库应在 v2/kit/db/homestay.db，实际 {dbp}")
+        # 发布模式：dist 里没有总包；下载按钮指向 Release 附件，数值取自 release-manifest.json
+        man = json.loads((ROOT / "release-manifest.json").read_text(encoding="utf-8"))
+        tag = report["tag"]
+        base = "https://github.com/cloudzun/ai-team-coding/releases/download/" + tag + "/"
+        if not re.fullmatch(r"v\d+(\.\d+)*", tag):
+            bad("发布 tag", tag)
+        want_m = base + "ai-team-coding-materials.zip"
+        want_o = base + "ai-team-coding-offline.zip"
+        if report["release_urls"] != {"materials": want_m, "offline": want_o}:
+            bad("发布链接", f"报告里的链接格式不对：{report['release_urls']}")
+        for label, url in (("总包", want_m), ("离线包", want_o)):
+            if f'href="{url}"' in dl:
+                ok(f"下载按钮 {label}", url)
             else:
-                h = hashlib.sha256(z.read(dbp)).hexdigest()
-                if h != db_expect:
-                    bad("总包库校验", f"库 SHA-256 {h} ≠ checksums.txt {db_expect}")
-            for n in names:
-                if not n.startswith("v2/"):
-                    bad("总包前缀", n)
-                if forbid.search(n) or (n.endswith(".db") and n not in ("v2/lab/fixtures/u3/bad_ops.db", dbp)):
-                    bad("总包禁入文件", n)
-        if not any(p.startswith("总包") for p in problems):
-            ok("总包", f"{m['file']} {m['bytes']:,} 字节；含 9 个分包全部内容 + 库（v2/kit/db/homestay.db，SHA-256 = checksums.txt 的 db_file_sha256）；页面置顶")
+                bad(f"下载按钮 {label}", f"下载页没有 href={url}")
+        hrefs = re.findall(r'href="(https?://[^"]*)"', dl)
+        if sorted(set(hrefs)) != sorted({want_m, want_o}):
+            bad("下载页外链", f"只允许两个 Release 链接，实际 {sorted(set(hrefs))}")
+        for key in ("materials", "offline"):
+            mm = man[key]
+            if mm["sha256"] not in dl or f"{mm['bytes']:,}" not in dl:
+                bad("manifest 数值", f"{key} 的字节数 / SHA-256 没出现在下载页")
+        if man["tag"] != tag:
+            bad("manifest tag", f"{man['tag']} ≠ {tag}")
+        if (DIST / "downloads" / "ai-team-coding-materials.zip").exists():
+            bad("发布模式", "dist 里不应有总包")
+        if dl.find("pack-all") > dl.find('id="packs"') or dl.find("pack-all") < 0:
+            bad("总包卡片", "“一次下载全部”应在分包表之上")
+        if not any(q.startswith(("发布", "下载按钮", "下载页外链", "manifest", "总包")) for q in problems):
+            ok("发布模式下载卡片", "总包与离线包指向 Release 附件，数值取自 release-manifest.json，卡片置顶")
     if "checksums.txt" in dl and "db_content_sha256" in dl:
         ok("课程库", "只显示校验和与核对命令")
     else:
@@ -285,25 +322,39 @@ def main():
     for n in (CONTENT / "kit").rglob("*.db"):
         bad("课程库入站", str(n))
 
-    # 8 离线包
-    off = ROOT / "release" / "ai-team-coding-offline.zip"
-    if off.exists():
-        with zipfile.ZipFile(off) as z:
-            names = set(z.namelist())
-            if "start.cmd" in names and "index.html" in names and "demo/index.html" in names:
-                ok("离线包", f"{len(names)} 个文件，含 start.cmd")
-            else:
-                bad("离线包", "缺 start.cmd / index.html / demo/index.html")
-            mp = "downloads/" + m["file"]
-            if mp in names and z.getinfo(mp).file_size == m["bytes"] and ("href=\"" + mp + "\"") in z.read("downloads.html").decode("utf-8"):
-                ok("离线包总包", "含总包，且 downloads.html 链到它")
-            else:
-                bad("离线包总包", "离线包里缺总包，或下载页没链到它")
-            if z.testzip() is not None:
-                bad("离线包", "zip 损坏")
-    else:
-        bad("离线包", "release/ai-team-coding-offline.zip 不存在")
+    # 8 离线包（仅本地带库模式）
+    if mode == "local":
+        off = ROOT / "release" / "ai-team-coding-offline.zip"
+        if off.exists():
+            with zipfile.ZipFile(off) as z:
+                names = set(z.namelist())
+                if "start.cmd" in names and "index.html" in names and "demo/index.html" in names:
+                    ok("离线包", f"{len(names)} 个文件，含 start.cmd")
+                else:
+                    bad("离线包", "缺 start.cmd / index.html / demo/index.html")
+                mp = "downloads/" + m["file"]
+                if mp in names and z.getinfo(mp).file_size == m["bytes"] and ("href=\"" + mp + "\"") in z.read("downloads.html").decode("utf-8"):
+                    ok("离线包总包", "含总包，且 downloads.html 链到它")
+                else:
+                    bad("离线包总包", "离线包里缺总包，或下载页没链到它")
+                if z.testzip() is not None:
+                    bad("离线包", "zip 损坏")
+        else:
+            bad("离线包", "release/ai-team-coding-offline.zip 不存在")
 
+    if mode == "local":
+        mf = ROOT / "release-manifest.json"
+        if not mf.exists():
+            bad("release-manifest", "本地带库构建应生成 release-manifest.json")
+        else:
+            man = json.loads(mf.read_text(encoding="utf-8"))
+            offz = ROOT / "release" / "ai-team-coding-offline.zip"
+            if man["materials"]["sha256"] != report["materials"]["sha256"] or man["materials"]["bytes"] != report["materials"]["bytes"]:
+                bad("release-manifest", "总包数值与本次构建不一致")
+            elif not offz.exists() or man["offline"]["sha256"] != sha256(offz) or man["offline"]["bytes"] != offz.stat().st_size:
+                bad("release-manifest", "离线包数值与 release/ 里的文件不一致")
+            else:
+                ok("release-manifest", f"tag={man['tag']}，总包/离线包字节数与 SHA-256 与本次构建一致")
     print("== qa_pages.py local ==")
     for good, name, detail in checks:
         print(("  PASS " if good else "  FAIL ") + name + (f"  {detail}" if detail else ""))
