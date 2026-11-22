@@ -1,0 +1,10 @@
+﻿data/homestay.db
+.venv/
+__pycache__/
+tmp/
+
+.env
+logs/
+
+data/ops.db*
+outbox/

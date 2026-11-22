@@ -1,0 +1,54 @@
+﻿{#
+  巡检面板。由 index.html 在问数面板下方 include 进来。
+  锚点：data-panel="agent" + data-agent-state；不用 data-view，避免影响 r1 的六视角遍历。
+  不做手工调价表单、不做审计日志页面（审计只经 GET /api/ops/audit）。
+#}
+<section class="agent-panel" data-panel="agent" data-agent-state="idle" aria-labelledby="agent-title">
+  <div class="agent-head">
+    <h2 id="agent-title">巡检 Agent <small>扫一遍全公司 · 给出带证据的建议 · 确认后进入待审批 · 人工审批</small></h2>
+    <div class="agent-controls">
+      <label class="agent-llm-toggle"><input type="checkbox" data-agent-use-llm checked> 使用模型写报告</label>
+      <button type="button" class="agent-run" data-agent-run>开始巡检</button>
+      <span class="agent-state-msg" data-agent-state-msg>尚未巡检</span>
+    </div>
+  </div>
+
+  <p class="agent-disclaimer" data-agent-disclaimer>巡检日期固定为 2026-09-30；本版只有两条规则（不调价情形 N-01 房东关房、单次调价幅度上限 P-01）；建议、数字、证据与理由由程序生成，报告与类别说明由模型生成，模型不可用时换成模板文字</p>
+  <p class="agent-degraded" data-agent-degraded hidden>已降级为规则模式 · 原因：<code data-agent-degrade-reason></code></p>
+  <p class="agent-error" data-agent-error hidden></p>
+
+  <div class="agent-body">
+    <details class="agent-steps-box" data-agent-steps-box>
+      <summary>工具调用（<span data-agent-step-count>0</span> 步）</summary>
+      <ol class="agent-steps" data-agent-steps aria-live="polite"></ol>
+    </details>
+
+    <div class="agent-report" data-agent-report hidden>
+      <h3>巡检报告</h3>
+      <p class="agent-report-text" data-agent-report-text></p>
+      <ul class="agent-notes" data-agent-notes></ul>
+    </div>
+
+    <div class="agent-suggestions-box" data-agent-suggestions-box hidden>
+      <div class="agent-toolbar">
+        <h3>建议清单 <small data-agent-suggestion-count></small></h3>
+        <div class="agent-filter" data-agent-filter role="group" aria-label="按规则筛选"></div>
+        <label class="agent-check-all"><input type="checkbox" data-agent-check-all checked> 全选可提交项</label>
+        <button type="button" class="agent-commit" data-agent-commit disabled>确认提交到待审批</button>
+      </div>
+      <p class="agent-commit-result" data-agent-commit-result hidden></p>
+      <div class="agent-suggestions" data-agent-suggestions></div>
+    </div>
+
+    <div class="agent-ops" data-agent-ops>
+      <div class="agent-ops-head">
+        <h3>待审批 <small>批准只改申请状态，不改价格记录；工单批准后生成房东通知邮件草稿到本地 outbox/，不发送</small></h3>
+        <button type="button" class="agent-refresh" data-agent-ops-refresh>刷新</button>
+      </div>
+      <p class="agent-decision-result" data-agent-decision-result hidden></p>
+      <div class="agent-ops-items" data-ops-items>
+        <p class="agent-empty">暂无待审批项</p>
+      </div>
+    </div>
+  </div>
+</section>

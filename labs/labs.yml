@@ -1,0 +1,97 @@
+﻿# 实验页配置：只写路由文字（标题、导语、切片清单），事实全部从章节与同步文件里切。
+# 切片规则：
+#   chapter + heading   取该章里标题文字恰好等于 heading 的一节（必须命中且只命中一次，否则构建失败）
+#   code_match          可选；只取该节里含这些子串的代码块（每个子串必须恰好命中一个代码块）
+#   file                取 content/ 下的整份 md 文件（去掉文件首行标题）
+labs:
+  - id: u1
+    title: 单元一　数据看板
+    chapter: ch4
+    intro: 本页按顺序摆出第 4 章里做这个单元要用的几段，原文不改，每段末尾回链到出处。
+    slices:
+      - label: 前提：本单元新增的数据与口径
+        chapter: ch4
+        heading: "1.2 本单元新增的数据与口径"
+      - label: 要做的事：成品任务书
+        chapter: ch4
+        heading: "3 成品任务书"
+      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+        chapter: ch4
+        heading: "4.4 G2 之前：用户抽验与放行"
+        code_match: ["chart_check.py --db"]
+      - label: 坏夹具：单元一没有夹具目录，用样例页与 --swap
+        file: lab/sample/README.md
+      - label: 接着走：推进顺序与卡住时怎么办
+        chapter: ch4
+        heading: "6 推进顺序与卡住时怎么办"
+      - label: 阶段一存档点
+        file: checkpoints/stage1/README.md
+
+  - id: u2
+    title: 单元二　问数
+    chapter: ch5
+    intro: 本页按顺序摆出第 5 章里做这个单元要用的几段，原文不改，每段末尾回链到出处。
+    slices:
+      - label: 前提：本单元新增的数据与口径
+        chapter: ch5
+        heading: "1.2 本单元新增的数据与口径"
+      - label: 要做的事：成品任务书
+        chapter: ch5
+        heading: "3 成品任务书"
+      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+        chapter: ch5
+        heading: "4.4 G2 之前：一条命令跑两次，看三句回答"
+        code_match: ["项目目录示例叫 unit2-ask", "# 正向", "# 负向"]
+      - label: 坏夹具
+        file: lab/fixtures/u2/README.md
+      - label: 接着走：推进顺序与卡住时怎么办
+        chapter: ch5
+        heading: "6 推进顺序与卡住时怎么办"
+      - label: 阶段二存档点
+        file: checkpoints/stage2/README.md
+
+  - id: u3
+    title: 单元三　巡检
+    chapter: ch6
+    intro: 本页按顺序摆出第 6 章里做这个单元要用的几段，原文不改，每段末尾回链到出处。
+    slices:
+      - label: 前提：本单元新增的数据与口径
+        chapter: ch6
+        heading: "1.2 本单元新增的数据与口径"
+      - label: 要做的事：成品任务书
+        chapter: ch6
+        heading: "3 成品任务书"
+      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+        chapter: ch6
+        heading: "4.4 G2 之前：亲手走一遍，一条命令跑两次"
+        code_match: ["u3_check.py"]
+      - label: 坏夹具
+        file: lab/fixtures/u3/README.md
+      - label: 接着走：推进顺序与卡住时怎么办
+        chapter: ch6
+        heading: "6 推进顺序与卡住时怎么办"
+      - label: 阶段三存档点
+        file: checkpoints/stage3/README.md
+
+  - id: u4
+    title: 单元四　插件
+    chapter: ch7
+    intro: 本页按顺序摆出第 7 章里做这个单元要用的几段，原文不改，每段末尾回链到出处。
+    slices:
+      - label: 前提：本单元新增的数据与口径
+        chapter: ch7
+        heading: "1.2 本单元新增的数据与口径"
+      - label: 要做的事：成品任务书
+        chapter: ch7
+        heading: "3 成品任务书"
+      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+        chapter: ch7
+        heading: "4.4 G2 之前：装插件，说三句话，一条命令跑两次"
+        code_match: ["u4_check.py"]
+      - label: 坏夹具
+        file: lab/fixtures/u4/README.md
+      - label: 接着走：推进顺序与卡住时怎么办
+        chapter: ch7
+        heading: "6 推进顺序与卡住时怎么办"
+      - label: 阶段四存档点
+        file: checkpoints/stage4/README.md

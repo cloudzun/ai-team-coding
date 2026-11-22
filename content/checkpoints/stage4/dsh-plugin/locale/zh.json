@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "民宿经营问数",
+    "description": "提供 4 个只读工具：homestay_compare（8 区入住率或平均房价的本期与上年同期对比）、homestay_trend（月度走势）、homestay_communities（小区入住率同比排行）、homestay_ask（自然语言问数）。数据经本机民宿经营服务（127.0.0.1:8801）只读查询，每个工具在对话中以图表卡片展示。使用前需先启动 8801 服务，否则报 E_HOMESTAY_DOWN。"
+  }
+}

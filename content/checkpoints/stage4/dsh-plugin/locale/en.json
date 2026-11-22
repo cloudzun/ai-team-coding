@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Homestay metrics",
+    "description": "Adds 4 read-only tools: homestay_compare (current vs prior-year occupancy or ADR across 8 Hangzhou districts), homestay_trend (monthly trend), homestay_communities (community occupancy YoY ranking), and homestay_ask (natural-language data questions). Data is queried read-only from the local homestay backend (127.0.0.1:8801); each tool is shown in chat as a chart card. Start the 8801 service first; otherwise the tools fail with E_HOMESTAY_DOWN."
+  }
+}

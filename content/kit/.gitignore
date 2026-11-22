@@ -1,0 +1,5 @@
+# 现成库文件约 40 MB，不进版本库：由课堂现场分发到 db/ 目录。
+# db/homestay.db 由讲师按 checksums.txt 登记值核对后发放。
+db/*
+!db/.gitkeep
+*.db

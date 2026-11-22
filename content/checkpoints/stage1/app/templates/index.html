@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>城市经营看板 · 杭州民宿托管</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">宿</div>
+      <div>
+        <h1>城市经营看板</h1>
+        <p class="brand-sub">{{ meta.get('city', '') }} · 民宿托管 · 数据覆盖 {{ meta.get('date_range', '') }}</p>
+      </div>
+    </div>
+    <div class="filter">
+      <label for="district-select">区域</label>
+      <span class="select-wrap">
+        <select id="district-select" data-filter="district">
+          <option value="">全公司</option>
+          {% for d in districts %}<option value="{{ d.district_id }}">{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </span>
+      <span class="current">当前：<b data-current-district>全公司</b></span>
+    </div>
+  </header>
+
+  <main class="board">
+    <!-- 状态 -->
+    <section class="view view-status" data-view="status" data-state="loading">
+      <div class="view-head">
+        <h2>经营状态 <small>2026-09 当月 · 同比对 2025-09 · 环比对 2026-08</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="kpis">
+        <article class="kpi" data-kpi="occupancy" style="--accent: var(--c-teal)">
+          <div class="kpi-name">入住率 <em>成交晚数 ÷ 可售晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="adr" style="--accent: var(--c-sky)">
+          <div class="kpi-name">平均房价 <em>完成订单总额 ÷ 成交晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="revpar" style="--accent: var(--c-coral)">
+          <div class="kpi-name">每间可售房收入 <em>完成订单总额 ÷ 可售晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="rating" style="--accent: var(--c-sand)">
+          <div class="kpi-name">平均评分 <em>按评论月 · 有效评分 &lt; 5 条记样本不足</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 趋势 -->
+    <section class="view card" data-view="trend" data-state="loading">
+      <div class="view-head">
+        <h2>月度趋势 <small>36 个月入住率与平均房价 · 订单按入住月归属</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="trend"></div>
+    </section>
+
+    <!-- 对比 -->
+    <section class="view card" data-view="compare" data-state="loading">
+      <div class="view-head">
+        <h2>各区入住率对比 <small>2026 年三季度 vs 上年同期 · 点击柱子筛选该区</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="compare"></div>
+    </section>
+
+    <!-- 结构 -->
+    <section class="view card" data-view="structure" data-state="loading">
+      <div class="view-head">
+        <h2>结构 <small>季度渠道订单占比（含取消单）· 在线房源房型（截至 2026-09-30）</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="split">
+        <div class="chart" data-chart="channel"></div>
+        <div class="chart" data-chart="roomtype"></div>
+      </div>
+    </section>
+
+    <!-- 分布 -->
+    <section class="view card" data-view="distribution" data-state="loading">
+      <div class="view-head">
+        <h2>价格分布 <small>按房型的每晚价 · 2026Q3 已完成订单</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="distribution"></div>
+    </section>
+
+    <!-- 地理 -->
+    <section class="view card view-geo" data-view="geo" data-state="loading">
+      <div class="view-head">
+        <h2>房源分布 <small>截至 2026-09-30 在线房源 · 经纬度散点，按区着色 · 点击房源筛选所在区</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="geo"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="notice-tag">模拟数据</span>
+    <span data-notice>{{ notice }}</span>
+  </footer>
+
+  <script>window.DISTRICTS = {{ districts | tojson }};</script>
+  <script src="/static/vendor/echarts.min.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/chart_export.js"></script>
+</body>
+</html>

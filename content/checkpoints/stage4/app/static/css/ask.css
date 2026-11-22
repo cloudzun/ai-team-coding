@@ -1,0 +1,304 @@
+/* 问数面板（规格 4.1）。独立前缀 ask-，不覆盖 r1 的样式。 */
+.ask-panel {
+  grid-column: 1 / -1;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px 12px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ask-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ask-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.ask-head h2 small {
+  margin-left: 8px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.ask-state-msg {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.ask-panel[data-ask-state="loading"] .ask-state-msg { color: #b45309; }
+.ask-panel[data-ask-state="error"] .ask-state-msg { color: #b91c1c; }
+.ask-panel[data-ask-state="refused"] .ask-state-msg { color: #92400e; }
+.ask-panel[data-ask-state="ready"] .ask-state-msg { color: #047857; }
+
+.ask-form {
+  display: flex;
+  gap: 8px;
+}
+
+.ask-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+}
+
+.ask-input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+  border-color: #60a5fa;
+}
+
+.ask-submit {
+  flex: 0 0 auto;
+  padding: 9px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ask-submit:hover:not(:disabled) { background: #1d4ed8; }
+.ask-submit:disabled { background: #9ca3af; cursor: progress; }
+
+.ask-examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ask-examples-label {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.ask-examples button {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  color: #1f2937;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.ask-examples button:hover { background: #e5e7eb; }
+
+.ask-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ask-loading,
+.ask-error,
+.ask-answer,
+.ask-degraded,
+.ask-disclaimer {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.ask-loading { color: #b45309; }
+.ask-error { color: #b91c1c; font-weight: 600; }
+
+.ask-answer {
+  color: #111827;
+  background: #f8fafc;
+  border-left: 3px solid #2563eb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ask-degraded { color: #92400e; }
+.ask-degraded code { background: #fef3c7; padding: 0 4px; border-radius: 4px; }
+
+.ask-disclaimer {
+  color: #9ca3af;
+  font-size: 0.76rem;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 8px;
+}
+
+.ask-diagnosis { display: flex; flex-direction: column; gap: 8px; }
+
+.ask-diag-block {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fcfcfd;
+}
+
+.ask-diag-block h3 {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: #374151;
+}
+
+.ask-diag-block ol {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #111827;
+}
+
+.ask-evidence {
+  margin-left: 6px;
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+
+.ask-evidence span {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 0 5px;
+  background: #eef2ff;
+  border-radius: 4px;
+  color: #4338ca;
+}
+
+.ask-citations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.ask-citation {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+  max-width: 100%;
+}
+
+.ask-citation[open] { width: 100%; }
+
+.ask-citation summary {
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: #4338ca;
+  font-variant-numeric: tabular-nums;
+  list-style: none;
+}
+
+.ask-citation summary::-webkit-details-marker { display: none; }
+
+.ask-citation-body {
+  padding: 4px 10px 8px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: #1f2937;
+}
+
+.ask-citation-meta { color: #6b7280; font-size: 0.76rem; }
+.ask-citation-content { margin: 4px 0 0; white-space: pre-wrap; word-break: break-word; }
+
+.ask-steps summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #2563eb;
+  padding: 2px 0;
+}
+
+.ask-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.ask-step {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #fcfcfd;
+}
+
+.ask-step-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.ask-step-head b { color: #111827; }
+.ask-step-meta { color: #9ca3af; }
+
+[data-step-sql] {
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.74rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.ask-table-wrap { overflow-x: auto; }
+
+.ask-table {
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  width: 100%;
+}
+
+.ask-table th,
+.ask-table td {
+  border: 1px solid #e5e7eb;
+  padding: 3px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ask-table th { background: #f9fafb; color: #374151; font-weight: 600; }
+.ask-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.ask-step-more { margin: 6px 0 0; font-size: 0.74rem; color: #9ca3af; }
+.ask-step-error { margin: 6px 0 0; font-size: 0.78rem; color: #b91c1c; }
+
+.ask-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .ask-form { flex-direction: column; }
+  .ask-submit { width: 100%; }
+}

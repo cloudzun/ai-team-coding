@@ -1,0 +1,11 @@
+﻿node_modules/
+dist/
+release/
+.build/
+
+# 数据库不入仓；仅放行 20 KB 的坏夹具
+*.db
+!content/lab/fixtures/u3/bad_ops.db
+
+.DS_Store
+Thumbs.db

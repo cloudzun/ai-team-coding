@@ -1,0 +1,18 @@
+﻿{
+  "name": "ai-team-coding",
+  "version": "1.0.0",
+  "private": true,
+  "description": "带 AI 团队写代码：从任务书到交付 —— 课件站（自建构建脚本，纯静态）",
+  "type": "module",
+  "scripts": {
+    "sync": "powershell -NoProfile -File scripts/sync-content.ps1 -Source ..\\l1-textbook\\v2",
+    "build": "node scripts/build.mjs",
+    "qa": "python scripts/qa_pages.py local",
+    "scan": "python scripts/scan_sensitive.py",
+    "serve": "node scripts/serve-dist.cjs 4380"
+  },
+  "dependencies": {
+    "js-yaml": "^5.5.0",
+    "marked": "^18.2.1"
+  }
+}

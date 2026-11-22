@@ -1,0 +1,19 @@
+# 课程数据包校验登记表 v1
+# 由讲师在分发前实测登记；任何文件变动后都要重新登记。
+#
+# 两类校验和，用途不同：
+#   1) db_content_sha256：数据内容校验和。所有表按表名排序、每张表按主键排序后逐行序列化再算 sha256，
+#      与 SQLite 文件的字节布局无关。判断“数据是不是同一份”只看这一项。
+#   2) db_file_sha256 / db_bytes：识别“课堂分发的这一份文件”。同一份数据重新生成时，文件字节可能不同，
+#      此时只看第 1 项。
+#
+# 格式：db_* 为“键 = 值”；file 行为“sha256 | 字节数 | 相对本目录的路径”。
+# 说明性文件（README.md、表结构说明.md、导出契约.md、本表）不登记。
+
+db_content_sha256 = bca0dbaa5365ce5092e17e7763b9ba0009ec1ddb01742e6bf64e949db315bbca
+db_file_sha256 = 8e014d4e4aad5b649700f6cd32de6bcc7470f6738fb1bae49bbbf6c2b7014b26
+db_bytes = 39538688
+db_relpath = db/homestay.db
+
+file = d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81 | 3957 | student-pack/指标口径表.md
+file = c0368e4f44e598d9aa82670d5ddd332b4cd5dcd832d039973f33513c97490e2c | 3483 | student-pack/运营手册.md

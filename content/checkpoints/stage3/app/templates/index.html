@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>城市经营看板 · 杭州民宿托管</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/map.css">
+  <link rel="stylesheet" href="/static/css/ask.css">
+  <link rel="stylesheet" href="/static/css/agent.css">
+  <style>.board-agent-slot:empty { display: none; }</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">宿</div>
+      <div>
+        <h1>城市经营看板</h1>
+        <p class="brand-sub">{{ meta.get('city', '') }} · 民宿托管 · 数据覆盖 {{ meta.get('date_range', '') }}</p>
+      </div>
+    </div>
+    <div class="filter">
+      <label for="district-select">区域</label>
+      <span class="select-wrap">
+        <select id="district-select" data-filter="district">
+          <option value="">全公司</option>
+          {% for d in districts %}<option value="{{ d.district_id }}">{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </span>
+      <span class="current">当前：<b data-current-district>全公司</b></span>
+    </div>
+  </header>
+
+  <main class="board">
+    <!-- 状态 -->
+    <section class="view view-status" data-view="status" data-state="loading">
+      <div class="view-head">
+        <h2>经营状态 <small>2026-09 当月 · 同比对 2025-09 · 环比对 2026-08</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="kpis">
+        <article class="kpi" data-kpi="occupancy" style="--accent: var(--c-teal)">
+          <div class="kpi-name">入住率 <em>成交晚数 ÷ 可售晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="adr" style="--accent: var(--c-sky)">
+          <div class="kpi-name">平均房价 <em>完成订单总额 ÷ 成交晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="revpar" style="--accent: var(--c-coral)">
+          <div class="kpi-name">每间可售房收入 <em>完成订单总额 ÷ 可售晚数</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+        <article class="kpi" data-kpi="rating" style="--accent: var(--c-sand)">
+          <div class="kpi-name">平均评分 <em>按评论月 · 有效评分 &lt; 5 条记样本不足</em></div>
+          <div class="kpi-value" data-field="value">—</div>
+          <div class="kpi-deltas">
+            <span class="delta"><i>同比</i><b data-field="yoy">—</b></span>
+            <span class="delta"><i>环比</i><b data-field="mom">—</b></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 问数面板：指标卡下方、图表网格上方，通栏（内容由 app/templates/_ask.html 提供） -->
+    <div class="board-full board-ask-slot">
+      {% include "_ask.html" ignore missing %}
+    </div>
+
+    <!-- 巡检面板：问数面板下方，通栏（内容由 app/templates/_agent.html 提供；缺失时本插槽为空并隐藏） -->
+    <div class="board-full board-agent-slot">{% include "_agent.html" ignore missing %}</div>
+
+    <!-- 趋势 -->
+    <section class="view card" data-view="trend" data-state="loading">
+      <div class="view-head">
+        <h2>月度趋势 <small>36 个月入住率与平均房价 · 订单按入住月归属</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="trend"></div>
+    </section>
+
+    <!-- 对比 -->
+    <section class="view card" data-view="compare" data-state="loading">
+      <div class="view-head">
+        <h2>各区入住率对比 <small>2026 年三季度 vs 上年同期 · 含上年市场基准 · 点击柱子筛选该区</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="compare"></div>
+    </section>
+
+    <!-- 结构 -->
+    <section class="view card" data-view="structure" data-state="loading">
+      <div class="view-head">
+        <h2>结构 <small>季度渠道订单占比（含取消单）· 在线房源房型（截至 2026-09-30）</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="split">
+        <div class="chart" data-chart="channel"></div>
+        <div class="chart" data-chart="roomtype"></div>
+      </div>
+    </section>
+
+    <!-- 分布 -->
+    <section class="view card" data-view="distribution" data-state="loading">
+      <div class="view-head">
+        <h2>价格分布 <small>按房型的每晚价 · 2026Q3 已完成订单</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="chart" data-chart="distribution"></div>
+    </section>
+
+    <!-- 区域地图（高德底图；不可用时退回离线散点） -->
+    <section class="view card view-geo" data-view="geo" data-state="loading" data-map-provider="pending">
+      <div class="view-head">
+        <h2>小区地图 <small>高德底图 · 每个气泡是一个小区 · 颜色 = 入住率同比 · 点击小区展开房源点，再点收起 · 区筛选用顶部下拉框</small></h2>
+        <span class="state-msg" data-state-msg></span>
+      </div>
+      <div class="map-shell">
+        <div class="map-frame" data-map="amap" role="application" aria-label="杭州各小区经营状况地图"></div>
+        <div class="chart map-fallback" data-chart="geo" hidden></div>
+        <div class="map-tip" data-map-tip hidden></div>
+      </div>
+      <p class="map-notice" data-map-notice hidden></p>
+      <div class="map-legend" data-map-legend>
+        <span class="legend-title">入住率同比</span>
+        <span class="legend-item"><i style="background:#b2182b"></i>大幅下滑 &lt; −10pp</span>
+        <span class="legend-item"><i style="background:#ef8a62"></i>下滑 −10 ~ −3pp</span>
+        <span class="legend-item"><i style="background:#cccccc"></i>持平 ±3pp</span>
+        <span class="legend-item"><i style="background:#67a9cf"></i>上升 +3 ~ +10pp</span>
+        <span class="legend-item"><i style="background:#2166ac"></i>大幅上升 ≥ +10pp</span>
+        <span class="legend-note">气泡大小 = 在线房源数（截至 <b data-legend-asof>—</b>）</span>
+        <span class="legend-item"><i class="legend-point"></i>房源点（点击小区展开）</span>
+        <span class="legend-note">小区为模拟名称，气泡位于小区在线房源的平均位置</span>
+        <span class="legend-note">数据期间 <b data-legend-period>—</b></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="notice-tag">模拟数据</span>
+    <span data-notice>{{ notice }}</span>
+  </footer>
+
+  <script>window.DISTRICTS = {{ districts | tojson }};</script>
+  <script>window.__MAP_CFG = { jsKey: {{ amap_js_key | tojson }}, serviceHost: "/_AMapService" };</script>
+  <script src="/static/vendor/echarts.min.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/map.js"></script>
+  <script src="/static/js/ask.js"></script>
+  <script src="/static/js/agent.js"></script>
+</body>
+</html>

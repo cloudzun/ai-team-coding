@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8 环演示：决策点闯关</title>
+<style>
+:root{
+  --bg:#0b1320; --bg2:#101c2d; --panel:#070d17; --line:#2a3d57; --line2:#3b536f;
+  --ink:#f6f1e4; --ink2:#c2cddc; --ink3:#8fa0b6;
+  --amber:#ffb23f; --amber2:#ffd48a; --green:#43e68c; --red:#ff6f6f;
+  --blue:#5ccbff; --violet:#c9aaff;
+  --sans:"Tahoma","Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Segoe UI Symbol","Segoe UI Emoji",sans-serif;
+  --mono:"Consolas","Cascadia Mono","Microsoft YaHei","Noto Sans Mono CJK SC","Segoe UI Symbol","Segoe UI Emoji",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#060b14;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none}
+#stage{
+  position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;
+  transform:translate(-50%,-50%);overflow:hidden;
+  background:
+    radial-gradient(1200px 700px at 85% -10%,rgba(255,178,63,.10),transparent 60%),
+    radial-gradient(900px 600px at -5% 105%,rgba(92,203,255,.09),transparent 60%),
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px) 0 0/48px 48px,
+    var(--bg);
+}
+/* ---------- 顶栏 ---------- */
+#top{position:absolute;left:0;right:0;top:0;height:64px;display:flex;align-items:center;padding:0 56px;gap:32px;z-index:5}
+#brand{font-size:24px;font-weight:700;letter-spacing:.08em;color:var(--amber);white-space:nowrap}
+#brand i{font-style:normal;color:var(--ink3);font-weight:400;margin-left:12px;letter-spacing:.02em}
+#prog{flex:1;display:flex;gap:8px;align-items:center}
+#prog b{flex:1;height:8px;border-radius:4px;background:#1c2b41;transition:background .3s}
+#prog b.done{background:#5c6f88}
+#prog b.cur{background:var(--amber);box-shadow:0 0 14px rgba(255,178,63,.6)}
+#count{font-size:26px;font-weight:700;white-space:nowrap;min-width:150px;text-align:right}
+#count small{font-size:20px;color:var(--ink3);font-weight:400;margin-left:8px}
+/* ---------- 环条 ---------- */
+#rings{position:absolute;left:56px;right:56px;top:72px;height:84px;display:none;align-items:stretch;gap:6px;z-index:4}
+#rings.on{display:flex}
+#rl{width:140px;flex:none;white-space:nowrap;display:flex;flex-direction:column;justify-content:center;border-right:2px solid var(--line);padding-right:12px;margin-right:6px}
+#rl small{font-size:18px;color:var(--ink3);letter-spacing:.2em}
+#rl strong{font-size:32px;color:var(--amber);line-height:1.15;white-space:nowrap}
+.rc{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;border:2px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);color:var(--ink3);transition:all .35s;padding:0 4px;position:relative}
+.rc b{font-size:26px;line-height:1}
+.rc span{font-size:19px;white-space:nowrap;margin-top:4px}
+.rc.cur{background:var(--amber);border-color:var(--amber2);color:#1a1100;box-shadow:0 0 0 4px rgba(255,178,63,.25),0 8px 26px rgba(255,178,63,.35);transform:translateY(-3px)}
+.rc.cur span{font-weight:700}
+.rc.hint{border:2px dashed var(--amber);color:var(--amber2)}
+.rg{flex:none;width:64px;display:flex;align-items:center;justify-content:center;color:var(--ink3);transition:all .35s}
+.rg i{display:block;width:52px;height:52px;transform:rotate(45deg);border:2px solid var(--line2);border-radius:8px;position:absolute}
+.rg{position:relative}
+.rg em{position:relative;font-style:normal;font-weight:700;font-size:22px}
+.rg.cur{color:#1a1100}
+.rg.cur i{background:var(--amber);border-color:var(--amber2);box-shadow:0 0 18px rgba(255,178,63,.6)}
+/* ---------- 卡片 ---------- */
+.card{position:absolute;inset:0;padding:100px 80px 84px;opacity:0;visibility:hidden;transform:translateX(60px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s}
+.card.past{transform:translateX(-60px)}
+.card.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease,visibility 0s}
+.card.dec{padding:176px 56px 84px}
+/* 封面 */
+.cover{display:flex;flex-direction:column;justify-content:center}
+.ghost{position:absolute;right:40px;top:50%;transform:translateY(-52%);font-size:1010px;font-weight:700;line-height:1;color:transparent;-webkit-text-stroke:3px rgba(255,178,63,.20);pointer-events:none;font-family:var(--sans)}
+.kicker{font-size:30px;letter-spacing:.4em;color:var(--amber);margin-bottom:28px;font-weight:700}
+.cover h1{font-size:132px;line-height:1.12;font-weight:800;letter-spacing:.02em;position:relative}
+.cover h1 em{font-style:normal;color:var(--amber);display:block}
+.cover .play{margin-top:44px;font-size:56px;font-weight:700;position:relative}
+.cover .play span{color:var(--amber)}
+.steps{display:flex;gap:18px;margin-top:40px;align-items:center;position:relative}
+.steps div{font-size:34px;padding:16px 34px;border:2px solid var(--line2);border-radius:60px;background:rgba(7,13,23,.7)}
+.steps div b{color:var(--amber);margin-right:10px}
+.steps u{text-decoration:none;font-size:34px;color:var(--ink3)}
+.legend{display:flex;gap:26px;margin-top:56px;font-size:26px;color:var(--ink2);align-items:center;position:relative;flex-wrap:wrap}
+.tag{display:inline-block;font-style:normal;font-weight:700;font-size:22px;padding:4px 14px;border-radius:6px;letter-spacing:.04em;white-space:nowrap}
+.t-rec{background:rgba(92,203,255,.16);color:var(--blue);border:1.5px solid var(--blue)}
+.t-inf{background:rgba(201,170,255,.15);color:var(--violet);border:1.5px solid var(--violet)}
+.t-live{background:rgba(255,178,63,.16);color:var(--amber);border:1.5px solid var(--amber)}
+.t-ex{background:rgba(246,241,228,.10);color:var(--ink);border:1.5px solid var(--ink3)}
+.hintf{position:absolute;left:80px;bottom:96px;font-size:26px;color:var(--ink3)}
+/* 总览 */
+.ov h2,.end h2{font-size:64px;font-weight:800;line-height:1.15}
+.ov .sub{font-size:30px;color:var(--ink2);margin-top:10px}
+.track{display:flex;align-items:flex-start;margin-top:100px;position:relative}
+.track::before{content:"";position:absolute;left:60px;right:60px;top:60px;height:6px;background:linear-gradient(90deg,var(--line2),var(--line2));border-radius:3px}
+.nd{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding:0 6px}
+.nd .dot{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:800;background:var(--bg2);border:5px solid var(--line2);color:var(--ink2);position:relative}
+.nd.fix .dot{background:var(--amber);border-color:var(--amber2);color:#1a1100;box-shadow:0 0 0 8px rgba(255,178,63,.18)}
+.nd.cond .dot{border-color:var(--amber);color:var(--amber);border-style:dashed}
+.nd h4{font-size:32px;margin-top:24px;line-height:1.25;font-weight:700}
+.nd p{font-size:25px;color:var(--ink2);margin-top:14px;line-height:1.45}
+.nd .pill{margin-top:18px;font-size:22px;font-weight:700;padding:5px 16px;border-radius:30px;white-space:nowrap}
+.nd.fix .pill{background:var(--amber);color:#1a1100}
+.nd.cond .pill{border:2px dashed var(--amber);color:var(--amber)}
+.nd.obs .pill{border:2px solid var(--line2);color:var(--ink3)}
+.gt p{white-space:nowrap}
+.gt{width:132px;flex:none;display:flex;flex-direction:column;align-items:center;position:relative;z-index:2}
+.gt .dm{width:80px;height:80px;transform:rotate(45deg);background:var(--red);border-radius:10px;margin-top:20px;box-shadow:0 0 22px rgba(255,111,111,.45);display:flex;align-items:center;justify-content:center}
+.gt .dm b{transform:rotate(-45deg);font-size:30px;color:#2a0505}
+.gt p{font-size:23px;color:var(--ink2);margin-top:36px;text-align:center;line-height:1.4}
+.ovnote{position:absolute;left:80px;right:80px;bottom:96px;display:flex;justify-content:space-between;align-items:center;font-size:27px;color:var(--ink2);border-top:2px solid var(--line);padding-top:22px}
+.ovnote b{color:var(--ink)}
+.key{display:flex;gap:24px;align-items:center;font-size:23px}
+.key .pill{font-size:22px;font-weight:700;padding:4px 16px;border-radius:30px}
+.pill.f{background:var(--amber);color:#1a1100}
+.pill.c{border:2px dashed var(--amber);color:var(--amber)}
+.pill.l{border:2px solid var(--line2);color:var(--ink3)}
+/* 决策卡 */
+.dec .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:36px;height:100%}
+.dec.wl .grid{grid-template-columns:1.55fr 1fr}
+.left{display:flex;flex-direction:column;min-height:0;gap:16px}
+.scene{font-size:28px;line-height:1.5;color:var(--ink)}
+.scene b{color:var(--amber);margin-right:10px;font-size:22px;letter-spacing:.1em;border:1.5px solid var(--amber);padding:2px 10px;border-radius:6px;vertical-align:2px}
+.panel{flex:1;min-height:0;display:flex;flex-direction:column;border:2px solid var(--line2);border-radius:14px;background:var(--panel);overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.ph{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#0e1828;border-bottom:2px solid var(--line);min-height:62px;flex:none}
+.ph .ttl{font-size:21px;color:var(--ink3);margin-right:auto;white-space:nowrap}
+.tab{font-size:22px;padding:8px 18px;border-radius:8px;border:2px solid var(--line2);color:var(--ink2);white-space:nowrap}
+.tab:hover{border-color:var(--amber)}
+.tab.on{background:var(--amber);border-color:var(--amber);color:#1a1100;font-weight:700}
+.tab kbd{font-family:var(--mono);opacity:.7;margin-right:6px;font-size:18px}
+.pb{flex:1;min-height:0;overflow:auto;padding:18px 24px}
+.pb::-webkit-scrollbar,.right::-webkit-scrollbar{width:10px}
+.pb::-webkit-scrollbar-thumb,.right::-webkit-scrollbar-thumb{background:#34506f;border-radius:5px}
+.scr{display:none}
+.scr.on{display:block;animation:fade .3s}
+.mono{font-family:var(--mono);font-size:24px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:#ece8da}
+.mono .hd{color:var(--amber2);font-weight:700}
+.mono .sp{color:var(--blue);font-weight:700}
+.mono .dim{color:var(--ink3)}
+.mono .ok{color:var(--green);font-weight:700}
+.mono .bad{color:var(--red);font-weight:700}
+.mono .em{color:var(--amber2)}
+.sm .mono{font-size:22px;line-height:1.45}
+.sm .pb{padding:14px 24px}
+.corner{margin-left:auto;font-size:20px;padding:4px 12px;border-radius:6px;background:rgba(255,178,63,.14);color:var(--amber);border:1.5px solid var(--amber)}
+.rep{border:2px solid var(--line);border-radius:10px;padding:10px 18px;margin-bottom:16px;background:rgba(255,255,255,.02)}
+.rep>small{display:block;font-size:20px;color:var(--ink3);margin-bottom:4px;font-family:var(--sans)}
+.sub2{border-radius:10px;border:2px solid;margin-bottom:14px;overflow:hidden}
+.sub2 h5{font-size:22px;padding:6px 16px;display:flex;gap:12px;align-items:center}
+.sub2 .mono{padding:8px 16px 10px}
+.sub2.g{border-color:rgba(67,230,140,.7)} .sub2.g h5{background:rgba(67,230,140,.16);color:var(--green)}
+.sub2.r{border-color:rgba(255,111,111,.75)} .sub2.r h5{background:rgba(255,111,111,.16);color:var(--red)}
+.look{font-size:25px;line-height:1.45;color:var(--ink2);padding-left:46px;position:relative;flex:none}
+.look::before{content:"看";position:absolute;left:0;top:2px;width:34px;height:34px;border-radius:50%;background:var(--amber);color:#1a1100;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.look b{color:var(--amber2)}
+table.bd{border-collapse:collapse;font-family:var(--mono);font-size:24px;width:100%}
+table.bd th,table.bd td{border:2px solid var(--line);padding:8px 14px;text-align:left}
+table.bd th{background:#0e1828;color:var(--ink3);font-weight:400}
+table.bd td.v{color:var(--green)}
+.wait{margin-top:20px;font-family:var(--mono);font-size:24px;line-height:1.6}
+.wait b{color:var(--amber2)}
+/* 右栏 */
+.right{display:flex;flex-direction:column;gap:18px;min-height:0;overflow:auto;padding:14px 8px 8px 0;position:relative}
+.rev.right,.rev .right{gap:16px}
+.qh{flex:none}
+.qh small{font-size:22px;letter-spacing:.3em;color:var(--amber);font-weight:700}
+.qh h2{font-size:46px;line-height:1.25;font-weight:800;margin-top:6px}
+.opts{display:flex;flex-direction:column;gap:14px;flex:none}
+.opt{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:20px;text-align:left;width:100%;padding:16px 22px 16px 16px;border:3px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.03);font-size:28px;line-height:1.42;position:relative;transition:all .2s}
+.opt:hover{border-color:var(--amber2);background:rgba(255,178,63,.07)}
+.opt .l{width:72px;height:72px;border-radius:14px;background:#1b2b42;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800;color:var(--amber)}
+.opt .s{display:none}
+.opt .pk,.opt .mk{display:none;position:absolute;right:14px;top:-15px;font-style:normal;font-size:21px;font-weight:700;padding:3px 14px;border-radius:20px}
+.opt .pk{background:var(--amber);color:#1a1100}
+.opt.picked{border-color:var(--amber);background:rgba(255,178,63,.13);box-shadow:0 0 0 4px rgba(255,178,63,.2)}
+.opt.picked .l{background:var(--amber);color:#1a1100}
+.opt.picked .pk{display:block}
+.opt .mk{right:auto;left:18px;background:#122033}
+.rev .opts{flex-direction:row;gap:12px}
+.rev .opt{font-size:21px;line-height:1.28;padding:10px 12px 10px 10px;grid-template-columns:44px 1fr;gap:10px;border-width:2px;border-radius:12px;flex:1;min-width:0;align-items:center}
+.rev .opt .l{width:44px;height:44px;font-size:28px;border-radius:10px}
+.rev .opt .t{display:none} .rev .opt .s{display:block}
+.rev .opt[data-mk] .mk{display:block;top:-13px;font-size:18px;padding:1px 10px}
+.rev .opt[data-mk=ok]{border-color:var(--green);background:rgba(67,230,140,.09)}
+.rev .opt[data-mk=ok] .mk{background:var(--green);color:#052612}
+.rev .opt[data-mk=real] .mk{background:var(--violet);color:#1c0b3a}
+.rev .opt[data-mk=no]{opacity:.82}
+.rev .opt[data-mk=no] .mk{background:var(--red);color:#2a0505}
+.rev .opt .pk{top:auto;bottom:-13px;right:10px;font-size:17px;padding:1px 10px}
+.rev .right{padding-top:10px;padding-bottom:12px}
+.rev .answer{gap:12px}
+.rev .blk{padding:8px 20px 10px}
+.rev .blk h3{margin-bottom:4px}
+.rev .blk li{margin-top:3px;line-height:1.4}
+.rev .ah strong{font-size:34px}
+.rev .foot{font-size:22px;line-height:1.35}
+.dec.rev .grid{grid-template-columns:.92fr 1.08fr}
+.dec.wl.rev .grid{grid-template-columns:1.2fr 1fr}
+.rev .scene{font-size:25px}
+.sub2 .mono{font-size:19px;line-height:1.45}
+.sub2 h5{font-size:20px}
+.rev .qh small{display:none}
+.rev .qh h2{font-size:32px;padding-right:200px}
+.rev .acts{position:absolute;right:4px;top:0;margin:0}
+.acts{display:flex;align-items:center;gap:22px;flex:none;margin-top:4px}
+.rb{font-size:36px;font-weight:800;padding:18px 44px;border-radius:14px;background:var(--amber);color:#1a1100;box-shadow:0 8px 24px rgba(255,178,63,.35);transition:transform .15s}
+.rb:hover{transform:translateY(-2px)}
+.rb kbd{font-family:var(--mono);font-size:20px;margin-left:12px;padding:2px 10px;border:2px solid rgba(26,17,0,.45);border-radius:6px;font-weight:700}
+.nobar{font-size:21px;color:var(--ink3);line-height:1.4}
+.rev .rb{font-size:22px;padding:8px 22px;background:transparent;color:var(--ink2);border:2px solid var(--line2);box-shadow:none}
+.rev .rb kbd{font-size:16px;border-color:var(--line2)}
+.rev .nobar{display:none}
+.rev .scene-hide{display:none}
+.answer{display:none;flex-direction:column;gap:16px}
+.rev .answer{display:flex}
+.rev .answer>*{animation:rise .5s both}
+.rev .answer>*:nth-child(2){animation-delay:.12s}
+.rev .answer>*:nth-child(3){animation-delay:.24s}
+.rev .answer>*:nth-child(4){animation-delay:.36s}
+.ah{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.ah span{font-size:22px;letter-spacing:.3em;color:var(--green);font-weight:700;border:2px solid var(--green);padding:2px 14px;border-radius:8px}
+.ah strong{font-size:38px;line-height:1.3}
+.blk{border-radius:14px;padding:10px 22px 12px;background:rgba(255,255,255,.035);border-left:8px solid var(--line2)}
+.blk.rec{border-left-color:var(--blue)} .blk.inf{border-left-color:var(--violet)} .blk.live{border-left-color:var(--amber)} .blk.ex{border-left-color:var(--ink3)}
+.blk h3{margin-bottom:8px}
+.blk ul{list-style:none}
+.blk li{font-size:25px;line-height:1.45;padding-left:26px;position:relative;margin-top:5px;color:var(--ink)}
+.blk li::before{content:"";position:absolute;left:2px;top:.62em;width:10px;height:10px;border-radius:50%;background:var(--ink3)}
+.blk li b{color:var(--amber2)}
+.foot{font-size:23px;color:var(--ink3);line-height:1.45}
+/* 结尾 */
+.end{display:flex;flex-direction:column}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px;flex:1;min-height:0;padding-bottom:6px}
+.tc{border:2px solid var(--line2);border-radius:20px;background:rgba(7,13,23,.7);padding:30px 34px;position:relative;display:flex;flex-direction:column;gap:18px}
+.tc .no{font-size:120px;font-weight:800;color:transparent;-webkit-text-stroke:3px var(--amber);line-height:1;position:absolute;right:26px;top:10px;opacity:.75}
+.tc h3{font-size:42px;line-height:1.3;color:var(--amber);padding-right:90px;min-height:110px}
+.tc ul{list-style:none}
+.tc li{font-size:34px;line-height:1.5;margin-top:18px;padding-left:28px;position:relative}
+.tc li::before{content:"";position:absolute;left:2px;top:.62em;width:12px;height:12px;background:var(--amber);transform:rotate(45deg)}
+.tc .from{margin-top:auto;font-size:22px;color:var(--ink3);border-top:2px solid var(--line);padding-top:14px}
+.endnote{font-size:34px;margin-top:26px;color:var(--ink);font-weight:700;text-align:center}
+.endnote span{color:var(--amber)}
+/* 底栏 */
+#bar{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;align-items:center;gap:30px;padding:0 56px;background:linear-gradient(transparent,rgba(5,9,15,.92) 55%);z-index:5;font-size:21px;color:var(--ink3)}
+#bar kbd{font-family:var(--mono);font-size:19px;color:var(--ink);border:1.5px solid var(--line2);border-radius:6px;padding:1px 9px;margin:0 6px 0 0;background:#111d2e}
+#bar span{white-space:nowrap}
+#bar .sp{flex:1}
+#bar button{font-size:22px;padding:4px 18px;border:2px solid var(--line2);border-radius:8px;color:var(--ink2)}
+#bar button:hover{border-color:var(--amber);color:var(--amber)}
+#toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);background:var(--amber);color:#1a1100;font-weight:800;font-size:30px;padding:14px 36px;border-radius:40px;box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:9;transition:opacity .6s}
+#toast.off{opacity:0;pointer-events:none}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="top">
+    <div id="brand">8 环演示<i>决策点闯关</i></div>
+    <div id="prog" aria-hidden="true"></div>
+    <div id="count"></div>
+  </div>
+  <div id="rings" aria-label="8 环位置"></div>
+
+  <!-- ================= 封面 ================= -->
+  <section class="card cover" data-name="封面">
+    <div class="ghost" aria-hidden="true">8</div>
+    <div class="kicker">第 2 章与第 3 章之间 · 你只看、只想、只举牌</div>
+    <h1>8 环演示：<em>决策点闯关</em></h1>
+    <div class="play">玩法：<span>先举牌，再揭晓。</span></div>
+    <div class="steps"><div><b>1</b>读记录</div><u>→</u><div><b>2</b>三人商量，举 A / B / C</div><u>→</u><div><b>3</b>揭晓，看实际发生了什么</div></div>
+    <div class="legend">
+      <span>揭晓里每句话都标明出处：</span>
+      <span><i class="tag t-rec">真实记录</i> 运行记录里真发生过</span>
+      <span><i class="tag t-inf">推断</i> 没发生，只是推想</span>
+      <span><i class="tag t-live">现场实演</i> 现场跑命令得到</span>
+    </div>
+    <div class="hintf">按 <b style="color:var(--ink)">F</b> 全屏，再按 <b style="color:var(--ink)">→</b> 或空格开始</div>
+  </section>
+
+  <!-- ================= 总览 ================= -->
+  <section class="card ov" data-name="8 环总览">
+    <h2>8 环总览：你在哪几处出手</h2>
+    <div class="sub">一次交付走 8 环，两道闸门。下面六张卡，都落在这条线上的某一处。</div>
+    <div class="track">
+      <div class="nd fix"><div class="dot">0</div><h4>档位与版本计划</h4><p>看版本计划，回字母</p><span class="pill">固定出手</span></div>
+      <div class="gt"><div class="dm"><b>G1</b></div><p>开工前<br>确认做什么</p></div>
+      <div class="nd cond"><div class="dot">1</div><h4>立项</h4><p>只回 A/B 重大问题；读立项书</p><span class="pill">有事才出手</span></div>
+      <div class="nd fix"><div class="dot">2</div><h4>规格</h4><p>读判据清单；回 A/B，裁定口径</p><span class="pill">固定出手</span></div>
+      <div class="nd cond"><div class="dot">3</div><h4>规格评审</h4><p>读评审结论；“做什么”变了再回 G1</p><span class="pill">有事才出手</span></div>
+      <div class="nd obs"><div class="dot">4</div><h4>施工</h4><p>不碰代码，盯看板</p><span class="pill">只看</span></div>
+      <div class="nd fix"><div class="dot">5</div><h4>独立验收</h4><p>亲手跑检查命令，一次正向、一次反向</p><span class="pill">固定出手</span></div>
+      <div class="gt"><div class="dm"><b>G2</b></div><p>commit 前<br>看证据再放行</p></div>
+      <div class="nd fix"><div class="dot">6</div><h4>G2 与 commit</h4><p>回“放行”，或“打回 + 退回哪一环”</p><span class="pill">固定出手</span></div>
+      <div class="nd obs"><div class="dot">7</div><h4>收尾</h4><p>读交接文档</p><span class="pill">只看</span></div>
+    </div>
+    <div class="ovnote">
+      <div><b>G1 管“做什么”，G2 管“做出来的能不能信”。</b>两道闸门都没有默认：你不回，lead 就不动。</div>
+      <div class="key"><span class="pill f">固定出手</span><span class="pill c">有事才出手</span><span class="pill l">只看</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 1 ================= -->
+  <section class="card dec" data-name="决策点 1" data-label="决策点 1 / 6" data-cur="0" data-gates="G1">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>lead 交来档位与版本计划，问 G1；同一条消息里还有两个别的问题等着回。</div>
+        <div class="panel sm">
+          <div class="ph"><span class="ttl">运行记录摘录 · 已脱敏</span>
+            <button class="tab on" tabindex="-1"><kbd>1</kbd>任务书</button>
+            <button class="tab" tabindex="-1"><kbd>2</kbd>版本计划与 G1 提问</button></div>
+          <div class="pb">
+<div class="scr on"><pre class="mono"><span class="hd">### 2 本轮要证明的一件事</span>
+运营负责人打开页面，一眼读到房东数和区数两个数，页脚有模拟数据声明。页面上的两个数，都和规格环参考 SQL 算出的一致。
+做完以后，如果换一种房东数读法再对账，检查命令仍然全绿，就是没做到。
+
+<span class="hd">### 4 边界与不做清单</span>
+- 不做：图表、联动、导出下载；自然语言问答、巡检 Agent、插件；登录与权限、移动端适配、深色模式、实时刷新。
+- 不写库，不改渔具包里的任何资料。
+- 必须标注：页脚逐字显示数据库 meta 表里 notice 一项的原文。</pre></div>
+<div class="scr"><pre class="mono"><span class="hd">## 1 本轮要证明的一件事</span>
+运营负责人打开页面，一眼读到房东数、区数两个数，页脚逐字显示 meta.notice；两个数都与规格环参考 SQL 算出的一致；换“另一种房东数读法”的参考 SQL 对同一份导出必须变红。
+<span class="hd">## 2 不做清单</span>
+图表、联动、导出下载；自然语言问答、巡检 Agent、插件；登录与权限、移动端适配、深色模式、实时刷新；写库；改渔具包任何资料。
+
+<span class="hd">G1 档位与版本计划（看版本计划和看板）</span>
+走 L1 课程版 8 环，判据最多 25 条（目标约 12 条），返工最多 1 个缺陷。只排先后，只给总量。只 commit，不 push。
+- A）按版本计划开工。代价：进环 1；之后“做什么”有变化会再问你。
+- B）打回改计划。代价：你说改哪一条，我改完再问一次。
+推荐 A。
+<span class="dim">……</span>
+三条都回之前，我不派施工，也不进环 1。</pre></div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>版本计划里的“一件事”和“不做清单”两段，同屏对照任务书栏 2、栏 4。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>你怎么回 G1？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" tabindex="-1"><span class="l">A</span><span class="t">版本计划末尾写了“推荐”，就照推荐回，同意开工。</span><span class="s">照推荐回，同意开工</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+          <button class="opt" data-k="B" data-mk="ok" tabindex="-1"><span class="l">B</span><span class="t">对着栏 2、栏 4 读两件事再回：版本计划里“本轮要证明的一件事”是不是你的栏 2，不做清单与栏 4 是否一致。</span><span class="s">对着栏 2、栏 4 读完再回</span><i class="pk">我们举牌的</i><i class="mk">范例</i></button>
+          <button class="opt" data-k="C" data-mk="no" tabindex="-1"><span class="l">C</span><span class="t">先不回，让 lead 按推荐先开工。</span><span class="s">先不回，让 lead 按推荐开工</span><i class="pk">我们举牌的</i><i class="mk">不成立</i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>B 是范例；C 不成立</strong></div>
+          <div class="blk rec"><h3><i class="tag t-rec">真实记录</i></h3><ul>
+            <li>版本计划里的“一件事”与栏 2 意思相同，连“换一种读法检查必须变红”也写进去了；不做清单与栏 4 逐项一致。</li>
+            <li>lead 在汇报末尾写的是：<b>“三条都回之前，我不派施工，也不进环 1。”</b></li>
+            <li>所以 G1 没有默认：你不回，不开工，也不按推荐执行。</li></ul></div>
+          <div class="blk inf"><h3><i class="tag t-inf">如果选另一个 · 推断</i></h3><ul>
+            <li>A（照推荐回）：回的内容不一定错，这次的版本计划也确实是对的。差别在回之前读没读：没读过，就无从知道对不对。</li></ul></div>
+          <div class="foot">第 4 章 4.1 会把这两件事扩成四件事。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 2 ================= -->
+  <section class="card dec" data-name="决策点 2" data-label="决策点 2 / 6" data-cur="5,6">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>同一次运行里的两条汇报，按先后排列。</div>
+        <div class="panel">
+          <div class="ph"><span class="ttl">运行记录摘录 · 已脱敏</span></div>
+          <div class="pb">
+            <div class="rep"><small>汇报 1（待办编号已略）</small><pre class="mono"><span class="sp">现在：</span>环 5 独立验收，门禁 机器通道 PASS；第二通道待用户抽验
+<span class="sp">变了：</span><span class="em">⏸ 等你做第二通道抽验。</span>⚡ 无新增。
+<span class="sp">要你：</span>做第二通道抽验，留下 evidence/user-check.md。这一步之前我不提 G2。</pre></div>
+            <div class="rep"><small>汇报 2</small><pre class="mono"><span class="sp">现在：</span>环 6 G2 放行与 commit，门禁 PASS，已提交<span class="dim">……</span>（下一步：环 7 收尾）
+<span class="sp">变了：</span>G2 放行已记入看板 decisions[]。⚡ 无新增。
+<span class="sp">要你：</span>不用你，继续。</pre></div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>三行各扫一眼。第一行与看板“现在在哪”一致吗；第二行有没有 ⏸；第三行只有 ⏸ 才展开。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>每一条，你要出手吗？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" tabindex="-1"><span class="l">A</span><span class="t">两条都要出手。</span><span class="s">两条都要出手</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+          <button class="opt" data-k="B" data-mk="ok" tabindex="-1"><span class="l">B</span><span class="t">第一条要，第二条不用。</span><span class="s">第一条要，第二条不用</span><i class="pk">我们举牌的</i><i class="mk">答案</i></button>
+          <button class="opt" data-k="C" tabindex="-1"><span class="l">C</span><span class="t">两条都不用，等 lead 做完。</span><span class="s">两条都不用，等 lead 做完</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>B</strong></div>
+          <div class="blk rec"><h3><i class="tag t-rec">真实记录</i></h3><ul>
+            <li>第一条的“变了”里有 <b>⏸</b>，“要你”展开了：这是你的动作。</li>
+            <li>第二条没有 ⏸，“要你”写的是“不用你，继续”。</li>
+            <li>这次运行里 lead 每次汇报都是这三行，你只扫这三行就够了。</li></ul></div>
+          <div class="blk inf"><h3><i class="tag t-inf">如果选另一个 · 推断</i></h3><ul>
+            <li>A：第二条里没有要你做的事，出手也无事可做。</li>
+            <li>C：第一条里 lead 说了“这一步之前我不提 G2”，不抽验，流程就停在这。</li></ul></div>
+          <div class="foot">汇报写成长文、没有这三行时，按栏 9 让 lead 重报，不用读长文。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 3 ================= -->
+  <section class="card dec wl" data-name="决策点 3" data-label="决策点 3 / 6" data-cur="0" data-hint="2" data-gates="G1">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>lead 在一条消息里问了三件事：房东数怎么数、区数怎么数、G1。房东数被单独标出“涉及验收口径，单独回”。（这次在环 0 就问了，通常在环 2。）</div>
+        <div class="panel">
+          <div class="ph"><span class="ttl">运行记录摘录 · 已脱敏</span>
+            <button class="tab on" tabindex="-1"><kbd>1</kbd>lead 的提问</button>
+            <button class="tab" tabindex="-1"><kbd>2</kbd>用户回复</button>
+            <button class="tab" tabindex="-1"><kbd>3</kbd>看板裁定</button></div>
+          <div class="pb">
+<div class="scr on"><pre class="mono"><span class="hd">D1【涉及验收口径，单独回】房东数按哪种读法数？</span>
+口径表里没有这个指标。只读实测：
+- A）签约房东，数 owners 表全部行。代价：最直接，和表一一对应；但会算进已经没有在线房源的房东。
+- B）在管房东，数截至 2026-09-30 名下有在线房源的房东。代价：更贴近“托管规模”，但要按口径表判定在线期间、写死截止日，SQL 和页面逻辑都多一层。
+两种读法数出来不一样，所以用另一种读法对账能变红。<span class="em">推荐 A</span>：这页是用来判断这份库值不值得信的，数库里登记了多少房东，最好解释。
+
+<span class="hd">D2 区数按哪种读法数？（口径表里也没有）</span>
+- A）数 districts 表全部区，本库是 8。代价：最简单，但看不出这些区有没有房源。
+- B）数截至 2026-09-30 有在线房源的区，本库也是 8。代价：和 D1 的 B 读法同一套逻辑，SQL 多一层。
+两种读法在本库都是 8，对账分不出来，这一项不影响验收。推荐与 D1 保持一致。</pre></div>
+<div class="scr"><pre class="mono"><span class="sp">用户：</span>都选A
+<span class="sp">lead：</span>你回的“都选A”是一句话覆盖了三条。房东数是验收口径，你在任务书第 5、7 栏写过，这条要单独回字母，不接受一句话全部放行。所以 D1 我先不算定，环 1 也还没开。
+<span class="dim">……</span>
+<span class="hd">D1【涉及验收口径】房东数按哪种读法数？</span>
+- A）签约房东：数 owners 表的全部行。代价：会算进已经没有在线房源的房东。
+- B）在管房东：数截至 2026-09-30 名下有在线房源的房东。代价：要写死截止日，SQL 和页面多一层判断。
+推荐 A。你回 A 后，验收时你拿来对账的“另一种读法”就是 B（在管房东）。
+<span class="sp">用户：</span>A</pre></div>
+<div class="scr"><pre class="mono"><span class="dim">- </span>G1 版本计划 —— 人：A 按版本计划开工
+<span class="dim">- </span>D1【验收口径】房东数 —— 人（单独回）：A 签约房东 = owners 表全部行。反向读法 = B 在管房东（截至 2026-09-30 名下有在线房源）
+<span class="dim">- </span>D2 区数 —— 人：A districts 表全部行（8）</pre></div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>代价里提到“对账”“变红”的那一句，它说的是你的验收。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>你怎么回房东数？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" data-mk="real" tabindex="-1"><span class="l">A</span><span class="t">回“都选A”，三件事一起带过。</span><span class="s">回“都选A”，三件事一起带过</span><i class="pk">我们举牌的</i><i class="mk">这次实际回的</i></button>
+          <button class="opt" data-k="B" data-mk="ok" tabindex="-1"><span class="l">B</span><span class="t">回“D1 选 &lt;字母&gt;。理由：……。请把这条写进规格的口径声明。”区数、G1 另回。</span><span class="s">D1 单独回字母，写理由；区数、G1 另回</span><i class="pk">我们举牌的</i><i class="mk">范例</i></button>
+          <button class="opt" data-k="C" tabindex="-1"><span class="l">C</span><span class="t">只回 G1，房东数先放着。</span><span class="s">只回 G1，房东数先放着</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>范例是 B；这次实际回的是“都选A”</strong></div>
+          <div class="blk rec"><h3><i class="tag t-rec">真实记录</i></h3><ul>
+            <li>用户回了一句“都选A”。</li>
+            <li>lead 把 G1 和区数记下，房东数没有算定，在下一条消息里<b>单独重问</b>，拿到一条只回房东数的单独回复。</li>
+            <li>理由：房东数是验收口径，任务书里写过要单独回字母。</li></ul></div>
+          <div class="blk ex"><h3><i class="tag t-ex">范例写法</i></h3><ul>
+            <li>单独一个字母，一句理由，要求写进规格的口径声明；并把所选读法的含义记进笔记（字母不固定对应哪一种读法）。</li></ul></div>
+          <div class="blk inf"><h3><i class="tag t-inf">如果选另一种读法 · 推断</i></h3><ul>
+            <li>页面和参考 SQL 按另一种读法做，G2 前的反向检查改用含义相反的那一份。</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 4 ================= -->
+  <section class="card dec" data-name="决策点 4" data-label="决策点 4 / 6" data-cur="1,2,3,4">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>G1 和房东数都回完了。接下来立项、规格、评审、施工四环，lead 在派子 agent 干活。</div>
+        <div class="panel">
+          <div class="ph"><span class="ttl">看板：环进度与“⏸ 等你”</span><span class="corner">收尾时的样子</span></div>
+          <div class="pb">
+            <div class="wait" style="margin:0 0 16px"><b>当前：环 7 收尾 ｜ 门禁：PASS ｜ 下一步：……</b></div>
+            <table class="bd">
+              <tr><th>环</th><th>状态</th><th>门禁</th></tr>
+              <tr><td>0 档位与版本计划</td><td class="v">✓ 完成</td><td>G1 已回 A</td></tr>
+              <tr><td>1 立项</td><td class="v">✓ 完成</td><td>PASS</td></tr>
+              <tr><td>2 规格</td><td class="v">✓ 完成</td><td>PASS</td></tr>
+              <tr><td>3 规格评审</td><td class="v">✓ 完成</td><td>PASS</td></tr>
+              <tr><td>4 施工</td><td class="v">✓ 完成</td><td>PASS</td></tr>
+            </table>
+            <div class="wait"><b>## ⏸ 等你（必须决策，流程停在这）</b><br>无</div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>看板顶部的“现在在哪”，和“⏸ 等你”一栏。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>这段时间你做什么？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" tabindex="-1"><span class="l">A</span><span class="t">隔几句就问 lead 做到哪了。</span><span class="s">隔几句就问 lead 做到哪了</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+          <button class="opt" data-k="B" data-mk="ok" tabindex="-1"><span class="l">B</span><span class="t">看一眼看板顶部，有 ⏸ 才出手，没有就继续等。</span><span class="s">看一眼看板，有 ⏸ 才出手</span><i class="pk">我们举牌的</i><i class="mk">答案</i></button>
+          <button class="opt" data-k="C" data-mk="no" tabindex="-1"><span class="l">C</span><span class="t">趁现在先把检查命令跑一遍。</span><span class="s">趁现在先跑检查命令</span><i class="pk">我们举牌的</i><i class="mk">做不了</i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>B</strong></div>
+          <div class="blk rec"><h3><i class="tag t-rec">真实记录</i></h3><ul>
+            <li>环 1 到环 4 里，这位用户没有一个字母要回，lead 也没有发三行汇报。</li>
+            <li>这一段没有你的动作：看板第一行告诉你在哪一环，“⏸ 等你”为空，就是不用你。</li></ul></div>
+          <div class="blk inf"><h3><i class="tag t-inf">如果选另一个 · 推断</i></h3><ul>
+            <li>C：做不了。检查命令要的导出文件，要等页面做出来才有。</li>
+            <li>A：问来的不会比看板多。</li></ul></div>
+          <div class="foot">下一次轮到你出手：环 5。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 5 ================= -->
+  <section class="card dec wl" data-name="决策点 5" data-label="决策点 5 / 6" data-cur="5" data-gates="G2">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>lead 要问 G2。同一份页面导出，同一条检查命令跑两次，只换参考 SQL：第一次是页面所按读法的那份，第二次是含义相反的那份。</div>
+        <div class="panel sm">
+          <div class="ph"><span class="ttl">先读任务书，再看输出</span>
+            <button class="tab on" tabindex="-1"><kbd>1</kbd>任务书原句</button>
+            <button class="tab" tabindex="-1"><kbd>2</kbd>一绿一红</button>
+            <span class="corner" style="display:none"></span></div>
+          <div class="pb">
+<div class="scr on"><pre class="mono"><span class="em">做完以后，如果换一种房东数读法再对账，检查命令仍然全绿，就是没做到。</span>
+<span class="dim">……</span>
+2. 页面上的两个数与参考 SQL 一致；全部 PASS（退出码 0）。
+3. 再用“另一种读法”的参考 SQL 对同一份导出对账，必须变红（退出码 1）。另一种读法，是和我在第 5 栏回的那个选项含义相反的那一种；课程在我的工具箱里备了两份读法文件，按文件名里的含义选，我用相反的那份。
+4. 库文件指纹前后不变。我跑检查命令时带上开工前存的指纹（--before），命令把它作为一项查出来。</pre></div>
+<div class="scr">
+  <div class="sub2 g"><h5><i class="tag t-live">现场实演</i><b>第一次 · 绿：参考 SQL 与导出同一读法</b></h5><pre class="mono"><span class="dim">……</span>参考 SQL：<span class="dim">……\</span>房东数_登记全部_ref.sql<span class="dim">……</span>
+[1/2] kpi   owner_count    <span class="ok">PASS</span>  值 218 与期望一致（容差 0.001）
+[2/2] kpi   district_count <span class="ok">PASS</span>  值 8 与期望一致（容差 0.001）
+[<span class="ok">PASS</span>] 业务库指纹：与基线一致（sha256 前 12 位 8e014d4e4aad）
+汇总：对象 2 个，PASS 2，FAIL 0，WARN 0；业务库指纹 PASS；容差 比例 0.001、金额 0.01 -&gt; <span class="ok">全部通过（退出码 0）</span></pre></div>
+  <div class="sub2 r"><h5><i class="tag t-live">现场实演</i><b>第二次 · 红：只把参考 SQL 换成含义相反的那份</b></h5><pre class="mono"><span class="dim">……</span>参考 SQL：<span class="dim">……\</span>房东数_期末在线_ref.sql<span class="dim">……</span>
+[1/2] kpi   owner_count    <span class="bad">FAIL</span>  值超出容差（差 1 &gt; 0.001）
+    - 导出 218，期望 217，差 1 &gt; 容差 0.001（other）
+[2/2] kpi   district_count <span class="ok">PASS</span>  值 8 与期望一致（容差 0.001）
+[<span class="ok">PASS</span>] 业务库指纹：与基线一致（sha256 前 12 位 8e014d4e4aad）
+汇总：对象 2 个，PASS 1，FAIL 1，WARN 0；业务库指纹 PASS；容差 比例 0.001、金额 0.01 -&gt; <span class="bad">不通过（退出码 1）</span></pre></div>
+</div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>第二次红在哪一行，其余几行还是不是绿。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>放行吗？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" tabindex="-1"><span class="l">A</span><span class="t">第二次红了，页面有错，打回施工。</span><span class="s">第二次红了，打回施工</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+          <button class="opt" data-k="B" data-mk="ok" tabindex="-1"><span class="l">B</span><span class="t">第一次绿、第二次红，都在预期内，人眼与结论也写好了，放行。</span><span class="s">一绿一红都在预期内，放行</span><i class="pk">我们举牌的</i><i class="mk">答案</i></button>
+          <button class="opt" data-k="C" tabindex="-1"><span class="l">C</span><span class="t">第一次绿了就够，第二次不用管。</span><span class="s">第一次绿了就够</span><i class="pk">我们举牌的</i><i class="mk"></i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>B</strong></div>
+          <div class="blk live"><h3><i class="tag t-live">现场实演</i></h3><ul>
+            <li>红只在房东数一行，区数和库指纹仍是绿。</li>
+            <li>换一种读法，检查就变红：说明它分得出两种读法，页面上的两个数是按你裁定的那一种对上的。栏 2 要证明的就是这个。</li>
+            <li>放行还要两个前置条件：抽验记录三块齐全，人眼两问有结论。</li></ul></div>
+          <div class="blk live"><h3><i class="tag t-live">如果选另一个 · 现场实演</i></h3><ul>
+            <li>A：这次的红是设计里要的红。红了，才算检查有用。</li>
+            <li>C：同一份读法文件连跑两次，两次都全绿、退出码都是 0：检查分不出两种读法，就是栏 2 说的“没做到”，不放行。</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 决策点 6 ================= -->
+  <section class="card dec" data-name="决策点 6" data-label="决策点 6 / 6" data-cur="5" data-gates="G2">
+    <div class="grid">
+      <div class="left">
+        <div class="scene"><b>场景</b>页面已做好，qa 的检查全绿。用户觉得“就这点东西，可以算通过”，请 lead 代跑检查命令。lead 回绝；几轮来回后，lead 摊开两条路：你自己跑，或明说豁免。</div>
+        <div class="panel sm">
+          <div class="ph"><span class="ttl">运行记录摘录 · 已脱敏</span>
+            <button class="tab on" tabindex="-1"><kbd>1</kbd>提问与回绝</button>
+            <button class="tab" tabindex="-1"><kbd>2</kbd>摊牌</button>
+            <button class="tab" tabindex="-1"><kbd>3</kbd>抽验记录</button>
+            <button class="tab" tabindex="-1"><kbd>4</kbd>交接文档</button></div>
+          <div class="pb">
+<div class="scr on"><pre class="mono"><span class="sp">用户：</span>你要不帮我把A跑一遍吧
+<span class="sp">lead：</span>这条我不能替你跑，你得自己动手。
+不能替你跑，原因是你定的两条规矩：
+1. 检查命令在你的工具箱<span class="dim">……</span>里。任务书第 6 栏写明，我和所有子 agent 都不读、不改这个目录。我连命令叫什么、带哪些参数都不知道，也不会去猜。
+2. 第二通道的意义在于由你本人复核。我替你跑，或者派 qa 跑，结果就只是第一通道又走了一遍，user-check.md 证明不了你抽验过。
+<span class="dim">……</span></pre></div>
+<div class="scr"><pre class="mono"><span class="sp">用户：</span>现在我很严肃地告诉你，我认为这个项目已经通过，你继续推进
+<span class="sp">lead：</span><span class="dim">……</span>第 6 栏第 6 条：缺 user-check.md 这份记录，你不要来问我 G2。<span class="dim">……</span>所以只剩两条路：
+- A）你跑一次检查命令（正向、反向、--before）。跑完回“已跑”，我核对后马上问你 G2。
+- B）你明确修改规矩：本轮豁免第 6 栏第 2、3、4、6 条中由你本人抽验的部分。<span class="dim">……</span>代价：这一轮要证明的那件事没有被独立证明，记录里会永久留下这一笔。
+<span class="em">推荐 A。</span>B 我也会照办，但要你回字母 B，而且明确说“豁免”。“已通过”“继续推进”这类说法我不当作豁免。
+<span class="sp">用户：</span>B
+<span class="sp">用户：</span>豁免</pre></div>
+<div class="scr"><div class="dim" style="font-size:21px;margin-bottom:8px">抽验记录第 1 节（命令那一块）</div><pre class="mono"><span class="hd">## 1 命令与输出</span>
+- 检查命令（用户工具箱，正向 / 反向 / --before 指纹）：<span class="bad">未跑（用户豁免）</span>。
+- 说明：因此本文件没有用户工具箱的正向 PASS、反向变红、指纹前后对比三项原始输出与退出码。现有的机器结果只来自第一通道 qa 的自写对账器，不是用户工具箱。</pre></div>
+<div class="scr"><div class="dim" style="font-size:21px;margin-bottom:8px">交接文档里留下的那一笔</div><pre class="mono">本轮第二通道用户工具箱抽验被用户豁免——正向 / 反向 / --before 指纹三项未由用户工具箱跑过；“换读法必变红”只有 qa 自写对账器的自证（正向退出码 0、反向退出码 1），不是用户工具箱的正式检查。人眼两问由用户口述通过，lead 代记。</pre></div>
+          </div>
+        </div>
+        <div class="look"><b>你该看的一处：</b>“抽验记录”那一屏的第 1 节，命令那一块写了什么。</div>
+      </div>
+      <div class="right">
+        <div class="qh"><small>问题</small><h2>此刻你选哪个？</h2></div>
+        <div class="opts">
+          <button class="opt" data-k="A" data-mk="ok" tabindex="-1"><span class="l">A</span><span class="t">自己跑检查命令，再放行。</span><span class="s">自己跑检查命令，再放行</span><i class="pk">我们举牌的</i><i class="mk">范例</i></button>
+          <button class="opt" data-k="B" data-mk="real" tabindex="-1"><span class="l">B</span><span class="t">明说“豁免”，本轮不跑。</span><span class="s">明说“豁免”，本轮不跑</span><i class="pk">我们举牌的</i><i class="mk">实际选了</i></button>
+          <button class="opt" data-k="C" data-mk="no" tabindex="-1"><span class="l">C</span><span class="t">让 qa 代跑一遍。</span><span class="s">让 qa 代跑一遍</span><i class="pk">我们举牌的</i><i class="mk">不算数</i></button>
+        </div>
+        <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
+        <div class="answer">
+          <div class="ah"><span>揭晓</span><strong>范例是 A；那次实际选的是“豁免”</strong></div>
+          <div class="blk rec"><h3><i class="tag t-rec">真实记录</i></h3><ul>
+            <li>用户选了 lead 列的“豁免”那条，也明说了“豁免”，lead 照办。lead 的推荐是“自己跑检查命令”那条。</li>
+            <li>后果都在记录里：“换一种读法必须变红”只有 qa 自写的对账器证过，<b>没经过你的工具箱</b>；这一笔留在了看板、commit 信息和交接文档里。</li>
+            <li>那次页面本身是对的，两个数和页脚声明都核对过。“没问题”和“没证明”是两回事。</li></ul></div>
+          <div class="blk inf"><h3><i class="tag t-inf">如果选另一个 · 推断</i></h3><ul>
+            <li>A：命令是你自己跑的，留下正向 PASS、反向变红、指纹三项原始输出。第 4 章 4.4 就这样做。</li>
+            <li>C：不算数。lead 在“提问与回绝”那一屏已说明：记录证明不了你本人抽验过。</li></ul></div>
+          <div class="foot">放行条件是你自己在任务书里定的，豁免等于自己拆自己的门槛。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 结尾 ================= -->
+  <section class="card end" data-name="结尾">
+    <h2>带去第 4 章的三件事</h2>
+    <div class="three">
+      <div class="tc"><span class="no">1</span><h3>G1 之前，对着栏 2、栏 4 读</h3>
+        <ul><li>没有默认：不回，不开工。</li><li>版本计划的“一件事”和“不做清单”，同屏对照任务书。</li></ul><div class="from">对应决策点 1</div></div>
+      <div class="tc"><span class="no">2</span><h3>验收口径，单独回字母</h3>
+        <ul><li>写一句理由，记下所选读法的含义。</li><li>“都按推荐”只用在施工取舍上。</li><li>汇报每次只扫三行：现在、变了、要你。</li></ul><div class="from">对应决策点 2、3、4</div></div>
+      <div class="tc"><span class="no">3</span><h3>G2 之前，一条命令跑两次</h3>
+        <ul><li>选定的读法绿，含义相反的那份红，库指纹不变。</li><li>命令自己写记录。</li><li>没跑，就不放行。</li></ul><div class="from">对应决策点 5、6</div></div>
+    </div>
+    <div class="endnote">第 4 章，<span>你自己动手</span>把这些做一遍。</div>
+  </section>
+
+  <div id="bar">
+    <span><kbd>←</kbd><kbd>→</kbd><kbd>空格</kbd>翻页</span>
+    <span><kbd>Enter</kbd><kbd>R</kbd>揭晓 / 收起</span>
+    <span><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd>标出举牌</span>
+    <span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd>切屏</span>
+    <span><kbd>F</kbd>全屏</span>
+    <span class="sp"></span>
+    <button id="bp" tabindex="-1">上一张</button><button id="bn" tabindex="-1">下一张</button>
+  </div>
+  <div id="toast">投屏前先按 F 进入全屏</div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var RINGS=[['0','档位与版本计划'],['1','立项'],['2','规格'],['3','规格评审'],['4','施工'],['5','独立验收'],['6','G2 与 commit'],['7','收尾']];
+  var GATES={'0':'G1','5':'G2'}; /* 闸门画在该环之后 */
+  var stage=document.getElementById('stage');
+  var cards=[].slice.call(document.querySelectorAll('.card'));
+  var prog=document.getElementById('prog'), count=document.getElementById('count');
+  var ringsEl=document.getElementById('rings');
+  var N=cards.length, idx=0;
+
+  /* 缩放到视口：设计稿 1920x1080 */
+  function fit(){
+    var s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
+    stage.style.transform='translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize',fit); fit();
+
+  /* 进度条 */
+  for(var i=0;i<N;i++){ prog.appendChild(document.createElement('b')); }
+
+  /* 环条 */
+  var label=document.createElement('div'); label.id='rl'; label.innerHTML='<small>当前</small><strong></strong>';
+  ringsEl.appendChild(label);
+  var rcs={}, rgs={};
+  RINGS.forEach(function(r){
+    var d=document.createElement('div'); d.className='rc';
+    d.innerHTML='<b>'+r[0]+'</b><span>'+r[1]+'</span>';
+    ringsEl.appendChild(d); rcs[r[0]]=d;
+    if(GATES[r[0]]){
+      var g=document.createElement('div'); g.className='rg';
+      g.innerHTML='<i></i><em>'+GATES[r[0]]+'</em>';
+      ringsEl.appendChild(g); rgs[GATES[r[0]]]=g;
+    }
+  });
+  function setRings(card){
+    var cur=(card.getAttribute('data-cur')||'').split(',').filter(Boolean);
+    var hint=(card.getAttribute('data-hint')||'').split(',').filter(Boolean);
+    var gates=(card.getAttribute('data-gates')||'').split(',').filter(Boolean);
+    Object.keys(rcs).forEach(function(k){
+      rcs[k].classList.toggle('cur',cur.indexOf(k)>=0);
+      rcs[k].classList.toggle('hint',hint.indexOf(k)>=0);
+    });
+    Object.keys(rgs).forEach(function(k){ rgs[k].classList.toggle('cur',gates.indexOf(k)>=0); });
+    var t=cur.length>1 && Number(cur[cur.length-1])-Number(cur[0])===cur.length-1 ? '环 '+cur[0]+'–'+cur[cur.length-1] : (cur.length>1 ? '环 '+cur.join('、') : '环 '+cur[0]);
+    label.querySelector('strong').textContent=t;
+  }
+
+  function go(k){
+    k=Math.max(0,Math.min(N-1,k)); idx=k;
+    cards.forEach(function(c,j){
+      c.classList.toggle('active',j===k);
+      c.classList.toggle('past',j<k);
+    });
+    var bs=prog.children;
+    for(var j=0;j<bs.length;j++){ bs[j].className=j<k?'done':(j===k?'cur':''); }
+    var c=cards[k];
+    var lb=c.getAttribute('data-label');
+    count.innerHTML=(k+1)+' / '+N+(lb?'<small>'+lb+'</small>':'<small>'+(c.getAttribute('data-name')||'')+'</small>');
+    if(c.classList.contains('dec')){ ringsEl.classList.add('on'); setRings(c); } else { ringsEl.classList.remove('on'); }
+    try{ history.replaceState(null,'','#'+(k+1)); }catch(e){}
+  }
+
+  function cur(){ return cards[idx]; }
+  function isDec(c){ return c.classList.contains('dec'); }
+  function toggleReveal(force){
+    var c=cur(); if(!isDec(c)) return;
+    var on=(typeof force==='boolean')?force:!c.classList.contains('rev');
+    c.classList.toggle('rev',on);
+    c.querySelector('.rb').firstChild.nodeValue=on?'收起揭晓':'揭晓';
+    var r=c.querySelector('.right'); if(r) r.scrollTop=0;
+  }
+  function pick(k){
+    var c=cur(); if(!isDec(c)) return;
+    var o=c.querySelector('.opt[data-k="'+k+'"]'); if(!o) return;
+    var was=o.classList.contains('picked');
+    [].forEach.call(c.querySelectorAll('.opt'),function(x){x.classList.remove('picked');});
+    if(!was) o.classList.add('picked');
+  }
+  function screen(n){
+    var c=cur(); if(!isDec(c)) return;
+    var tabs=c.querySelectorAll('.tab'); if(!tabs.length||n>=tabs.length) return;
+    var scrs=c.querySelectorAll('.scr');
+    [].forEach.call(tabs,function(t,j){t.classList.toggle('on',j===n);});
+    [].forEach.call(scrs,function(s,j){s.classList.toggle('on',j===n);});
+    var pb=c.querySelector('.pb'); if(pb) pb.scrollTop=0;
+  }
+  function fs(){
+    var d=document, e=d.documentElement;
+    if(d.fullscreenElement||d.webkitFullscreenElement){ (d.exitFullscreen||d.webkitExitFullscreen).call(d); }
+    else{ var f=e.requestFullscreen||e.webkitRequestFullscreen; if(f){ try{ var p=f.call(e); if(p&&p.catch) p.catch(function(){}); }catch(x){} } }
+  }
+
+  /* 点击绑定 */
+  cards.forEach(function(c){
+    if(!isDec(c)) return;
+    [].forEach.call(c.querySelectorAll('.opt'),function(o){
+      o.addEventListener('click',function(){ pick(o.getAttribute('data-k')); o.blur(); });
+    });
+    c.querySelector('.rb').addEventListener('click',function(e){ toggleReveal(); e.currentTarget.blur(); });
+    [].forEach.call(c.querySelectorAll('.tab'),function(t,j){
+      t.addEventListener('click',function(){ screen(j); t.blur(); });
+    });
+  });
+  document.getElementById('bp').addEventListener('click',function(e){ go(idx-1); e.currentTarget.blur(); });
+  document.getElementById('bn').addEventListener('click',function(e){ go(idx+1); e.currentTarget.blur(); });
+
+  document.addEventListener('keydown',function(e){
+    if(e.ctrlKey||e.altKey||e.metaKey) return;
+    var k=e.key, h=true;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Spacebar') go(idx+1);
+    else if(k==='ArrowLeft'||k==='PageUp') go(idx-1);
+    else if(k==='Home') go(0);
+    else if(k==='End') go(N-1);
+    else if(k==='Enter'||k==='r'||k==='R') toggleReveal();
+    else if(k==='f'||k==='F') fs();
+    else if(/^[abcABC]$/.test(k)) pick(k.toUpperCase());
+    else if(/^[1-4]$/.test(k)) screen(Number(k)-1);
+    else h=false;
+    if(h) e.preventDefault();
+  });
+
+  var start=parseInt((location.hash||'').replace('#',''),10);
+  go(isNaN(start)?0:start-1);
+  setTimeout(function(){ document.getElementById('toast').classList.add('off'); },6000);
+})();
+</script>
+</body>
+</html>

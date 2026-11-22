@@ -1,0 +1,2 @@
+﻿# content/ 是同步镜像：保持字节原样，SYNC.json 里的 SHA-256 才对得上
+content/** -text

@@ -1,0 +1,949 @@
+{
+    "synced_at":  "2026-11-22T17:16:17+08:00",
+    "source":  "l1-textbook/v2",
+    "source_commit":  "72cdcd2b49c22ed9fc4524515931e9595f34678c",
+    "source_dirty":  false,
+    "file_count":  188,
+    "files":  [
+                  {
+                      "path":  "chapters/ch1_任务书与流程.md",
+                      "sha256":  "228722cc8c594ba7a893514764f63e3841303cd21e24670e9b50e4027caf398d",
+                      "bytes":  34061
+                  },
+                  {
+                      "path":  "chapters/ch2_搭最小环境.md",
+                      "sha256":  "b2f0001d5b75b8c67a100271b62cf2b4905838070121ff9632cd7e96a4fb6163",
+                      "bytes":  32963
+                  },
+                  {
+                      "path":  "chapters/ch2b_8环演示.md",
+                      "sha256":  "56c70cb5f0d410c5a326f8b14da1d1bacefc85caf08c6be63f90f2ab3d824034",
+                      "bytes":  10361
+                  },
+                  {
+                      "path":  "chapters/ch3_业务数据与需求.md",
+                      "sha256":  "7f5e7a61432abd717cdd9d19f6b2e7b90a4abbe8b5615a259c21fb65de1a4f05",
+                      "bytes":  33846
+                  },
+                  {
+                      "path":  "chapters/ch4_单元一_看板任务书.md",
+                      "sha256":  "a227e0066eac7847ff1c7ced6c4881299f74a9701bb6429b66176842bd37c66c",
+                      "bytes":  92368
+                  },
+                  {
+                      "path":  "chapters/ch5_单元二_问数任务书.md",
+                      "sha256":  "f17e3572b703b8ecfffe348a06a55d23970e158612e57651e57f5f51dc86a4e2",
+                      "bytes":  76191
+                  },
+                  {
+                      "path":  "chapters/ch6_单元三_巡检任务书.md",
+                      "sha256":  "36b974e6dd5c2c8f315415546844af36b86b01591d1f3c874b6f36a7d18f6516",
+                      "bytes":  73108
+                  },
+                  {
+                      "path":  "chapters/ch7_单元四_插件任务书.md",
+                      "sha256":  "ed4a7e072c0a2f583256e6f0d4b88c62c4f3412ffb152a54f452f85687c1cbb1",
+                      "bytes":  77363
+                  },
+                  {
+                      "path":  "chapters/ch8_复盘与展望.md",
+                      "sha256":  "112ae80048b906ec58ae3aec1f22507562877353de756cfc12a949f466860857",
+                      "bytes":  44157
+                  },
+                  {
+                      "path":  "checkpoints/stage1/.gitignore",
+                      "sha256":  "dbbd5f5c86f490f2455c6fa46549ed1f8d0880c2927bfac4468d45dae585f7bc",
+                      "bytes":  47
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/__init__.py",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/main.py",
+                      "sha256":  "a2daa6c0791a589afca95523cf88c6ab398a12ba27dc4a2df1f4b885b9863c4b",
+                      "bytes":  3012
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/queries.py",
+                      "sha256":  "4f6f25bf82f7d4e7fa356c00ae493ea6634674a59c8bcf658a60ef616c66cf44",
+                      "bytes":  16394
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/css/dashboard.css",
+                      "sha256":  "4a180538c25a6df77d46decac4f0b84e1a3ab465a5357defa2a1b985ff645203",
+                      "bytes":  6105
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/js/chart_export.js",
+                      "sha256":  "893d1c97c1d44b3a4141103562c4a0b7426c5c5492d30cb5091aafacdb3fe66f",
+                      "bytes":  8825
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/js/dashboard.js",
+                      "sha256":  "8ce1cbadef04573b81cac3f8d8eee10807dbf801f93899ad2df36c0f810170c7",
+                      "bytes":  25521
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/vendor/echarts.min.js",
+                      "sha256":  "dbc15e9b9ca60d2ab3115953cc42e92a70d540388a27d4d0acfcf8c3464b6a0b",
+                      "bytes":  1030900
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/vendor/ECHARTS-LICENSE.txt",
+                      "sha256":  "9ef11df57e751e8c6d10d54e1855c64d316627bbe89e73326de7e3ccdb8184aa",
+                      "bytes":  12212
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/static/vendor/ECHARTS-NOTICE.txt",
+                      "sha256":  "6e991b88000ad9e981472373befe6968be3673c5020ae8e5954be54725abe104",
+                      "bytes":  172
+                  },
+                  {
+                      "path":  "checkpoints/stage1/app/templates/index.html",
+                      "sha256":  "d02d94abe2e3cf98982ac3a61036396f3e5a699e38e23e2e6f98ddaa2b32f268",
+                      "bytes":  5850
+                  },
+                  {
+                      "path":  "checkpoints/stage1/data/.gitkeep",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage1/docs/指标口径表.md",
+                      "sha256":  "d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81",
+                      "bytes":  3957
+                  },
+                  {
+                      "path":  "checkpoints/stage1/docs/运营手册.md",
+                      "sha256":  "581031bbabecb08d0d9d052d06a38cae6552440e1b638bef3e255d39e46b0ab1",
+                      "bytes":  3532
+                  },
+                  {
+                      "path":  "checkpoints/stage1/README.md",
+                      "sha256":  "6da34aef00bf436be037adc0fa7e20ce92f4b0040bd82ec03932c05868c8cab1",
+                      "bytes":  11957
+                  },
+                  {
+                      "path":  "checkpoints/stage1/requirements.txt",
+                      "sha256":  "9cc373959a71f1dc1a17d7a7c350be20909054b975b5cc15e508f7e1d4e6f58b",
+                      "bytes":  260
+                  },
+                  {
+                      "path":  "checkpoints/stage2/.env.example",
+                      "sha256":  "3cacc15933d8bc41c9c433e54b2237cf648845e1a873340aef956fd89f26dee7",
+                      "bytes":  1043
+                  },
+                  {
+                      "path":  "checkpoints/stage2/.gitignore",
+                      "sha256":  "af4195c95fd8488a9b577776330ed849400804a6b98688f4d14a891895186b2e",
+                      "bytes":  47
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/__init__.py",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/__init__.py",
+                      "sha256":  "266aa5f129caea31b36d91bffb485bbb148262cb05341bced67402c67bc8f337",
+                      "bytes":  1098
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/context.py",
+                      "sha256":  "50c5de7cc519bb75c6a3f14c9bbc9be6fd784a735c1f368fa3bea7a25ed30e79",
+                      "bytes":  17338
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/format.py",
+                      "sha256":  "a8f248f34540f5a4e93fa177de54c70940195d58927742271832c4090c8e0554",
+                      "bytes":  6762
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/llm.py",
+                      "sha256":  "365768a21b56a554e51dfd970dbae42daf493393d064487b18d4cffed27c79a8",
+                      "bytes":  7475
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/pipeline.py",
+                      "sha256":  "30bf78a472742fba5033e5ffaa1ae20cf2709a3500e2fe38ed5a0ad658bb8b2d",
+                      "bytes":  51332
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/ask/trace.py",
+                      "sha256":  "02eeb10c581862a3ac2edf9021694a55871234b58588265b0258efabac1b25f1",
+                      "bytes":  8361
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/config.py",
+                      "sha256":  "c59852a51e5f72c05e4a777a8e7494531e640d2711c5b83959174c4d6647ea0b",
+                      "bytes":  3572
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/gcj.py",
+                      "sha256":  "6908f1b7c5736620ac80b21b597dc314121e220164a8a537e35c77ed20febc1f",
+                      "bytes":  2588
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/main.py",
+                      "sha256":  "d5c714516537d26f2a383b7ad6c887389ec5946320a07964a004d1aaa8806048",
+                      "bytes":  6951
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/queries.py",
+                      "sha256":  "d5fdab5e0a14d7bf1116131598026c668e0ed22a68b20a6cc3c0649c0d806d58",
+                      "bytes":  21999
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/sqlguard.py",
+                      "sha256":  "5757449ddd73e3c2e91be6366199645f63a1496aa5455c7fec08ef5e8a8fa7e5",
+                      "bytes":  9460
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/css/ask.css",
+                      "sha256":  "eaa7a591f76340fdfc807f8cf578169df3e69c4d0392fea6325fa112c57cabb5",
+                      "bytes":  5997
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/css/dashboard.css",
+                      "sha256":  "f6c05fcd50b27df81fbd505464e77e7a07046e3174fbf1a73bf733a9cbef76c2",
+                      "bytes":  6246
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/css/map.css",
+                      "sha256":  "1e9901c71699ef066d000433ca48e55bfca329272831262c5d8189757990e0bd",
+                      "bytes":  3106
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/js/ask.js",
+                      "sha256":  "6cafa5595832f1fd8e13554c680827519e31fb7f699c3fca922be7004104cb45",
+                      "bytes":  10423
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/js/chart_export.js",
+                      "sha256":  "893d1c97c1d44b3a4141103562c4a0b7426c5c5492d30cb5091aafacdb3fe66f",
+                      "bytes":  8825
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/js/dashboard.js",
+                      "sha256":  "2f6d8bdcf6195bd791236233bb4f00d1ba598335b434b4bc71a43b18cddc8cfa",
+                      "bytes":  29314
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/js/map.js",
+                      "sha256":  "a087f95d0611815ea38b6da35a367ef74b7767fc5bc8a11c3cb9386ef7c2007e",
+                      "bytes":  17883
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/vendor/echarts.min.js",
+                      "sha256":  "dbc15e9b9ca60d2ab3115953cc42e92a70d540388a27d4d0acfcf8c3464b6a0b",
+                      "bytes":  1030900
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/vendor/ECHARTS-LICENSE.txt",
+                      "sha256":  "9ef11df57e751e8c6d10d54e1855c64d316627bbe89e73326de7e3ccdb8184aa",
+                      "bytes":  12212
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/static/vendor/ECHARTS-NOTICE.txt",
+                      "sha256":  "6e991b88000ad9e981472373befe6968be3673c5020ae8e5954be54725abe104",
+                      "bytes":  172
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/templates/_ask.html",
+                      "sha256":  "d335189a0ab41578456774e70ad42c0906fc07fab582bf1404bbe9e0a9ed9aa0",
+                      "bytes":  2481
+                  },
+                  {
+                      "path":  "checkpoints/stage2/app/templates/index.html",
+                      "sha256":  "e7805a2ecba8985a56aa3e02d7f5c99f7d0dcccdd2edb8e4bfcfb6360fb91e0f",
+                      "bytes":  7677
+                  },
+                  {
+                      "path":  "checkpoints/stage2/data/.gitkeep",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage2/docs/指标口径表.md",
+                      "sha256":  "d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81",
+                      "bytes":  3957
+                  },
+                  {
+                      "path":  "checkpoints/stage2/docs/运营手册.md",
+                      "sha256":  "581031bbabecb08d0d9d052d06a38cae6552440e1b638bef3e255d39e46b0ab1",
+                      "bytes":  3532
+                  },
+                  {
+                      "path":  "checkpoints/stage2/README.md",
+                      "sha256":  "800db5fd4f4013ca2a94364b2f6559a024b574fe0446f75d6d806b35b47c1ea3",
+                      "bytes":  17743
+                  },
+                  {
+                      "path":  "checkpoints/stage2/requirements.txt",
+                      "sha256":  "9cc373959a71f1dc1a17d7a7c350be20909054b975b5cc15e508f7e1d4e6f58b",
+                      "bytes":  260
+                  },
+                  {
+                      "path":  "checkpoints/stage3/.env.example",
+                      "sha256":  "bd5564eb2341e8c5438d03589047e28f088efd32a01dfe82fd24173e98e775e3",
+                      "bytes":  1607
+                  },
+                  {
+                      "path":  "checkpoints/stage3/.gitignore",
+                      "sha256":  "39e04b1b25a4fef89af43821caf232ff5eb84386f1585fb4332e7ec908eb9d4e",
+                      "bytes":  89
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/__init__.py",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/agent/__init__.py",
+                      "sha256":  "1b5b212f91dd89a6d58263075e1aebdc4225cb8c303083852cfc1bfcb873e3c9",
+                      "bytes":  3475
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/agent/llm_gate.py",
+                      "sha256":  "771d7f08f590bb76b1365f3d7d398d5ef28c248954558e68ceeff71fd2e52558",
+                      "bytes":  2113
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/agent/rules.py",
+                      "sha256":  "65873c768be9233b95cfc66f48302211d5a8b9ae11cb18de82ef469d3d02afa3",
+                      "bytes":  9485
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/agent/runner.py",
+                      "sha256":  "b2b33bb1353546bf68cbc37a90197690ad07c504cb8035951b0261c99f0cb5bf",
+                      "bytes":  20108
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/agent/tools.py",
+                      "sha256":  "a4f094c48882bd0f3e97394b2d993880245f9aa95c2c99dba0c1fbaa9fba8a35",
+                      "bytes":  5718
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/__init__.py",
+                      "sha256":  "266aa5f129caea31b36d91bffb485bbb148262cb05341bced67402c67bc8f337",
+                      "bytes":  1098
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/context.py",
+                      "sha256":  "50c5de7cc519bb75c6a3f14c9bbc9be6fd784a735c1f368fa3bea7a25ed30e79",
+                      "bytes":  17338
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/format.py",
+                      "sha256":  "a8f248f34540f5a4e93fa177de54c70940195d58927742271832c4090c8e0554",
+                      "bytes":  6762
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/llm.py",
+                      "sha256":  "e550cd2cc0219b7bee60feadc3a0169fa58f0a9933be8cbcf07b6cb557328fac",
+                      "bytes":  7486
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/pipeline.py",
+                      "sha256":  "7b22513b18e18286b57e31236b1ae4ad8e9e1274329690393d6b6b7b472a147e",
+                      "bytes":  51243
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ask/trace.py",
+                      "sha256":  "02eeb10c581862a3ac2edf9021694a55871234b58588265b0258efabac1b25f1",
+                      "bytes":  8361
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/config.py",
+                      "sha256":  "2d83c11ca75a0e6f906c3f4e9ff05d40f3c1d26f4b3d5dc1d3429e76e8fa3510",
+                      "bytes":  5250
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/gcj.py",
+                      "sha256":  "3daf53084eca6b7519232acbd099aa728ed2bea5048a5f1f8e4b823ad0ea90b4",
+                      "bytes":  2570
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/main.py",
+                      "sha256":  "30b6ebb929fbd914cf88673fb55dd783cd56e1518ade9ddc60423304650f5b17",
+                      "bytes":  7943
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/ops_store.py",
+                      "sha256":  "26a2d5b5e4d8eccad1bf62d8e6f2d2ac8c1360a82354a5cecfd801732eb75d32",
+                      "bytes":  18415
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/queries.py",
+                      "sha256":  "4d0151702b5b04f0c3cbbee262e1c4c7c3a910c2f8d5a5216046e607720abce4",
+                      "bytes":  26391
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/sqlguard.py",
+                      "sha256":  "5757449ddd73e3c2e91be6366199645f63a1496aa5455c7fec08ef5e8a8fa7e5",
+                      "bytes":  9460
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/css/agent.css",
+                      "sha256":  "4390e7792bf1f0e72039c253383e642ce62383566454f2f7a567c3fd7360d581",
+                      "bytes":  7522
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/css/ask.css",
+                      "sha256":  "eaa7a591f76340fdfc807f8cf578169df3e69c4d0392fea6325fa112c57cabb5",
+                      "bytes":  5997
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/css/dashboard.css",
+                      "sha256":  "f6c05fcd50b27df81fbd505464e77e7a07046e3174fbf1a73bf733a9cbef76c2",
+                      "bytes":  6246
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/css/map.css",
+                      "sha256":  "fc02a38993afbfbb612bfd97dd5b86413a4bb0f6e9b910aa0498f73aafc8f2ea",
+                      "bytes":  3505
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/js/agent.js",
+                      "sha256":  "73d9bf921f5ff9a7233f860f7cef52fe52c7806080c4911ee5b22b3425cdd25c",
+                      "bytes":  16377
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/js/ask.js",
+                      "sha256":  "6cafa5595832f1fd8e13554c680827519e31fb7f699c3fca922be7004104cb45",
+                      "bytes":  10423
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/js/dashboard.js",
+                      "sha256":  "db767cc4ee8534bb360c83db5e9431a7db17e7e404d39c9cead338bbbfe5774a",
+                      "bytes":  29008
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/js/map.js",
+                      "sha256":  "65e46a8725ad28fe7e77f90e14b2ca1eb8e95a5596412710b13e1484e0e4528c",
+                      "bytes":  20639
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/vendor/echarts.min.js",
+                      "sha256":  "dbc15e9b9ca60d2ab3115953cc42e92a70d540388a27d4d0acfcf8c3464b6a0b",
+                      "bytes":  1030900
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/vendor/ECHARTS-LICENSE.txt",
+                      "sha256":  "9ef11df57e751e8c6d10d54e1855c64d316627bbe89e73326de7e3ccdb8184aa",
+                      "bytes":  12212
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/static/vendor/ECHARTS-NOTICE.txt",
+                      "sha256":  "6e991b88000ad9e981472373befe6968be3673c5020ae8e5954be54725abe104",
+                      "bytes":  172
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/templates/_agent.html",
+                      "sha256":  "cf00258fced5c62ca68e5bf5bf650685e451cd7c91bf57e9cb1d4c9f01500a93",
+                      "bytes":  3180
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/templates/_ask.html",
+                      "sha256":  "d335189a0ab41578456774e70ad42c0906fc07fab582bf1404bbe9e0a9ed9aa0",
+                      "bytes":  2481
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/templates/index.html",
+                      "sha256":  "ca5abf4d35b458347af3fd4ca8fc012d4cd6d8a9f048c8224b1e7d197eda551b",
+                      "bytes":  8214
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/tools/__init__.py",
+                      "sha256":  "48ddb33238e25e261f8db4e6106211ebba97ea86fadc0a612172c9e36e36ee2e",
+                      "bytes":  91
+                  },
+                  {
+                      "path":  "checkpoints/stage3/app/tools/metrics.py",
+                      "sha256":  "d7d5cb5468c5c9f77bf4bf8ccea2197f2fede9fa7d13e157469440ae08a387c8",
+                      "bytes":  8050
+                  },
+                  {
+                      "path":  "checkpoints/stage3/docs/指标口径表.md",
+                      "sha256":  "d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81",
+                      "bytes":  3957
+                  },
+                  {
+                      "path":  "checkpoints/stage3/docs/运营手册.md",
+                      "sha256":  "581031bbabecb08d0d9d052d06a38cae6552440e1b638bef3e255d39e46b0ab1",
+                      "bytes":  3532
+                  },
+                  {
+                      "path":  "checkpoints/stage3/README.md",
+                      "sha256":  "e948d19aa8fa3b59068ef128476c245f96a021caf066a8466d442e6497c21587",
+                      "bytes":  11066
+                  },
+                  {
+                      "path":  "checkpoints/stage3/requirements.txt",
+                      "sha256":  "9cc373959a71f1dc1a17d7a7c350be20909054b975b5cc15e508f7e1d4e6f58b",
+                      "bytes":  260
+                  },
+                  {
+                      "path":  "checkpoints/stage4/.env.example",
+                      "sha256":  "bd5564eb2341e8c5438d03589047e28f088efd32a01dfe82fd24173e98e775e3",
+                      "bytes":  1607
+                  },
+                  {
+                      "path":  "checkpoints/stage4/.gitignore",
+                      "sha256":  "39e04b1b25a4fef89af43821caf232ff5eb84386f1585fb4332e7ec908eb9d4e",
+                      "bytes":  89
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/__init__.py",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/agent/__init__.py",
+                      "sha256":  "1b5b212f91dd89a6d58263075e1aebdc4225cb8c303083852cfc1bfcb873e3c9",
+                      "bytes":  3475
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/agent/llm_gate.py",
+                      "sha256":  "771d7f08f590bb76b1365f3d7d398d5ef28c248954558e68ceeff71fd2e52558",
+                      "bytes":  2113
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/agent/rules.py",
+                      "sha256":  "65873c768be9233b95cfc66f48302211d5a8b9ae11cb18de82ef469d3d02afa3",
+                      "bytes":  9485
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/agent/runner.py",
+                      "sha256":  "b2b33bb1353546bf68cbc37a90197690ad07c504cb8035951b0261c99f0cb5bf",
+                      "bytes":  20108
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/agent/tools.py",
+                      "sha256":  "a4f094c48882bd0f3e97394b2d993880245f9aa95c2c99dba0c1fbaa9fba8a35",
+                      "bytes":  5718
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/__init__.py",
+                      "sha256":  "266aa5f129caea31b36d91bffb485bbb148262cb05341bced67402c67bc8f337",
+                      "bytes":  1098
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/context.py",
+                      "sha256":  "50c5de7cc519bb75c6a3f14c9bbc9be6fd784a735c1f368fa3bea7a25ed30e79",
+                      "bytes":  17338
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/format.py",
+                      "sha256":  "a8f248f34540f5a4e93fa177de54c70940195d58927742271832c4090c8e0554",
+                      "bytes":  6762
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/llm.py",
+                      "sha256":  "e550cd2cc0219b7bee60feadc3a0169fa58f0a9933be8cbcf07b6cb557328fac",
+                      "bytes":  7486
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/pipeline.py",
+                      "sha256":  "7b22513b18e18286b57e31236b1ae4ad8e9e1274329690393d6b6b7b472a147e",
+                      "bytes":  51243
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ask/trace.py",
+                      "sha256":  "02eeb10c581862a3ac2edf9021694a55871234b58588265b0258efabac1b25f1",
+                      "bytes":  8361
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/config.py",
+                      "sha256":  "2d83c11ca75a0e6f906c3f4e9ff05d40f3c1d26f4b3d5dc1d3429e76e8fa3510",
+                      "bytes":  5250
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/gcj.py",
+                      "sha256":  "3daf53084eca6b7519232acbd099aa728ed2bea5048a5f1f8e4b823ad0ea90b4",
+                      "bytes":  2570
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/main.py",
+                      "sha256":  "30b6ebb929fbd914cf88673fb55dd783cd56e1518ade9ddc60423304650f5b17",
+                      "bytes":  7943
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/ops_store.py",
+                      "sha256":  "26a2d5b5e4d8eccad1bf62d8e6f2d2ac8c1360a82354a5cecfd801732eb75d32",
+                      "bytes":  18415
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/queries.py",
+                      "sha256":  "80141f1fa66e0f03196acd5fe82ba43fc8839e69665e050a3797704b5d0f3a60",
+                      "bytes":  26802
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/sqlguard.py",
+                      "sha256":  "5757449ddd73e3c2e91be6366199645f63a1496aa5455c7fec08ef5e8a8fa7e5",
+                      "bytes":  9460
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/css/agent.css",
+                      "sha256":  "4390e7792bf1f0e72039c253383e642ce62383566454f2f7a567c3fd7360d581",
+                      "bytes":  7522
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/css/ask.css",
+                      "sha256":  "eaa7a591f76340fdfc807f8cf578169df3e69c4d0392fea6325fa112c57cabb5",
+                      "bytes":  5997
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/css/dashboard.css",
+                      "sha256":  "f6c05fcd50b27df81fbd505464e77e7a07046e3174fbf1a73bf733a9cbef76c2",
+                      "bytes":  6246
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/css/map.css",
+                      "sha256":  "fc02a38993afbfbb612bfd97dd5b86413a4bb0f6e9b910aa0498f73aafc8f2ea",
+                      "bytes":  3505
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/js/agent.js",
+                      "sha256":  "73d9bf921f5ff9a7233f860f7cef52fe52c7806080c4911ee5b22b3425cdd25c",
+                      "bytes":  16377
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/js/ask.js",
+                      "sha256":  "6cafa5595832f1fd8e13554c680827519e31fb7f699c3fca922be7004104cb45",
+                      "bytes":  10423
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/js/dashboard.js",
+                      "sha256":  "db767cc4ee8534bb360c83db5e9431a7db17e7e404d39c9cead338bbbfe5774a",
+                      "bytes":  29008
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/js/map.js",
+                      "sha256":  "65e46a8725ad28fe7e77f90e14b2ca1eb8e95a5596412710b13e1484e0e4528c",
+                      "bytes":  20639
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/vendor/echarts.min.js",
+                      "sha256":  "dbc15e9b9ca60d2ab3115953cc42e92a70d540388a27d4d0acfcf8c3464b6a0b",
+                      "bytes":  1030900
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/vendor/ECHARTS-LICENSE.txt",
+                      "sha256":  "9ef11df57e751e8c6d10d54e1855c64d316627bbe89e73326de7e3ccdb8184aa",
+                      "bytes":  12212
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/static/vendor/ECHARTS-NOTICE.txt",
+                      "sha256":  "6e991b88000ad9e981472373befe6968be3673c5020ae8e5954be54725abe104",
+                      "bytes":  172
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/templates/_agent.html",
+                      "sha256":  "cf00258fced5c62ca68e5bf5bf650685e451cd7c91bf57e9cb1d4c9f01500a93",
+                      "bytes":  3180
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/templates/_ask.html",
+                      "sha256":  "d335189a0ab41578456774e70ad42c0906fc07fab582bf1404bbe9e0a9ed9aa0",
+                      "bytes":  2481
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/templates/index.html",
+                      "sha256":  "ca5abf4d35b458347af3fd4ca8fc012d4cd6d8a9f048c8224b1e7d197eda551b",
+                      "bytes":  8214
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/tools/__init__.py",
+                      "sha256":  "48ddb33238e25e261f8db4e6106211ebba97ea86fadc0a612172c9e36e36ee2e",
+                      "bytes":  91
+                  },
+                  {
+                      "path":  "checkpoints/stage4/app/tools/metrics.py",
+                      "sha256":  "d7d5cb5468c5c9f77bf4bf8ccea2197f2fede9fa7d13e157469440ae08a387c8",
+                      "bytes":  8050
+                  },
+                  {
+                      "path":  "checkpoints/stage4/docs/指标口径表.md",
+                      "sha256":  "d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81",
+                      "bytes":  3957
+                  },
+                  {
+                      "path":  "checkpoints/stage4/docs/运营手册.md",
+                      "sha256":  "581031bbabecb08d0d9d052d06a38cae6552440e1b638bef3e255d39e46b0ab1",
+                      "bytes":  3532
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/client.js",
+                      "sha256":  "d36f1c3efb73f7d7ff4d92ce002b9fb8d80e43a0920fdc7b6cb3834afce327fc",
+                      "bytes":  34092
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/cordis.patch.yml",
+                      "sha256":  "052484fd3a091f7482a3270f4531c49ccc782b4665ddd95b0b493f1805d1db5f",
+                      "bytes":  84
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/icon.svg",
+                      "sha256":  "25130a4fa1ff7c5f18b148350059caaf12f4750ba7b67345ea39f5df5b65d096",
+                      "bytes":  439
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/index.js",
+                      "sha256":  "cb84cb640003d55335459871875b9ae31a07e15d214487a144df8b3b0331a266",
+                      "bytes":  43042
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/locale/en.json",
+                      "sha256":  "1c7bab8ee2ed0122297d7f78150f195faa25e12fe07ed5f3c39ac72bcb49ca41",
+                      "bytes":  522
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/locale/zh.json",
+                      "sha256":  "b9d4effa58c9f44a661f74b7e53667c9eb5ece9b011b194979240f6dd9819185",
+                      "bytes":  498
+                  },
+                  {
+                      "path":  "checkpoints/stage4/dsh-plugin/package.json",
+                      "sha256":  "e47267cccac95e13e3128f3209c98d1f287411d23af20f06c21d778d4b2cb24f",
+                      "bytes":  733
+                  },
+                  {
+                      "path":  "checkpoints/stage4/README.md",
+                      "sha256":  "421b68408107af81bbe68f6b714a27c96ba24bf092b51b47955a19d32e041b2e",
+                      "bytes":  23524
+                  },
+                  {
+                      "path":  "checkpoints/stage4/requirements.txt",
+                      "sha256":  "9cc373959a71f1dc1a17d7a7c350be20909054b975b5cc15e508f7e1d4e6f58b",
+                      "bytes":  260
+                  },
+                  {
+                      "path":  "demo/8环演示.html",
+                      "sha256":  "98afc6dd2f0253670da3db09ae1a364463584513f06343294ea7b57d12481fd3",
+                      "bytes":  59289
+                  },
+                  {
+                      "path":  "kit/.gitignore",
+                      "sha256":  "f2b804fb03c5cb0350340706b42c666c7f22ade446c0ed714fb5d917116259f8",
+                      "bytes":  181
+                  },
+                  {
+                      "path":  "kit/checksums.txt",
+                      "sha256":  "94ad2a0a8859ffa4fd9707cb79e2144d44f6fe3a9d35b9611957a91336b46583",
+                      "bytes":  1206
+                  },
+                  {
+                      "path":  "kit/db/.gitkeep",
+                      "sha256":  "a2c66978cf51a994816f75aec8db68f798b8e021fe68ab0cbbd4da25d0dc3662",
+                      "bytes":  125
+                  },
+                  {
+                      "path":  "kit/README.md",
+                      "sha256":  "fd5da308bb73b2f96538237cc42e0f5b1c5f9e681395032e22988d8436da8e47",
+                      "bytes":  5200
+                  },
+                  {
+                      "path":  "kit/student-pack/指标口径表.md",
+                      "sha256":  "d323b02a6b33d50764d8aca786b9c440f0eaf7ff6611996dfec4e0eef9346c81",
+                      "bytes":  3957
+                  },
+                  {
+                      "path":  "kit/student-pack/运营手册.md",
+                      "sha256":  "c0368e4f44e598d9aa82670d5ddd332b4cd5dcd832d039973f33513c97490e2c",
+                      "bytes":  3483
+                  },
+                  {
+                      "path":  "kit/tools/gen-board.mjs",
+                      "sha256":  "a4b30a911245a3d94da6bf9af5e5f7bb63491640e816acbf1f97b0ea80510f84",
+                      "bytes":  11753
+                  },
+                  {
+                      "path":  "kit/交付约定_单元三.md",
+                      "sha256":  "a65e35bfc2bcb0ad8f3383d4277f21242b9ec85d0d7ca130aaae6c15b1b18a3a",
+                      "bytes":  4337
+                  },
+                  {
+                      "path":  "kit/交付约定_单元二.md",
+                      "sha256":  "304c2b75dd4f9567c88d384be789385ac19a9635ada8960c4d3787d9f65e69ee",
+                      "bytes":  3944
+                  },
+                  {
+                      "path":  "kit/交付约定_单元四.md",
+                      "sha256":  "e44188999f74f6b03fff0000f5eeb7f1855e3554b03575f0b8cf723e2dce6eb2",
+                      "bytes":  3656
+                  },
+                  {
+                      "path":  "kit/导出契约.md",
+                      "sha256":  "ef3c0d55bb1b1ebf40cb5b797490f54027d49b7b32e0a20b4175b2106005fcbc",
+                      "bytes":  4960
+                  },
+                  {
+                      "path":  "kit/表结构说明.md",
+                      "sha256":  "7d8c62cce7bcf72844860f3064ffe14adf84ceb22e71fa1dee225de4306be750",
+                      "bytes":  9557
+                  },
+                  {
+                      "path":  "lab/fixtures/u2/bad_answers.jsonl",
+                      "sha256":  "0f9cf662c3415047cfcc4a004165d120581ae98b98242ed9003bde6a60f21a49",
+                      "bytes":  3921
+                  },
+                  {
+                      "path":  "lab/fixtures/u2/good_answers.jsonl",
+                      "sha256":  "2b9b2f606f6437b2f88d193c9df59dc34a0aaf34db3f785d5e2f46b4b486f56c",
+                      "bytes":  4745
+                  },
+                  {
+                      "path":  "lab/fixtures/u2/README.md",
+                      "sha256":  "de510411ad0d1259222ddaeac373a6c10217295a15beaa7c70fcea8ef95c2a1f",
+                      "bytes":  5026
+                  },
+                  {
+                      "path":  "lab/fixtures/u3/bad_ops.db",
+                      "sha256":  "b83c1b5474fcd608ad5a494de6ea13230692308b7926d87436dc8ffd3fe7cc47",
+                      "bytes":  20480
+                  },
+                  {
+                      "path":  "lab/fixtures/u3/README.md",
+                      "sha256":  "b7a5e17bd7d5e05eb6e6b65be3696c7aeebf46a35f0caf397c0bc15f15ad352b",
+                      "bytes":  3384
+                  },
+                  {
+                      "path":  "lab/fixtures/u4/bad_card.json",
+                      "sha256":  "33828dc33a1723e2d72a7868516c5f4238a59dda3dadb9682e43d53b244fb7b6",
+                      "bytes":  857
+                  },
+                  {
+                      "path":  "lab/fixtures/u4/good_card.json",
+                      "sha256":  "ce2bc0311881b7f0e1144098d2977bb0d80a77c8995ecca4b0b1e2540336fd81",
+                      "bytes":  857
+                  },
+                  {
+                      "path":  "lab/fixtures/u4/README.md",
+                      "sha256":  "59fddf48df98fbc75c89ae92ca166ee3494fcacffce16683dd662cf068fdd01b",
+                      "bytes":  1690
+                  },
+                  {
+                      "path":  "lab/sample/index.html",
+                      "sha256":  "7b9c9cfb13347ce9faa03e8c6e1eeeac3d131efbe156fb95748ea5d2edcdd5bd",
+                      "bytes":  10695
+                  },
+                  {
+                      "path":  "lab/sample/index_swapped.html",
+                      "sha256":  "5bb4095f1abf73f0156dd13584a188678d7a76f436f06078774641683212f354",
+                      "bytes":  11187
+                  },
+                  {
+                      "path":  "lab/sample/README.md",
+                      "sha256":  "e0692568ce9299b598d75b22d302867852461d8a57eccf8eab90f465de9c9167",
+                      "bytes":  4376
+                  },
+                  {
+                      "path":  "lab/sample/sample_expected.json",
+                      "sha256":  "38825bbfa99b6398f6de9e3d31a94a470a50cb31f72b074446b3573682a237bd",
+                      "bytes":  3632
+                  },
+                  {
+                      "path":  "lab/templates/ref_sql写法_单元一.md",
+                      "sha256":  "0bae8e6d216f54ef25162c02383ebd207c94ca407f81235c5c5692327e57d20f",
+                      "bytes":  22069
+                  },
+                  {
+                      "path":  "lab/templates/事实卡查询模板.sql",
+                      "sha256":  "233e131fe706903e29af6b286975ba85895cf4ae8dd3e2115eada1d20a8ae822",
+                      "bytes":  7103
+                  },
+                  {
+                      "path":  "lab/templates/人眼抽查记录表_单元一.md",
+                      "sha256":  "6cbec185044d42eaae444c478f1c83dc877fd8d81724415e1bafa286a1678fa5",
+                      "bytes":  2753
+                  },
+                  {
+                      "path":  "lab/templates/任务书模板.md",
+                      "sha256":  "077ad11dff533614d19dc7ee92da1c921a8e08a3526b3740cdb773ff2b6d944f",
+                      "bytes":  5596
+                  },
+                  {
+                      "path":  "lab/templates/任务书自查清单.md",
+                      "sha256":  "579731c871acb3bca9c430cd82535d666b540425788d4de52f46b6ea61076962",
+                      "bytes":  3856
+                  },
+                  {
+                      "path":  "lab/templates/关键决策卡_单元一.md",
+                      "sha256":  "6dacd785a2663154a8edf84d61e566582be8dd68c6e633557cd25f5e6490f07b",
+                      "bytes":  2998
+                  },
+                  {
+                      "path":  "lab/templates/判据清单模板_单元一.md",
+                      "sha256":  "4218ff25618185a9042c2b9a0ae7c8c6e09a7985e409fc260fe327f68a15960b",
+                      "bytes":  3612
+                  },
+                  {
+                      "path":  "lab/templates/判据筛查清单.md",
+                      "sha256":  "7dbd96ba93cfd5d29cd880f0cf458eda0dea1a9d11f09c7f464dac3e99318ffb",
+                      "bytes":  3226
+                  },
+                  {
+                      "path":  "lab/templates/口号改写对比卡.md",
+                      "sha256":  "f5098e2d568770704f041bf9ac4ed07f26f408fb0d63812601c8f0d764add714",
+                      "bytes":  3673
+                  },
+                  {
+                      "path":  "lab/templates/数据事实卡模板.md",
+                      "sha256":  "d8702cbc699bf9df2030aafaf0f857c77b20c497896e88b067cb6baeef41c224",
+                      "bytes":  6450
+                  },
+                  {
+                      "path":  "lab/templates/示范任务书_单元一.md",
+                      "sha256":  "e33f35dfd1f37c2fc0192697ac3672f79581a3e6ee3fbc7ebb69d8228d3861b5",
+                      "bytes":  8877
+                  },
+                  {
+                      "path":  "lab/templates/示范需求_单元一.md",
+                      "sha256":  "d187db6fa1153e2addd327a2443644acb1d34ce0d17b11e8b7d4e722a3d67773",
+                      "bytes":  9301
+                  },
+                  {
+                      "path":  "lab/templates/结业汇报模板.md",
+                      "sha256":  "bdd92031ef7da8f4be1cb57120dc3bc2d306f309dcc813098322d54953267038",
+                      "bytes":  1807
+                  },
+                  {
+                      "path":  "lab/templates/需求清单模板.md",
+                      "sha256":  "1a81517b829b497caf32e4f89f8a8b26bf3a014185c639786895db448a80ce7e",
+                      "bytes":  5814
+                  },
+                  {
+                      "path":  "lab/tools/chart_check.py",
+                      "sha256":  "ad63b1f7f12c3360f8f44c2451b21d52b26890bdcb5ce8afdf6e259754c923b8",
+                      "bytes":  48344
+                  },
+                  {
+                      "path":  "lab/tools/db_fingerprint.py",
+                      "sha256":  "6309e97f3b6b5739d730cf6d2893299c8d0ebc77bb68af7766af0db783ebd6c1",
+                      "bytes":  4471
+                  },
+                  {
+                      "path":  "lab/tools/env_check.py",
+                      "sha256":  "5c5aea8a9b1e0f91cd05f94b2a03ad1de7b4cf2b6b1f82d0460d6705b7053dfb",
+                      "bytes":  17324
+                  },
+                  {
+                      "path":  "lab/tools/u2_check.py",
+                      "sha256":  "43ec9e4ff6bf6990a8aac284e2ee598fc3ff3fbfe12f2b90a8de3e21b7fca18b",
+                      "bytes":  47625
+                  },
+                  {
+                      "path":  "lab/tools/u3_check.py",
+                      "sha256":  "dbab0a6674325e5ff3d47b3a558ea8c7761067a329c131b8509e97ce4c4977d3",
+                      "bytes":  28978
+                  },
+                  {
+                      "path":  "lab/tools/u4_check.py",
+                      "sha256":  "0bb690dba96ee144281cebe56297735cfd112428aeb2b63f268761ce8a6bc96e",
+                      "bytes":  32592
+                  }
+              ]
+}

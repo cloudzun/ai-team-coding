@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样例页 · 按月入住率：本期 vs 上年同期</title>
+<style>
+  :root {
+    --ink: #111827;
+    --muted: #4b5563;
+    --line: #e5e7eb;
+    --cur: #1f6feb;
+    --prev: #b45309;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 20px 40px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, "Microsoft YaHei", "PingFang SC", sans-serif;
+    line-height: 1.6;
+  }
+  main { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+  .note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-left: 4px solid #c2410c;
+    color: #7c2d12;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 0 0 16px;
+  }
+  .kpi-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .kpi {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 18px;
+    min-width: 220px;
+  }
+  .kpi-label { font-size: 13px; color: var(--muted); }
+  .kpi-value { font-size: 28px; font-weight: 700; letter-spacing: .5px; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 8px 4px;
+  }
+  .card h2 { font-size: 15px; margin: 6px 10px 0; font-weight: 600; }
+  svg { display: block; width: 100%; height: auto; }
+  .grid { stroke: #eef1f4; stroke-width: 1; }
+  .ytick { fill: #6b7280; font-size: 11px; }
+  .xtick { fill: #6b7280; font-size: 10px; }
+  .axis { stroke: #d1d5db; stroke-width: 1; }
+  .line { stroke-width: 2; }
+  .pt { fill: #fff; stroke-width: 2; }
+  .pt-value { font-size: 9px; }
+  .legend-item text { font-size: 12px; fill: #374151; }
+  code { background: #eef2f7; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  footer { margin-top: 18px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>按月入住率：本期 vs 上年同期</h1>
+  <p class="sub">课程样例页 · 一张图 + 一个导出函数，用来演练阶段一的“图表导出”约定。</p>
+
+  <p class="note">
+    样例数据，非课程数据库。页面里的数字是虚构的整齐数字，只用来练“导出、对账、装反会不会变红”，
+    与课程数据库中的任何指标无关。
+  </p>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">最近一期入住率（2026-06）</div>
+      <div class="kpi-value" id="kpi-occ-latest">--</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>按月入住率（横轴为各期月份，上年同期按同一月份对齐）</h2>
+    <div id="chart-host"></div>
+  </div>
+
+  <footer>
+    导出：在浏览器控制台执行
+    <code>copy(JSON.stringify(await window.__chartExport()))</code>
+    ，再粘贴存成 <code>export.json</code>。
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------
+   样例数据（虚构、整齐；不是课程数据库里的数值）
+   12 个月，覆盖 2025-07 至 2026-06；上年同期是同一批月份往前推一年。
+   ------------------------------------------------------------------ */
+const MONTHS = [
+  "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12",
+  "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"
+];
+const CUR = [0.812, 0.764, 0.720, 0.688, 0.651, 0.703, 0.775, 0.831, 0.796, 0.742, 0.694, 0.860];
+const PREV = [0.785, 0.739, 0.702, 0.664, 0.628, 0.675, 0.740, 0.798, 0.761, 0.710, 0.665, 0.823];
+
+/* 两个系列：名字、颜色、数据。图例、点、线的颜色都从这里取。 */
+const SERIES = [
+  { name: "本期", color: "#1f6feb", values: CUR },
+  { name: "上年同期", color: "#b45309", values: PREV }
+];
+
+/* ------------------------------------------------------------------
+   画图的坐标系。数值与像素之间只有这一处换算，导出函数按同一套坐标系反算。
+   ------------------------------------------------------------------ */
+const SVG_W = 760, SVG_H = 380;
+const PAD = { left: 56, right: 20, top: 60, bottom: 60 };
+const Y_MIN = 0.55, Y_MAX = 0.90;
+const Y_TICKS = [0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90];
+const INNER_W = SVG_W - PAD.left - PAD.right;   // 684
+const INNER_H = SVG_H - PAD.top - PAD.bottom;   // 260
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+function px(i) {   // 第 i 个类目的横坐标（类目中心）
+  return PAD.left + (INNER_W / MONTHS.length) * (i + 0.5);
+}
+function py(v) {   // 数值对应的纵坐标
+  return PAD.top + ((Y_MAX - v) / (Y_MAX - Y_MIN)) * INNER_H;
+}
+const pct = (v) => (v * 100).toFixed(1) + "%";
+
+/* ------------------------------------------------------------------
+   渲染：把图真的画成 SVG 节点。当前值、刻度文字、图例都成为 DOM 节点，
+   导出函数之后从这些节点读回去，而不是读上面的 CUR / PREV 数组。
+   ------------------------------------------------------------------ */
+function render() {
+  const parts = [];
+
+  // 纵轴网格线与刻度文字
+  Y_TICKS.forEach(function (t) {
+    const y = py(t);
+    parts.push('<line class="grid" x1="' + PAD.left + '" y1="' + y + '" x2="' +
+               (SVG_W - PAD.right) + '" y2="' + y + '"/>');
+    parts.push('<text class="ytick" x="' + (PAD.left - 10) + '" y="' + (y + 4) +
+               '" text-anchor="end">' + Math.round(t * 100) + "%</text>");
+  });
+
+  // 横轴刻度文字
+  MONTHS.forEach(function (m, i) {
+    parts.push('<text class="xtick" x="' + px(i) + '" y="' + (SVG_H - PAD.bottom + 22) +
+               '" text-anchor="middle">' + m + "</text>");
+  });
+
+  // 坐标轴
+  parts.push('<line class="axis" x1="' + PAD.left + '" y1="' + py(Y_MIN) + '" x2="' +
+             (SVG_W - PAD.right) + '" y2="' + py(Y_MIN) + '"/>');
+
+  // 两个系列：折线、数据点、点上的数值文字
+  SERIES.forEach(function (s, si) {
+    const pts = s.values.map(function (v, i) { return px(i) + "," + py(v); }).join(" ");
+    parts.push('<g class="series" data-series-index="' + si + '">');
+    parts.push('<polyline class="line" points="' + pts + '" fill="none" stroke="' +
+               s.color + '"/>');
+    s.values.forEach(function (v, i) {
+      const cx = px(i), cy = py(v);
+      parts.push('<circle class="pt" cx="' + cx + '" cy="' + cy + '" r="3.5" stroke="' +
+                 s.color + '"/>');
+      parts.push('<text class="pt-value" x="' + cx + '" y="' + (cy - 9) +
+                 '" text-anchor="middle" fill="' + s.color + '">' + pct(v) + "</text>");
+    });
+    parts.push("</g>");
+  });
+
+  // 图例：写在图上，名字来自 SERIES
+  let lx = PAD.left;
+  SERIES.forEach(function (s, si) {
+    parts.push('<g class="legend-item" data-series-index="' + si + '">');
+    parts.push('<line x1="' + lx + '" y1="26" x2="' + (lx + 22) + '" y2="26" stroke="' +
+               s.color + '" stroke-width="3"/>');
+    parts.push('<text x="' + (lx + 30) + '" y="30">' + s.name + "</text>");
+    parts.push("</g>");
+    lx += 34 + s.name.length * 13;
+  });
+
+  const host = document.getElementById("chart-host");
+  host.innerHTML = '<svg id="chart-svg" viewBox="0 0 ' + SVG_W + " " + SVG_H +
+                   '" role="img" aria-label="按月入住率折线图，本期与上年同期两条线">' +
+                   parts.join("") + "</svg>";
+
+  // 指标卡：也从数据渲染，导出时读它的显示文字
+  document.getElementById("kpi-occ-latest").textContent = pct(CUR[CUR.length - 1]);
+}
+
+/* ------------------------------------------------------------------
+   导出函数：唯一约定 window.__chartExport。
+   防自报：数值从已渲染的 SVG 节点几何位置反算，系列名从图例节点读，
+   横轴类目从刻度文字读，显示文字就是节点里的文字。
+   图装反了（图例名与数据对调），这里读到的就是装反的名字 —— 这正是要的。
+   ------------------------------------------------------------------ */
+window.__chartExport = function () {
+  const svg = document.getElementById("chart-svg");
+
+  // 横轴类目：读渲染出来的刻度文字，同时记住它们的横坐标
+  const xTicks = Array.prototype.map.call(svg.querySelectorAll("text.xtick"), function (t) {
+    return { x: t.textContent.trim(), at: parseFloat(t.getAttribute("x")) };
+  });
+
+  // 系列名：读图例节点里的文字，按 data-series-index 归到对应的图组
+  const legendNames = {};
+  Array.prototype.forEach.call(svg.querySelectorAll("g.legend-item"), function (item) {
+    const idx = item.getAttribute("data-series-index");
+    const text = item.querySelector("text");
+    legendNames[idx] = text ? text.textContent.trim() : null;
+  });
+
+  // 每个图组：数据点的数值从圆的 cy 反算，横轴取最近的刻度文字，显示文字读点上的 text
+  const series = Array.prototype.map.call(svg.querySelectorAll("g.series"), function (g) {
+    const idx = g.getAttribute("data-series-index");
+    const circles = Array.prototype.slice.call(g.querySelectorAll("circle.pt"));
+    const texts = Array.prototype.slice.call(g.querySelectorAll("text.pt-value"));
+    const points = circles.map(function (c, k) {
+      const cx = parseFloat(c.getAttribute("cx"));
+      const cy = parseFloat(c.getAttribute("cy"));
+      // 像素 -> 数值：与 py() 相反的换算
+      const ratio = Y_MAX - ((cy - PAD.top) / INNER_H) * (Y_MAX - Y_MIN);
+      let nearest = xTicks[0];
+      xTicks.forEach(function (t) {
+        if (Math.abs(t.at - cx) < Math.abs(nearest.at - cx)) { nearest = t; }
+      });
+      return {
+        x: nearest ? nearest.x : null,
+        value: Math.round(clamp(ratio, -1, 2) * 10000) / 10000,
+        label: texts[k] ? texts[k].textContent.trim() : null
+      };
+    });
+    return { name: legendNames[idx] === undefined ? null : legendNames[idx], points: points };
+  });
+
+  // 指标卡：读渲染出来的文字，例如 “86.0%（2026-06）”
+  const kpiText = document.getElementById("kpi-occ-latest").textContent.trim();
+  const kpiNumber = parseFloat(kpiText.replace("%", "").replace("（", " ").trim());
+  const kpiValue = Math.round((kpiNumber / 100) * 10000) / 10000;
+
+  return {
+    page: "sample",
+    filters: { district: "全城（样例）" },
+    kpis: [
+      { id: "occ_latest", value: kpiValue, label: kpiText }
+    ],
+    charts: [
+      {
+        id: "occ_monthly",
+        title: "按月入住率：本期 vs 上年同期",
+        series: series
+      }
+    ]
+  };
+};
+
+render();
+</script>
+</body>
+</html>
