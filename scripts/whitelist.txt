@@ -1,4 +1,4 @@
-﻿# 白名单：相对教材仓库 v2/ 的路径，/ 分隔。* 不跨目录，** 跨目录。
+# 白名单：相对教材仓库 v2/ 的路径，/ 分隔。* 不跨目录，** 跨目录。
 # 黑名单优先：命中 blacklist.txt 的文件一律不同步，即使在这里列了。
 # 每一行必须至少命中一个文件，否则同步失败（缺文件不静默）。
 
@@ -27,6 +27,8 @@ kit/交付约定_单元三.md
 kit/交付约定_单元四.md
 kit/student-pack/*
 kit/tools/gen-board.mjs
+kit/tools/demo/*
+kit/gstack-sprint/SKILL.md
 kit/db/.gitkeep
 
 # 实验材料

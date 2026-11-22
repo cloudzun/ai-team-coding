@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>看板 · 民宿运营看板（演示）</title>
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171c22; --line:#252d36; --fg:#e6e9ee; --muted:#8b95a3;
+    --ok:#3fb950; --run:#58a6ff; --wait:#f85149; --auto:#d29922; --idle:#39414b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:32px;background:var(--bg);color:var(--fg);
+    font:15px/1.6 "Segoe UI",-apple-system,"Microsoft YaHei",sans-serif}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px;font-weight:600}
+  h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    margin:32px 0 12px;font-weight:600}
+  .meta{color:var(--muted);font-size:13px}
+  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;
+    border:1px solid var(--line);margin-right:8px}
+  .status{display:flex;flex-wrap:wrap;gap:24px;margin:20px 0 8px;padding:16px 20px;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .status div{font-size:13px;color:var(--muted)}
+  .status b{display:block;font-size:16px;color:var(--fg);font-weight:600;margin-top:2px}
+  .bar{display:block;width:100%;height:6px;background:var(--idle);border-radius:3px;overflow:hidden;margin:8px 0 0}
+  .bar>i{display:block;height:100%;background:var(--ok);width:50%}
+  h2 .sq{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:8px;vertical-align:middle}
+  h2 .sq.wait{background:var(--wait)} h2 .sq.auto{background:var(--auto)}
+  ul.rings{list-style:none;padding:0;margin:0;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  ul.rings li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:13px}
+  ul.rings li.done{border-color:rgba(63,185,80,.45)}
+  ul.rings li.active{border-color:var(--run);box-shadow:0 0 0 1px var(--run) inset}
+  ul.rings li.fail{border-color:var(--wait)}
+  .ring .dot{font-size:14px}
+  .done .dot{color:var(--ok)} .active .dot{color:var(--run)}
+  .fail .dot{color:var(--wait)} .pending .dot{color:var(--idle)}
+  ul.rings li.stale{border-color:rgba(210,153,34,.45)}
+  .stale .dot{color:var(--auto)}
+  .rid{font-family:ui-monospace,Consolas,monospace;color:var(--muted);font-size:11px}
+  .rname{font-weight:600}
+  .rgate,.rtime{color:var(--muted);font-size:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin:10px 0}
+  .card.wait{border-left:3px solid var(--wait)}
+  .card.auto{border-left:3px solid var(--auto)}
+  .card header{display:flex;align-items:baseline;gap:10px}
+  .card h3{font-size:15px;margin:0;font-weight:600}
+  .tag{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--muted);
+    border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+  ul.opts{list-style:none;padding:0;margin:12px 0 8px}
+  ul.opts li{padding:6px 0;border-top:1px dashed var(--line)}
+  .cost{color:var(--muted);margin-left:10px;font-size:13px}
+  .rec{margin:8px 0 2px;color:var(--fg)}
+  .dflt{margin:0;color:var(--muted);font-size:13px}
+  .redo{margin:6px 0 0;color:var(--auto);font-size:13px}
+  .empty{color:var(--muted);font-size:14px;margin:6px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  .mono{font-family:ui-monospace,Consolas,monospace}
+  .muted{color:var(--muted)}
+  ul.prev{list-style:none;padding:0;margin:0;font-size:13px}
+  ul.prev li{padding:8px 0;border-bottom:1px dashed var(--line)}
+  ul.prev li:last-child{border-bottom:none}
+  footer{margin-top:36px;color:var(--muted);font-size:12px}
+</style>
+<div class="wrap">
+  <h1>民宿运营看板（演示）</h1>
+  <p class="meta">
+    <span class="badge">形态 A 绿地</span>
+    <span class="badge">轮次 20261120-1015</span>
+    更新 2026-11-20T17:45:00+08:00
+  </p>
+
+  <div class="status">
+    <div>当前<b>环 4 施工</b></div>
+    <div>门禁<b>待判</b></div>
+    <div>已用<b>1h05m</b></div>
+    <div>下一步<b>环 5 独立验收</b></div>
+    <div>进度<b>4/8（50%）</b><span class="bar"><i></i></span></div>
+  </div>
+
+  <h2>环进度</h2>
+  <ul class="rings">
+<li class="ring done">
+      <span class="dot">✓</span>
+      <span class="rid">0</span>
+      <span class="rname">档位与版本计划</span>
+      <span class="rgate">G1 已回</span>
+      <span class="rtime">10m</span>
+    </li>
+<li class="ring done">
+      <span class="dot">✓</span>
+      <span class="rid">1</span>
+      <span class="rname">立项</span>
+      <span class="rgate">PASS</span>
+      <span class="rtime">12m</span>
+    </li>
+<li class="ring done">
+      <span class="dot">✓</span>
+      <span class="rid">2</span>
+      <span class="rname">规格</span>
+      <span class="rgate">PASS</span>
+      <span class="rtime">20m</span>
+    </li>
+<li class="ring done">
+      <span class="dot">✓</span>
+      <span class="rid">3</span>
+      <span class="rname">规格评审</span>
+      <span class="rgate">PASS</span>
+      <span class="rtime">28m</span>
+    </li>
+<li class="ring active">
+      <span class="dot">▶</span>
+      <span class="rid">4</span>
+      <span class="rname">施工</span>
+      <span class="rgate">待判</span>
+      <span class="rtime">35m</span>
+    </li>
+<li class="ring pending">
+      <span class="dot">·</span>
+      <span class="rid">5</span>
+      <span class="rname">独立验收</span>
+      <span class="rgate">—</span>
+      <span class="rtime">—</span>
+    </li>
+<li class="ring pending">
+      <span class="dot">·</span>
+      <span class="rid">6</span>
+      <span class="rname">G2 放行与 commit</span>
+      <span class="rgate">—</span>
+      <span class="rtime">—</span>
+    </li>
+<li class="ring pending">
+      <span class="dot">·</span>
+      <span class="rid">7</span>
+      <span class="rname">收尾</span>
+      <span class="rgate">—</span>
+      <span class="rtime">—</span>
+    </li>
+  </ul>
+
+  <h2><span class="sq wait"></span>等你（必须决策，流程停在这）</h2>
+  <article class="card wait">
+        <header><span class="tag">D3</span><h3>演示看板要不要在概览页之外再加一页明细列表？</h3></header>
+        <ul class="opts"><li><b>A)</b> 只做概览页<span class="cost">代价：演示脚本只走概览页一条动线，改动面最小</span></li><li><b>B)</b> 概览页 + 明细列表页<span class="cost">代价：多一套筛选与表格，判据也要跟着加</span></li></ul>
+        <p class="rec"><b>推荐 A</b>，因为 立项第 3 节的演示脚本 4 步全在概览页内走得完，明细列表属于范围增减，按约定留到下个版本</p>
+        <p class="dflt">默认：G1 没有默认，不回不动</p>
+      </article>
+
+  <h2><span class="sq auto"></span>我已按推荐执行（可否决）</h2>
+  <article class="card auto">
+        <header><span class="tag">D2</span><h3>图表渲染用现成组件，不自己手写绘制逻辑</h3></header>
+        <p>环 4　依据：规格里三处图表复用同一套渲染与图例，手写会让同一段逻辑出现三份</p>
+        <p class="redo">重做成本：要把三处图表的绘制与图例逐处改写　→ 你说不行我就改</p>
+      </article>
+<article class="card auto">
+        <header><span class="tag">D5</span><h3>各环记录沿用环表产出列的文件名，不另建子目录</h3></header>
+        <p>环 4　依据：环表已经定了产出名，加一层子目录后汇报路径与环表对不上</p>
+        <p class="redo">重做成本：只改文件名与汇报路径，不动内容　→ 你说不行我就改</p>
+      </article>
+
+  <h2>决策台账</h2>
+  <table>
+    <thead><tr><th>#</th><th>环</th><th>问题</th><th>选择</th><th>依据</th><th>谁拍</th><th>可否决</th></tr></thead>
+    <tbody>
+<tr>
+      <td class="mono">D1</td>
+      <td>1</td>
+      <td>这一版是否接真实数据源</td>
+      <td><b>不接，全部用模拟数据，界面上标注“模拟数据”</b></td>
+      <td class="muted">立项第 6 节“可造假”清单要求逐条写清标注方式</td>
+      <td>人</td>
+      <td>否</td>
+    </tr>
+<tr>
+      <td class="mono">D4</td>
+      <td>3</td>
+      <td>空态与加载态要不要各给一条判据</td>
+      <td><b>合并成一条判据，两句动作都要可机器判</b></td>
+      <td class="muted">评审指出没有空态判据时，验收只能靠观感</td>
+      <td>lead</td>
+      <td>是</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h2>判例（可复用）</h2>
+  <ul class="prev">
+<li><span class="mono">P1</span> 凡新增依赖先问，结论写进决策台账<span class="muted">　来自 D2 / D5</span></li>
+<li><span class="mono">P2</span> 验收标准写不出可机器判的动作就不算标准<span class="muted">　来自 D4</span></li>
+  </ul>
+
+  <footer>由 gen-board.mjs 从 board.json 生成 · 单一数据源，勿手改本文件</footer>
+</div>
+</html>

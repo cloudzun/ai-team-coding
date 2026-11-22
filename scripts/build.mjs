@@ -15,7 +15,7 @@ const RELEASE = path.join(ROOT, 'release')
 const BUILD_DIR = path.join(ROOT, '.build')
 const SITE_NAME = '带 AI 团队写代码：从任务书到交付'
 const SITE_SHORT = '带 AI 团队写代码'
-const EXPECTED_PAGES = 16
+const EXPECTED_PAGES = 17
 
 const errors = []
 const fail = (msg) => { errors.push(msg) }
@@ -91,7 +91,7 @@ const argv = process.argv.slice(2)
 const argOf = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined }
 const RELEASE_TAG = argOf('--release-assets') || process.env.RELEASE_ASSETS_TAG || ''
 const RELEASE_MODE = Boolean(RELEASE_TAG)
-const LOCAL_TAG = argOf('--tag') || 'v1'
+const LOCAL_TAG = argOf('--tag') || 'v2'
 const REPO_SLUG = process.env.RELEASE_REPO || 'cloudzun/ai-team-coding'
 const MATERIALS_FILE = 'ai-team-coding-materials.zip'
 const OFFLINE_FILE = 'ai-team-coding-offline.zip'
@@ -124,7 +124,7 @@ if (RELEASE_MODE) {
   const dbSource = argOf('--db-source') || process.env.HOMESTAY_DB
   if (!dbSource) {
     console.error('缺课程库：请用 --db-source <库文件路径> 或环境变量 HOMESTAY_DB 指定（由维护者提供，库不入库）。')
-    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v1')
+    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v2')
     process.exit(1)
   }
   if (!fs.existsSync(dbSource)) { console.error('课程库文件不存在（--db-source / HOMESTAY_DB 指向的路径）'); process.exit(1) }
@@ -269,7 +269,7 @@ const NAV = [
   { key: 'home', label: '首页', href: 'index.html' },
   { key: 'textbook', label: '教材', href: 'textbook/ch1.html' },
   { key: 'demo', label: '8 环演示', href: 'textbook/ch2b.html' },
-  { key: 'labs', label: '实验', href: 'labs/u1.html' },
+  { key: 'labs', label: '实验', href: 'labs/u0.html' },
   { key: 'download', label: '下载', href: 'downloads.html' },
 ]
 function brandMark() {
@@ -358,7 +358,7 @@ const labs = labsCfg.labs
 
 // 下载包定义（先于实验页，实验页要回链）
 const PACKS = [
-  { id: 'kit', file: 'v2-kit.zip', title: '渔具包（学员件）', desc: '口径表、运营手册、表结构说明、导出契约、交付约定三份、checksums.txt、README，以及看板生成脚本；db 目录只留空位', include: ['kit/**'] },
+  { id: 'kit', file: 'v2-kit.zip', title: '渔具包（学员件）', desc: '口径表、运营手册、表结构说明、导出契约、交付约定三份、checksums.txt、README，看板生成脚本与演示文件（tools/demo），课程版 gstack-sprint 技能（gstack-sprint/SKILL.md）；db 目录只留空位', include: ['kit/**'] },
   { id: 'tools', file: 'v2-lab-tools.zip', title: '检查与自检脚本', desc: 'env_check、db_fingerprint、chart_check、u2/u3/u4_check', include: ['lab/tools/**'] },
   { id: 'templates', file: 'v2-lab-templates.zip', title: '模板', desc: '任务书模板、示范任务书、需求清单、事实卡、自查清单等', include: ['lab/templates/**'] },
   { id: 'fixtures', file: 'v2-lab-fixtures-u2-u4.zip', title: '坏夹具（单元二至四）', desc: 'u2 问答记录、u3 运营库、u4 卡片导出', include: ['lab/fixtures/u2/**', 'lab/fixtures/u3/**', 'lab/fixtures/u4/**'] },
@@ -408,6 +408,12 @@ function labPage(lab, li) {
       const h = hits[0]
       base = h.depth
       toks = sectionTokens(c, h)
+      if (sl.intro) {
+        // 只取该节在第一个子标题之前的导语
+        const k = toks.findIndex((t) => t.type === 'heading')
+        if (k >= 0) toks = toks.slice(0, k)
+        rep.intro = true
+      }
       sourcesMeta.set(c.rel, c.sha)
       if (sl.code_match) {
         const codes = toks.filter((t) => t.type === 'code')
@@ -423,7 +429,7 @@ function labPage(lab, li) {
       }
       const no = sectionNo(h.text)
       const href = `../${c.out}#${h.id}`
-      origin = `出处：<a href="${href}">第 ${esc(c.num)} 章${no ? ' ' + esc(no) + ' 节' : '“' + esc(h.text) + '”'}</a>${sl.code_match ? '（只取其中的代码块）' : ''}`
+      origin = `出处：<a href="${href}">第 ${esc(c.num)} 章${no ? ' ' + esc(no) + ' 节' : '“' + esc(h.text) + '”'}</a>${sl.code_match ? '（只取其中的代码块）' : ''}${sl.intro ? '（只取该节开头的导语）' : ''}`
     }
     // 子标题降级：基准标题 → 本页 h2，其下一级 → h3
     const out = toks.map((t) => {
@@ -526,7 +532,7 @@ ${nodes}</svg>`
   <div class="cards">
     <a class="card" href="textbook/ch1.html"><span class="card-k">01</span><strong>教材</strong><span>第 1–8 章与 8 环演示，一章一页，左侧章目录，右侧本页目录。</span></a>
     <a class="card card-dark" href="textbook/ch2b.html"><span class="card-k">02</span><strong>8 环演示</strong><span>投屏页，深色，按原样收录；入口在第 2b 章。</span></a>
-    <a class="card" href="labs/u1.html"><span class="card-k">03</span><strong>实验</strong><span>单元一至四。按标题从章节里切片拼成，每段回链出处。</span></a>
+    <a class="card" href="labs/u0.html"><span class="card-k">03</span><strong>实验</strong><span>环境准备与单元一至四。按标题从章节里切片拼成，每段回链出处。</span></a>
     <a class="card" href="downloads.html"><span class="card-k">04</span><strong>下载</strong><span>渔具包、检查脚本、模板、夹具、样例页与四个存档点，列文件名、字节数与 SHA-256。</span></a>
   </div>
 </section>`
@@ -626,7 +632,7 @@ if (RELEASE_MODE) {
 <section class="dl-all" id="pack-all" aria-labelledby="all-h">
 <p class="dl-all-k">一次下载全部</p>
 <h2 id="all-h">${esc(ALL.title)}</h2>
-<p class="dl-all-s">下面 9 个分包的全部内容合并，再加上课程库。解开后课程库在 <code>${esc(DB_ZIP_PATH)}</code>。</p>
+<p class="dl-all-s">下面 9 个分包的全部内容合并，再加上课程库；含课程版 gstack-sprint 技能。解开后课程库在 <code>${esc(DB_ZIP_PATH)}</code>。</p>
 <p class="dl-all-f"><a class="btn btn-a" href="${esc(ALL.href)}" download>下载 ${esc(ALL.file)}${RELEASE_MODE ? '（GitHub Release）' : ''}</a></p>
 ${offlineLine}
 <dl class="dl-all-m">
@@ -719,7 +725,7 @@ if (errors.length) {
 // ───────────────────────── 离线包与发布清单（仅本地带库模式） ─────────────────────────
 if (RELEASE_MODE) {
   console.log(`构建完成（发布模式 ${RELEASE_TAG}）：${htmlFiles.length} 页，${PACKS.length} 个下载包；总包与离线包不在 dist 里，下载按钮指向 GitHub Release`)
-  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 16 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
+  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 17 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
 } else {
   fs.rmSync(RELEASE, { recursive: true, force: true })
   fs.mkdirSync(RELEASE, { recursive: true })
@@ -737,5 +743,5 @@ if (RELEASE_MODE) {
   }
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n')
   console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，总包 ${fmtBytes(ALL.bytes)} 字节，离线包 ${fmtBytes(offZip.length)} 字节；已写 release-manifest.json（tag=${LOCAL_TAG}）`)
-  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 16 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
+  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 17 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
 }

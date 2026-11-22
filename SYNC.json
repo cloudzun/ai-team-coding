@@ -1,9 +1,9 @@
 {
-    "synced_at":  "2026-11-22T17:16:17+08:00",
+    "synced_at":  "2026-11-22T20:20:45+08:00",
     "source":  "l1-textbook/v2",
-    "source_commit":  "72cdcd2b49c22ed9fc4524515931e9595f34678c",
-    "source_dirty":  false,
-    "file_count":  188,
+    "source_commit":  "3426afa1de942fc39d97ad717c041aa68690f462",
+    "source_dirty":  true,
+    "file_count":  192,
     "files":  [
                   {
                       "path":  "chapters/ch1_任务书与流程.md",
@@ -12,8 +12,8 @@
                   },
                   {
                       "path":  "chapters/ch2_搭最小环境.md",
-                      "sha256":  "b2f0001d5b75b8c67a100271b62cf2b4905838070121ff9632cd7e96a4fb6163",
-                      "bytes":  32963
+                      "sha256":  "f7e1bbdc846903864ffd99d5b180cc3b452769d0d2ebe35c7182be6ffd66b7e7",
+                      "bytes":  59725
                   },
                   {
                       "path":  "chapters/ch2b_8环演示.md",
@@ -741,6 +741,11 @@
                       "bytes":  125
                   },
                   {
+                      "path":  "kit/gstack-sprint/SKILL.md",
+                      "sha256":  "89039310c420d562c86f871b890fc9f2a4063812cd81d2ea434b56c7e09fa6e9",
+                      "bytes":  66721
+                  },
+                  {
                       "path":  "kit/README.md",
                       "sha256":  "fd5da308bb73b2f96538237cc42e0f5b1c5f9e681395032e22988d8436da8e47",
                       "bytes":  5200
@@ -754,6 +759,21 @@
                       "path":  "kit/student-pack/运营手册.md",
                       "sha256":  "c0368e4f44e598d9aa82670d5ddd332b4cd5dcd832d039973f33513c97490e2c",
                       "bytes":  3483
+                  },
+                  {
+                      "path":  "kit/tools/demo/BOARD.html",
+                      "sha256":  "cc4d21c28812a3bf287b72f52745180462176428503c8d76fbbeaf8863a5b4ef",
+                      "bytes":  9341
+                  },
+                  {
+                      "path":  "kit/tools/demo/board.json",
+                      "sha256":  "cee1daf9467aceb14a73a8cc257e7a336c39607c675e430f1a5349444db2ac3b",
+                      "bytes":  3354
+                  },
+                  {
+                      "path":  "kit/tools/demo/BOARD.md",
+                      "sha256":  "77558b19935ebacf08e9ba0e500b3408cb033a95f5f505fc2cc8e0707a7ac185",
+                      "bytes":  2479
                   },
                   {
                       "path":  "kit/tools/gen-board.mjs",

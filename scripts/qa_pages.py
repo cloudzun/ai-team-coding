@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=16。
+"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=17。
 
 只读 dist/ 与 .build/report.json（build.mjs 写出）。任何异常 -> 退出码 1。
 """
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 REPORT = ROOT / ".build" / "report.json"
 CONTENT = ROOT / "content"
-EXPECTED_PAGES = 16
+EXPECTED_PAGES = 17
 
 problems = []
 checks = []
@@ -221,7 +221,7 @@ def main():
 
     # 7 下载包
     dl = (DIST / "downloads.html").read_text(encoding="utf-8")
-    forbid = re.compile(r"_sources\.md$|(^|/)_build/|(^|/)_scout/|(^|/)reviews/|(^|/)syllabus/|HANDOFF|BOARD|lab/fixtures/pilot/|kit/gstack-sprint/|__pycache__|\.pyc$")
+    forbid = re.compile(r"_sources\.md$|(^|/)_build/|(^|/)_scout/|(^|/)reviews/|(^|/)syllabus/|HANDOFF|(?<!kit/tools/demo/)BOARD|lab/fixtures/pilot/|__pycache__|\.pyc$")
     for p in report["packs"]:
         zp = DIST / "downloads" / p["file"]
         if not zp.exists():
@@ -241,6 +241,14 @@ def main():
                     bad("zip 禁入文件", f"{p['file']}: {n}")
     if not any(p.startswith("下载") or p.startswith("zip") for p in problems):
         ok("下载包", f"{len(report['packs'])} 个，zip 完好、带 v2/ 前缀、无禁入文件、页面列出字节数与 SHA-256")
+    # 自学要用的四个文件：看板演示三件 + 课程版技能，必须在渔具包里
+    must = ["v2/kit/tools/demo/board.json", "v2/kit/tools/demo/BOARD.md", "v2/kit/tools/demo/BOARD.html", "v2/kit/gstack-sprint/SKILL.md"]
+    with zipfile.ZipFile(DIST / "downloads" / "v2-kit.zip") as kz:
+        miss = [n for n in must if n not in kz.namelist()]
+    if miss:
+        bad("渔具包必备文件", f"v2-kit.zip 缺 {miss}")
+    else:
+        ok("渔具包必备文件", "含 tools/demo 三件与课程版 gstack-sprint/SKILL.md")
     if mode == "local":
         # 总包：9 个分包全部内容 + 课程库；库的 SHA-256 与 checksums.txt 一致
         m = report["materials"]

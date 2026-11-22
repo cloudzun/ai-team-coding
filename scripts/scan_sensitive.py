@@ -7,6 +7,7 @@
   - ch4 里 lead 原话两处、ch5 里产品页固定提示文案两处（“以…为准”）
   - u3_check.py 一处注释（“以存档点 DDL 为准”）
   - env_check.py 一处安装位置探测路径（盘符）
+  - 第 2 章 V3.0“环境准备”段 1、段 3 里校验 Git Bash 的标准安装路径 C:/Program Files/Git/bin/bash.exe（固定程序目录，不是用户目录）
 跳过：二进制、zip、*.db、app/static/vendor/（第三方压缩库与许可证，非本课文字）。
 """
 import re
@@ -34,6 +35,7 @@ ALLOW = [
     ("待确认/以…为准", "请以下方数据为准"),
     ("待确认/以…为准", "整改工单以存档点 DDL 为准"),
     ("盘符/用户目录", "C:/Program Files/DeepSeek Harness"),
+    ("盘符/用户目录", r"C:\Program Files\Git\bin\bash.exe"),
 ]
 # 存档点源码注释/示例域名，lead 裁定放行：stageC 终扫没有覆盖存档点的应用源码，本脚本扫到了下面三类。
 # 它们在教材仓库的 checkpoints/*/app 里（本站只读，不改）；输出里单独列出。

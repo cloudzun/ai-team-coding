@@ -1,4 +1,4 @@
-﻿# 黑名单：优先于白名单。
+# 黑名单：优先于白名单。
 # 规则：以 / 结尾 = 目录名（任意层级）；含 / = 相对 v2/ 的完整路径；否则 = 文件名。* 不跨目录，** 跨目录。
 # 以 ! 开头 = 对黑名单的例外（只放行，不等于进白名单）。
 
@@ -10,10 +10,9 @@ syllabus/
 HANDOFF*
 BOARD*
 lab/fixtures/pilot/
-kit/gstack-sprint/
-kit/tools/demo/
 make_*.py
 __pycache__/
 *.pyc
 *.db
 !lab/fixtures/u3/bad_ops.db
+!kit/tools/demo/*

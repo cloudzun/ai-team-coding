@@ -1,5 +1,5 @@
-﻿<#
- make-release.ps1 -DbSource <homestay.db path> [-Tag v1] [-Repo cloudzun/ai-team-coding] [-Publish]
+<#
+ make-release.ps1 -DbSource <homestay.db path> [-Tag v2] [-Repo cloudzun/ai-team-coding] [-Publish]
 
  Local, DB-backed build, then (only with -Publish) upload the two assets to a GitHub Release.
  Without -Publish this script runs the build and gates, then only PRINTS the gh command. It never pushes code.
@@ -7,7 +7,7 @@
 #>
 param(
   [Parameter(Mandatory = $true)][string]$DbSource,
-  [string]$Tag = 'v1',
+  [string]$Tag = 'v2',
   [string]$Repo = 'cloudzun/ai-team-coding',
   [switch]$Publish
 )

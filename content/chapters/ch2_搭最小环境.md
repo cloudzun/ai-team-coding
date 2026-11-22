@@ -1,4 +1,4 @@
-<!-- Chapter: 2  Author: AI 写稿  Version: V2.5  Updated: 2026-11-22 -->
+<!-- Chapter: 2  Author: AI 写稿  Version: V3.0  Updated: 2026-11-22 -->
 
 # 第 2 章 搭最小环境与环境自检
 
@@ -12,6 +12,7 @@
 4. 说出“内容校验和”和“文件指纹”各回答什么问题；用只读方式打开课程数据库，记下各表行数。
 5. 把大模型接口的访问地址与密钥放进被版本控制忽略的本地配置文件，并验证确实被忽略。
 6. 把本章自检记录里的事实写成任务书栏 8（端口与环境事实），并做一次端口占用检查。
+7. 自学时，在自己的机器上从零装好渔具包（“环境准备”一节）：手动装 DSH、配模型、选工作区，其余让 DSH 照四段提示词自己装，每一处都看到成功的标志。
 
 验收标准（组内三人共同交出）：
 
@@ -21,18 +22,19 @@
 - 各表行数记录一份，与自检输出一致；数据库文件指纹对比末行为“不变”。
 - 栏 8 一份（`records/column8.md`），每条事实都能指出对应的自检记录；端口占用检查记录一份（`records/port_check.txt`）。
 - 问题清单一份：没解决的项写明现象与卡在哪一步；全绿时写“无”。
+- 自学者另有一条：“环境准备”里手动三件事和四段提示词，每一处“看到什么算成功”都对上；课堂上讲师已预装的，不必做。
 
 ## 讲解
 
 ### 2.1 渔具包清单
 
-课程教的是“渔”，渔具就是 gstack 和围着它配齐的东西，合称渔具包，单元一到单元四共用。gstack 与课程版 gstack-sprint 技能由讲师预装，你只做自检，不自己装；其余随课堂分发或用你自己的机器。
+课程教的是“渔”，渔具就是 gstack 和围着它配齐的东西，合称渔具包，单元一到单元四共用。gstack 与课程版 gstack-sprint 技能，课堂上由讲师预装，你只做自检；自学、用自己的机器时，先照后面的“环境准备”一节，让 DSH 帮你装，再做自检。其余随课堂分发或用你自己的机器。
 
 | 项 | 它在课程里干什么 | 怎么确认 |
 |---|---|---|
 | 1 DSH（宿主） | 全课统一的工作台：你和 gstack 的对话、技能加载、子任务派发都在 DSH 会话里发生 | 开一个会话，看到会话界面 |
-| 2 gstack（讲师预装） | 一套现成的工作方法：想清需求、写规格、评审、验收都有对应技能，你的任务书由它们加工 | gstack 自检三步 |
-| 3 课程版 gstack-sprint 技能（讲师预装） | 把一次交付拆成 8 环的流程表，第 4 章起每个单元都按它走 | DSH 里加载它，读出标题 |
+| 2 gstack（课堂上讲师预装；自学自己装） | 一套现成的工作方法：想清需求、写规格、评审、验收都有对应技能，你的任务书由它们加工 | gstack 自检三步 |
+| 3 课程版 gstack-sprint 技能（课堂上讲师预装；自学自己放） | 把一次交付拆成 8 环的流程表，第 4 章起每个单元都按它走 | DSH 里加载它，读出标题 |
 | 4 看板生成器 | 把记录进度的 `board.json` 变成 `BOARD.html` 与 `BOARD.md`；需要 Node.js | 跑演示，退出码 0 |
 | 5 课程数据包 | 数据库、指标口径表、运营手册、表结构说明、导出契约：所有“对不对”都对着它们判 | 自检脚本逐项核对 |
 | 6 学员工具箱 | 检查脚本（环境自检、库指纹、图表检查）与样例页：你自己验收 gstack 的产出时用 | 自检脚本；浏览器打开样例页 |
@@ -57,7 +59,7 @@
 - 类比：一间配齐工具的木工房。锯、刨、尺都在架子上，你只要知道哪件活用哪件工具。
 - 定义：gstack 是一套装在宿主里的技能，每个技能是一种工作方法，覆盖想清需求、规格与计划评审、测试验收、发布等环节。
 - 边界：它不是会自己写代码的 agent，套件里没有“写业务代码”的技能；它也不是 DSH 自带的，DSH 是把它装出来的技能目录当作技能来源读进来。
-- 在 DSH / gstack 里叫什么：**gstack**；课程所用版本含 56 个技能，会话里按短名称加载，例如 `office-hours`、`spec`、`qa-only`。
+- 在 DSH / gstack 里叫什么：**gstack**；课程所用版本含几十个技能，会话里按短名称加载，例如 `office-hours`、`spec`、`qa-only`。
 
 **技能**
 - 类比：一张写好的工序卡。先做什么、再做什么、做完交什么，写在纸上，谁拿到都能照办。
@@ -68,7 +70,7 @@
 **gstack-sprint**
 - 类比：装修队的施工流程表。先量房、出图、审图、施工、验收、交钥匙，每步有人负责，关键几步要业主签字。
 - 定义：课程版 gstack-sprint 是一个技能，规定一次版本交付走 8 环（环 0 到环 7）：lead 编排并判每环的门禁，子 agent 执行各环，你在 G1、G2 两道闸门拍板。
-- 边界：它不是自动驾驶，你要写任务书、回字母、纠偏、过闸门；它也不在 gstack 的 56 个技能里，是课程发放的副本，放在另一个技能目录。lead 是你在 DSH 主会话里对话的 agent，子 agent 是 lead 派出去干具体活的 agent；8 环各是什么，第 1 章已讲。
+- 边界：它不是自动驾驶，你要写任务书、回字母、纠偏、过闸门；它也不在 gstack 自带的那几十个技能里，是课程发放的副本，放在另一个技能目录。lead 是你在 DSH 主会话里对话的 agent，子 agent 是 lead 派出去干具体活的 agent；8 环各是什么，第 1 章已讲。
 - 在 DSH / gstack 里叫什么：**gstack-sprint**（课程版）。
 
 **看板**
@@ -94,6 +96,342 @@
 
 本章四类自检，各留一份记录：环境自检、gstack 自检（安装状态、体检、DSH 里加载技能三步）、同名冲突自检（名字以 gstack-sprint 开头的技能只有 1 份且是课程版）、看板生成器演示。环境自检脚本逐项打印 `[绿]`、`[红]`，个别项给 `[黄]`；全部通过时退出码为 0，有红项为 1，黄色不计入。九项自动判定：Python 版本、数据包登记、库文件、内容校验和、只读读表、只读写入被拒且指纹未变、两份资料、Git、DSH 安装。人工勾选三项：浏览器、大模型接口，以及脚本里写作 coding agent 的那一项，在本课对应你的 DSH 会话。可选参数 `--db` 指定库文件（默认 `v2/kit/db/homestay.db`），`--kit` 指定数据包目录（默认 `v2/kit`）。
 
+## 环境准备：自己的机器从零装起
+
+课堂上，DSH、gstack、课程版 gstack-sprint 由讲师预装，你直接做后面的“实操”。自学，或用自己的机器时，先把本节做完，再进“实操”的步骤 1。做完后，机器上有：Git（含 Git Bash）、Python 3.12、Node.js、Bun、DSH、你自己的大模型接口、锁定版本的 gstack、课程版 gstack-sprint、课程总包。系统用 Windows 11，要能上网；浏览器用系统自带的 Edge 即可。
+
+本节的主路线里，你只用手做三件事：装 DSH、在设置里配模型、选一个空文件夹当工作区。其余的软件和文件，全部由你把本节给的提示词发给 DSH，让 DSH 自己装。提示词分四段，每段一个检查点。一次只发一段：把整段复制发给 DSH，等它答完，看到这一段后面写的“成功”标志，再发下一段。每段提示词里都写死了版本和来源，要求 DSH 不得自行换版本、遇到错误先把原文报给你再给方案、做完按清单逐项回答“是/否 + 证据”。密钥只填在设置里，不要贴进对话。DSH 弹出批准框时，先看一眼它要执行的命令，地址和软件名应当就是提示词里写的那些，再批准。某一段怎么都走不通，用本节末尾的“备用做法”自己动手装。
+
+### 手动一 装 DSH
+
+入口是 DeepSeek 官网下载页 https://www.deepseek.com/download/ ，下载 Windows 版，安装包约 300 MB。安装向导一路确认，安装位置保持默认；Windows 提示“已保护你的电脑”时，点“更多信息”再点“仍要运行”。装完，从开始菜单打开 DeepSeek Harness。课程编写时验证的 DSH 版本是 0.2.2-rc.5，这是预览版，界面可能随版本变化。
+
+- 成功：打开后看到 DSH 的主界面（第一次可能先出现欢迎页，按提示确认即可）。
+
+### 手动二 给 DSH 配大模型接口
+
+DSH 自己不带模型。课程里 agent 做事、后面的产品调用，都要用你自己的大模型接口；兼容 OpenAI 接口的服务商都行。下面以硅基流动（SiliconFlow）为例，换别家就换成它文档里给的访问地址、模型名和你的密钥。密钥你自己到服务商网站申请；它只填在下面这一处，不贴进对话、截图和任何要交的记录。
+
+系统语言是中文时，DSH 的界面和回复都是中文；系统语言是英文时是英文，下面括注对应的英文名。在 DSH 里打开“设置 → 模型”（Settings → Models），点“添加模型提供商”，把卡片切到“自定义模型 API”，按下表填写后保存：
+
+| 项 | 例如 |
+|---|---|
+| Provider ID | `siliconflow`（小写，保存后不能改） |
+| 基础 URL | `https://api.siliconflow.cn/v1` |
+| API 协议 | OpenAI Chat Completions |
+| API 密钥 | 你自己的密钥 |
+| 模型 | `deepseek-ai/DeepSeek-V3.2`（点“获取可用模型”搜索后勾选，或直接手填模型 ID） |
+
+- 成功：“设置 → 模型”页出现 `siliconflow` 卡片，卡片里有 `deepseek-ai/DeepSeek-V3.2`。
+
+这三样（访问地址、模型名、密钥）也是后面步骤 5 的 `.env` 里 `LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY` 要填的值，到时用同一组。
+
+### 手动三 选一个空文件夹当工作区
+
+在文件管理器里新建一个空文件夹，名字用英文、不含空格，例如 `l1-course`，不要放进已有的项目文件夹里。在 DSH 里点“选择工作区”（Select workspace），添加并选中它（没选工作区时，输入框是灰的）。新开一个会话，在模型菜单里选 `deepseek-ai/DeepSeek-V3.2`，发一句“你好”。后面四段提示词都在这个会话里发。
+
+- 成功：会话里收到模型的回复文字。收到报错，回到手动二检查地址、模型名、密钥有没有填错。
+
+### 段 1 装工具
+
+这一段让 DSH 装 Git（含 Git Bash）、Python 3.12、Node.js LTS、Bun。整段复制，发给 DSH：
+
+```text
+请帮我在这台 Windows 11 电脑上装四样工具：Git（含 Git Bash）、Python 3.12、Node.js LTS、Bun。我不敲命令，由你来做。
+
+版本要求，不许自行换：
+- Git：Git for Windows 当前稳定版，必须带 Git Bash。
+- Python：3.12 系列（3.12.x），不要装 3.13 或更新的版本。
+- Node.js：LTS 版，不要装 Current 版。
+- Bun：1.4.2 或更高。
+
+做法：
+1. 先用 winget 逐条安装，命令固定为：
+   winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements
+   winget install --id Python.Python.3.12 -e --accept-package-agreements --accept-source-agreements
+   winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements
+   winget install --id Oven-sh.Bun -e --accept-package-agreements --accept-source-agreements
+2. winget 不能用，或其中某一条失败（例如提示源数据缺失），就对失败的那一项改用官网安装包。只能用下面这些来源，别的网站不要用：
+   - Git：https://git-scm.com/download/win ，64 位安装包，静默参数 /VERYSILENT /NORESTART /SP-
+   - Python：https://www.python.org/downloads/windows/ ，选 3.12.x 的 64 位安装包，静默参数 /quiet InstallAllUsers=0 PrependPath=1 Include_launcher=1
+   - Node.js：https://nodejs.org/ ，LTS 的 64 位 Windows 安装包（.msi），静默安装 msiexec /i 安装包文件 /qn
+   - Bun：在 PowerShell 里运行 irm bun.sh/install.ps1 | iex
+3. 装完后，刚装的软件可能还没进当前窗口的 PATH。检查前先从系统里重新读取用户和系统两份 PATH，再运行：
+   git --version
+   python --version
+   node --version
+   bun --version
+   Test-Path "C:\Program Files\Git\bin\bash.exe"
+   如果重读后仍然找不到命令，先告诉我，不要自行重装。
+4. 如果 python 命令弹出应用商店、或没有任何输出，先把现象原文报给我，再给处理方案，等我同意再做。
+
+遇到任何错误，先把错误原文完整贴给我，再给出处理方案并说明理由；上面列出的备用来源可以直接用，列表之外的做法先问我。不要把任何密钥写进命令或回复。
+
+全部做完后，按下面清单逐项回答，每项写“是”或“否”，并附证据（命令输出原文）：
+1. Git 已装好：git --version 的输出；C:\Program Files\Git\bin\bash.exe（Git Bash）是否存在
+2. Python 是 3.12：python --version 的输出，是否以 3.12 开头
+3. Node.js 已装好：node --version 的输出
+4. Bun 是 1.4.2 或更高：bun --version 的输出
+最后一行写“四项都是”或“有否项：…”。
+```
+
+- 成功：DSH 的回复里，四项都是“是”，Git、Node.js 打印版本号，Python 以 3.12 开头，Bun 是 1.4.2 或更高，且 Git Bash 的 `bash.exe` 存在。
+- 批准框：DSH 弹批准框时，看一眼它要执行的命令，应当是 `winget install` 或上面写的官网地址，再批准；Windows 弹出“是否允许此应用对你的设备进行更改”时点“是”。
+
+### 段 2 下载课程材料
+
+这一段让 DSH 把课程总包下载并解压到工作区。整段复制，发给 DSH：
+
+```text
+请帮我把课程材料下载并解压到当前工作目录。我不敲命令，由你来做。
+
+固定来源，不许自行换地址：
+https://github.com/cloudzun/ai-team-coding/releases/download/v2/ai-team-coding-materials.zip
+
+做法：
+1. 先打印当前工作目录的路径并列出里面的内容，确认它是我选的那个空文件夹。如果里面已经有别的文件，先告诉我，不要继续。
+2. 在 PowerShell 里下载：
+   curl.exe -L --fail -o "$env:TEMP\ai-team-coding-materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v2/ai-team-coding-materials.zip
+3. 用 Expand-Archive 解压到当前工作目录：
+   Expand-Archive -Path "$env:TEMP\ai-team-coding-materials.zip" -DestinationPath . -Force
+   必须用 Expand-Archive，不要用 tar：tar 在部分系统区域下会丢掉中文名的文件。
+4. 解压后，在当前工作目录里用 Test-Path 检查下面各项，并列出 v2 下的文件夹：
+   v2\kit\db\homestay.db
+   v2\kit\student-pack
+   v2\kit\gstack-sprint\SKILL.md（还要报告文件大小，必须大于 0 字节）
+   v2\kit\tools\demo\board.json
+
+遇到任何错误（下载失败、解压失败、缺文件），先把错误原文完整贴给我，再给出处理方案并说明理由，等我同意再换做法。不要把别处的文件拷进来凑数。
+
+全部做完后，按下面清单逐项回答，每项写“是”或“否”，并附证据（命令输出原文）：
+1. v2\kit\db\homestay.db 在位
+2. v2\kit\student-pack 在位
+3. v2\kit\gstack-sprint\SKILL.md 在位，且大小大于 0 字节
+4. v2\kit\tools\demo\board.json 在位
+5. v2 下有 checkpoints、kit、lab 三个文件夹
+最后一行写“五项都是”或“有否项：…”。
+```
+
+- 成功：DSH 的回复里五项都是“是”，工作区里多出一个 `v2` 文件夹；`homestay.db`、`student-pack`、`SKILL.md` 都在，`SKILL.md` 不是 0 字节。
+- 批准框：DSH 弹批准框时，看一眼它要执行的命令，下载地址应当就是提示词里那一条 GitHub 地址，解压用的是 `Expand-Archive`，再批准。
+
+### 段 3 装 gstack 并放入课程版技能
+
+这一段让 DSH 在 Git Bash 里装 gstack、锁定到课程用的提交号，再把课程版 gstack-sprint 放进 DSH 读取的另一个技能目录。整段复制，发给 DSH：
+
+```text
+请帮我在这台 Windows 11 电脑上安装 gstack，并放入课程版 gstack-sprint 技能。我不敲命令，由你来做。前提：Git（含 Git Bash）已装好，当前工作目录里已有 v2\kit\gstack-sprint 文件夹。
+
+固定内容，不许自行换版本、换来源：
+- gstack 来源：https://github.com/garrytan/gstack.git
+- 版本：按提交号 e66c43c57209a17e2d9a79847a2e985c27ca80bd 固定，对应 gstack 1.91.191.0。这一版没有版本标签，所以不要拉最新版，不要用分支名或标签，不要用 git clone 直接拉。
+- 安装位置：~/.claude/skills/gstack
+
+第一部分：在 Git Bash 里装 gstack。用 C:\Program Files\Git\bin\bash.exe -l 运行下面这些 bash 命令，不要在 PowerShell 里直接运行。先检查 ~/.claude/skills/gstack 是否已存在且里面有文件；如果是，先停下告诉我，不要删除或覆盖。否则依次运行：
+   mkdir -p ~/.claude/skills/gstack && cd ~/.claude/skills/gstack
+   git init -q
+   git remote add origin https://github.com/garrytan/gstack.git
+   git fetch --depth 1 origin e66c43c57209a17e2d9a79847a2e985c27ca80bd
+   git checkout -q FETCH_HEAD
+   git rev-parse HEAD
+   cat VERSION
+   ./setup --no-prefix --no-browser < /dev/null
+   echo "退出码 $?"
+   ./setup --status
+说明：./setup 会下载依赖并生成技能说明，要跑很久。请把命令的超时设得足够长，或放后台运行并等它自己结束，不要中途打断，也不要重复运行。它的最后一行应是 gstack ready (claude)。输出里的 CSO unavailable、Chromium install skipped、Claude Code CLI not found、codex not installed 这类提示可以忽略；其他 error 或 fail 要按下面的错误规则处理。不要给 ./setup 加别的参数，不要修改 gstack 目录里的任何文件。
+
+第二部分：放课程版技能。在 PowerShell 里，在当前工作目录运行：
+   New-Item -ItemType Directory -Force "$HOME\.agents\skills" | Out-Null
+   如果 "$HOME\.agents\skills\gstack-sprint" 已经存在，先停下告诉我，不要直接复制（直接复制会多嵌套一层）。
+   Copy-Item "v2\kit\gstack-sprint" "$HOME\.agents\skills\gstack-sprint" -Recurse
+   Select-String -Path "$HOME\.agents\skills\gstack-sprint\SKILL.md" -Pattern '^name: gstack-sprint' -Encoding UTF8
+   Test-Path "$HOME\.agents\skills\gstack-sprint\gstack-sprint"   （应为 False，True 说明嵌套了）
+
+遇到任何错误，先把错误原文完整贴给我，再给出处理方案并说明理由，等我同意再换做法。不要把任何密钥写进命令或回复。
+
+全部做完后，按下面清单逐项回答，每项写“是”或“否”，并附证据（命令输出原文）：
+1. gstack 固定在指定提交号：git rev-parse HEAD 的输出等于 e66c43c57209a17e2d9a79847a2e985c27ca80bd
+2. 版本号是 1.91.191.0：cat VERSION 的输出
+3. ./setup 跑完且退出码为 0：退出码那一行，以及最后一行是否为 gstack ready (claude)
+4. ./setup --status 里 claude 一行的结果列是 current，Install checks 里 section links 写 all resolve：贴这两行原文
+5. 课程版技能已放好：Select-String 打印出含 name: gstack-sprint 的一行，且没有 gstack-sprint\gstack-sprint 这一层嵌套
+最后一行写“五项都是”或“有否项：…”。
+```
+
+- 成功：DSH 的回复里五项都是“是”，`VERSION` 是 `1.91.191.0`，`claude` 一行是 `current`，课程版 `gstack-sprint` 已放进 `~/.agents/skills`。
+- 批准框：DSH 弹批准框时，看一眼它要执行的命令，gstack 只能从 `https://github.com/garrytan/gstack.git` 取、版本是那串提交号，复制技能的目标是 `.agents\skills\gstack-sprint`，再批准；这一段要跑很久，屏幕停着不动是正常的，等它报完。
+
+### 段 4 装 Skills Manager
+
+这一段让 DSH 给自己装社区插件 DSH Skills Manager。DSH 自带读取 `~/.agents/skills`，但不读 `~/.claude/skills`，gstack 要靠这个插件才读得到；它是社区维护的插件（Apache-2.0 许可），不是 DeepSeek 官方出品。整段复制，发给 DSH：
+
+```text
+请帮我给我正在使用的这个 DSH 安装社区插件 DSH Skills Manager，让 DSH 能读到我机器上 Claude Code 与 Shared Agent 两个技能目录里的技能。我不敲命令，由你来做。
+
+固定内容，不许自行换：
+- npm 包名：@michengai/dsh-skills-manager，装最新版，不要换成别的包。
+- npm 源：https://registry.npmjs.org/ ，不要换成镜像或别的源。
+- 装到我正在用的这个 DSH 里。
+
+做法：
+1. 用 DSH 自己的插件安装能力安装（例如 plugin_manager 工具）。需要批准时我会点批准。
+2. 装完后，告诉我它的版本号和许可证。
+3. 告诉我怎么让它生效。不要自己退出或重启 DSH，由我自己操作：我会把 DSH 完全退出（包括任务栏托盘里的图标）再重新打开。
+
+遇到任何错误（连不上 npm 源、版本要求不满足、安装被拒），先把错误原文完整贴给我，再给出处理方案并说明理由，等我同意再换做法。不要把任何密钥写进命令或回复。
+
+全部做完后，按下面清单逐项回答，每项写“是”或“否”，并附证据（输出原文）：
+1. 安装成功：包名、版本号，以及用的是哪个 npm 源
+2. 许可证已报告：预期是 Apache-2.0
+3. 已告诉我让它生效的步骤：包括“完全退出 DSH，含托盘图标，再重新打开”，以及重开后到设置里哪一页确认
+最后一行写“三项都是”或“有否项：…”。
+```
+
+DSH 回复三项都是“是”之后，自己把 DSH 完全退出（托盘里的图标也要退出），再重新打开，然后打开“设置”，找到“技能”（Skills）页（系统语言是英文时界面是英文，设置叫 Settings）。
+
+- 成功：重开后，“设置”里出现“技能”（Skills）页，“Claude Code”与“Shared Agent”两个来源都已开启；“Claude Code”下能看到 gstack 的技能（如 `office-hours`、`spec`、`qa-only`），“Shared Agent”下能看到 `gstack-sprint`。
+- 批准框：DSH 弹批准框时，看一眼它要执行的命令，包名应当是 `@michengai/dsh-skills-manager`、源是 `https://registry.npmjs.org/`，再批准。
+
+做到这里，回到“实操”，从步骤 1 开始；步骤 3 的 gstack 自检、步骤 4 的 DSH 四句话和同名冲突自检，就是对这四段的验收。
+
+### 备用做法：自己动手装
+
+上面的提示词走不通（比如批准框一直被拒绝，或下载被网络拦住），或者你想自己看清每一步，就用这一部分：命令都在窗口里自己敲，分准备 1 到准备 8 八步，每步都有“看到什么算成功”。准备 2、3、7 就是主路线里的手动一、二、三，已经做过的跳过；做完八步后，同样回到“实操”，从步骤 1 开始。
+
+照抄命令，每一步末尾一句话告诉你看到什么算成功。没看到，先别往下做。命令标明在哪个窗口里运行：**PowerShell** 指开始菜单里的 Windows PowerShell，**Git Bash** 指开始菜单里的 Git Bash（准备 1 装完才有）。
+
+#### 准备 1 装 Git、Python 3.12、Node.js、Bun
+
+在 PowerShell 里逐条运行：
+
+```powershell
+winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements
+winget install --id Python.Python.3.12 -e --accept-package-agreements --accept-source-agreements
+winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements
+winget install --id Oven-sh.Bun -e --accept-package-agreements --accept-source-agreements
+```
+
+装完，关掉所有终端窗口，新开一个 PowerShell，运行：
+
+```powershell
+git --version
+python --version
+node --version
+bun --version
+```
+
+- 成功：四条都打印版本号；Python 以 3.12 开头，Bun 是 1.4.2 或更高。
+- 提示“不是可识别的命令”：这个窗口没有重开，关掉重开；仍不行，把对应那条 `winget install` 再跑一遍。`python` 弹出应用商店或没有输出：在“设置 → 应用 → 高级应用设置 → 应用执行别名”里关掉 `python.exe` 的开关，再新开窗口。
+
+#### 准备 2 装 DSH
+
+入口是 DeepSeek 官网下载页 https://www.deepseek.com/download/ ，下载 Windows 版；产品介绍页是 https://www.deepseek.com/harness/ 。也可以在 PowerShell 里直接下载并运行安装包，命令如下：
+
+```powershell
+curl.exe -L --fail -o "$HOME\Downloads\dsh-setup.exe" https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe
+Start-Process "$HOME\Downloads\dsh-setup.exe" -Wait
+```
+
+备注：上面命令里的地址 `https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe` 是 Windows 版安装包的直链。课程编写时验证的 DSH 版本是 0.2.2-rc.5，这是预览版，界面可能随版本变化。
+
+安装包约 300 MB。安装向导一路确认；Windows 提示“已保护你的电脑”时，点“更多信息”再点“仍要运行”。装完，从开始菜单打开 DeepSeek Harness。
+
+- 成功：打开后看到 DSH 的主界面（第一次可能先出现欢迎页，按提示确认即可）。
+
+#### 准备 3 给 DSH 配大模型接口
+
+DSH 自己不带模型。课程里 agent 做事、后面的产品调用，都要用你自己的大模型接口；兼容 OpenAI 接口的服务商都行。下面以硅基流动（SiliconFlow）为例，换别家就换成它文档里给的访问地址、模型名和你的密钥。密钥你自己到服务商网站申请；它只填在下面这一处，不贴进对话、截图和任何要交的记录。
+
+系统语言是英文时，DSH 的界面和回复都是英文：“设置”叫 Settings，“模型”叫 Models，下面括注对应的英文名。在 DSH 里打开“设置 → 模型”（Settings → Models），点“添加模型提供商”，把卡片切到“自定义模型 API”，按下表填写后保存：
+
+| 项 | 例如 |
+|---|---|
+| Provider ID | `siliconflow`（小写，保存后不能改） |
+| 基础 URL | `https://api.siliconflow.cn/v1` |
+| API 协议 | OpenAI Chat Completions |
+| API 密钥 | 你自己的密钥 |
+| 模型 | `deepseek-ai/DeepSeek-V3.2`（点“获取可用模型”搜索后勾选，或直接手填模型 ID） |
+
+- 成功：“设置 → 模型”页出现 `siliconflow` 卡片，卡片里有 `deepseek-ai/DeepSeek-V3.2`。
+
+这三样（访问地址、模型名、密钥）也是后面步骤 5 的 `.env` 里 `LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY` 要填的值，到时用同一组。
+
+#### 准备 4 下载课程总包并解压
+
+在 PowerShell 里运行：
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\l1-course" | Out-Null
+curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v2/ai-team-coding-materials.zip
+Expand-Archive "$HOME\l1-course\materials.zip" "$HOME\l1-course" -Force
+Set-Location "$HOME\l1-course"
+Get-ChildItem v2 | Select-Object Name
+Test-Path v2\kit\checksums.txt
+Test-Path v2\kit\db\homestay.db
+Test-Path v2\kit\student-pack
+```
+
+解压命令用 `Expand-Archive`，不用 `tar`：系统区域不是中文时，`tar -xf` 会丢掉中文名的文件。解开后，`l1-course` 里应有 `v2` 文件夹。用户目录下的 `l1-course` 文件夹，就是后面所说“含 `v2` 文件夹的那一层目录”；以后在 PowerShell 里先 `Set-Location "$HOME\l1-course"` 再运行命令。
+
+- 成功：`Get-ChildItem` 列出 `checkpoints`、`kit`、`lab` 三个文件夹，三条 `Test-Path` 都输出 `True`，即 `v2\kit\db\homestay.db` 与 `v2\kit\student-pack` 两份资料都在。
+
+#### 准备 5 装 gstack，锁定到课程用的版本
+
+课程按 gstack 1.91.191.0 这一版写。这一版没有打版本标签，所以用提交号锁定，不要直接拉最新版（最新版的内容会变）。在 Git Bash 里逐条运行：
+
+```bash
+mkdir -p ~/.claude/skills/gstack && cd ~/.claude/skills/gstack
+git init -q
+git remote add origin https://github.com/garrytan/gstack.git
+git fetch --depth 1 origin e66c43c57209a17e2d9a79847a2e985c27ca80bd
+git checkout -q FETCH_HEAD
+cat VERSION
+./setup --no-prefix --no-browser
+echo "退出码 $?"
+./setup --status
+```
+
+`./setup` 过程中若出现 y/N 的提问，直接按回车；不回答也会自动跳过。`--no-browser` 是跳过 gstack 自带浏览器的下载，本课用不到它。`./setup` 会自动安装依赖并生成技能说明，需要等它跑完，屏幕最后一行是 `gstack ready (claude)`。其中 `CSO unavailable` 和浏览器相关的跳过提示（如 `Chromium install skipped`）可以忽略。
+
+- 成功：`cat VERSION` 打印 `1.91.191.0`；`./setup` 末行是 `gstack ready (claude)`；`退出码 0`；`./setup --status` 里 `claude` 一行的结果列是 `current`。
+
+gstack 采用 MIT 许可，许可证文件是目录里的 `LICENSE`。
+
+#### 准备 6 放入课程版 gstack-sprint
+
+课程版 gstack-sprint 在总包的 `v2\kit\gstack-sprint\` 里，放到 DSH 读取的另一个技能目录 `~/.agents/skills`。在 PowerShell 里运行：
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.agents\skills" | Out-Null
+Copy-Item "$HOME\l1-course\v2\kit\gstack-sprint" "$HOME\.agents\skills\gstack-sprint" -Recurse
+Select-String -Path "$HOME\.agents\skills\gstack-sprint\SKILL.md" -Pattern '^name: gstack-sprint' -Encoding UTF8
+```
+
+- 成功：最后一条打印出含 `name: gstack-sprint` 的一行。若提示找不到路径，说明准备 4 没做完。
+
+若最后一条没有任何输出，先运行 `Get-ChildItem "$HOME\.agents\skills" -Recurse`，对照下面两种情况改：
+
+- `SKILL.md` 的大小是 0 字节：总包里的这个文件不完整。重新做准备 4 的下载与解压（`-Force` 会覆盖），再 `Remove-Item "$HOME\.agents\skills\gstack-sprint" -Recurse`，然后重跑上面的 `Copy-Item` 和 `Select-String`。
+- 看到 `gstack-sprint\gstack-sprint` 两层目录：目标目录已存在时，`Copy-Item` 会把文件复制进多出来的一层。先 `Remove-Item "$HOME\.agents\skills\gstack-sprint" -Recurse` 删掉整个目录，再重跑 `Copy-Item`。
+
+#### 准备 7 选工作区，确认模型能答
+
+在 DSH 里点“选择工作区”，添加并选中用户目录下的 `l1-course` 文件夹（没选工作区时，输入框是灰的）。新开一个会话，在模型菜单里选 `deepseek-ai/DeepSeek-V3.2`，发一句“你好”。系统语言是英文时，界面是英文，回复也可能是英文，这是正常的。
+
+- 成功：会话里收到模型的回复文字；回复里若主动提到 L1 course edition，说明课程版技能已被读到。收到报错，回到准备 3 检查地址、模型名、密钥有没有填错。
+
+#### 准备 8 让 DSH 读到 gstack 和课程版技能
+
+DSH 自带读取 `~/.agents/skills`，课程版 gstack-sprint 已在那里；gstack 在 `~/.claude/skills`，DSH 自己不读这个目录，要装一个社区插件 DSH Skills Manager（Apache-2.0 许可，不是 DeepSeek 官方出品）。在准备 7 的会话里发这句话：
+
+> 请把 npm 包 @michengai/dsh-skills-manager 最新版安装到我的 DSH，使用官方 npm 源 https://registry.npmjs.org/ ，装完告诉我怎么让它生效。
+
+出现批准框就批准；装完把 DSH 完全退出（托盘里的图标也要退出），再重新打开，然后打开“设置”（系统语言是英文时界面是英文，设置叫 Settings，插件相关页叫 Plugins，技能页叫 Skills）。
+
+- 成功：设置里出现“技能”（Skills）页，页里“Claude Code”来源下能看到 `gstack` 一套的技能（如 `office-hours`、`spec`、`qa-only`），“Shared Agent”来源下能看到 `gstack-sprint`，两个来源都已开启。
+
+做到这里，回到“实操”，从步骤 1 开始；步骤 3 的 gstack 自检、步骤 4 的 DSH 四句话和同名冲突自检，就是对这八步的验收。
+
 ## 实操
 
 命令都在“含 `v2` 文件夹的那一层目录”（步骤 1 的空目录）里运行，以 Windows PowerShell 为主；gstack 自检的命令在 Git Bash 里运行，也在这一层目录。三个角色：业务核对校验和并读资料，分析只读记行数并跑看板演示，技术确认渔具包可用。
@@ -105,6 +443,7 @@
 # 建目录（Git Bash：mkdir -p v2/kit/db v2/lab records）
 New-Item -ItemType Directory -Force v2\kit\db, v2\lab, records
 # 先把数据包放进 v2\kit、工具箱与样例页放进 v2\lab（拖放也行），再拷库文件；尖括号换成文件所在位置（Git Bash：cp）
+# 自学：总包里已带 v2\kit\db\homestay.db（“环境准备”段 2 解压后就在），下面这行跳过
 Copy-Item "<课堂分发的库文件路径>" v2\kit\db\homestay.db
 git init
 Add-Content .gitignore ".env"
@@ -160,13 +499,9 @@ echo "退出码 ${PIPESTATUS[0]}"   # 0 才对；技能说明里的链接断了�
 echo "退出码 ${PIPESTATUS[0]}"
 cat ~/.claude/skills/gstack/VERSION   # 版本号，记进记录
 ```
-`setup --status` 会列出好几个宿主的行，课程只看 `claude` 这一行，因为 DSH 读的是它所在的技能目录。体检里 `warn` 和 `not configured` 不是失败：`codex` 一行显示 not configured，只影响环 3 里“外部意见（Outside Voice）”那一步，第 1 章的 8 环表里已列。再在 PowerShell 里看 DSH 的技能管理器有没有把这个目录读进来，第三步放到步骤 4：
-```powershell
-# 只读：claude 源对应 gstack 的技能目录，agents 源对应课程版 gstack-sprint 所在的目录；两个应都是 True
-(Get-Content "$HOME/.dsh/skills-manager/state.json" -Raw | ConvertFrom-Json).sources | Select-Object claude, agents
-```
-- 产物：`records/gstack_status.txt`、`records/gstack_doctor.txt`；版本号与两个源的状态写进 `records/tech_notes.md`。
-- 验收：两条命令退出码都是 0；`claude` 一行结果列为 `current`；体检末行含 `0 fail`；两个源为 True。
+`setup --status` 会列出好几个宿主的行，课程只看 `claude` 这一行，因为 DSH 读的是它所在的技能目录。体检里 `warn` 和 `not configured` 不是失败：`codex` 一行显示 not configured，只影响环 3 里“外部意见（Outside Voice）”那一步，第 1 章的 8 环表里已列。再看 DSH 有没有把这个目录读进来，第三步放到步骤 4。这一项在界面里看，要在段 4 做完、DSH 完全退出重开过一次之后才有：打开 DSH 的“设置”（英文界面叫 Settings）里的“技能”（Skills）页，看到“Claude Code”与“Shared Agent”两个来源都已开启，并且展开“Claude Code”能看到 gstack 的技能（如 `office-hours`、`spec`、`qa-only`）。技能页没有这两个来源，说明段 4 还没生效。
+- 产物：`records/gstack_status.txt`、`records/gstack_doctor.txt`；版本号，以及技能页两个来源是否开启，写进 `records/tech_notes.md`。
+- 验收：两条命令退出码都是 0；`claude` 一行结果列为 `current`；体检末行含 `0 fail`；技能页里“Claude Code”与“Shared Agent”两个来源都已开启，“Claude Code”下能看到 gstack 的技能。
 
 ### 步骤 4 DSH 里确认技能、同名冲突自检、看板演示
 
@@ -247,8 +582,8 @@ python v2/lab/tools/db_fingerprint.py v2/kit/db/homestay.db records/fp_before.tx
 | `读不了库文件`、`打不开数据库`、`数据内容校验和不符`、`缺表`、`两份资料不齐或已改动`、`只读方式下写入竟然成功`、`文件被改动了` | 文件被占用、拷贝被截断，拷错版本，或被写过、改过：关掉占用它的程序，重拿课堂分发的文件；练习写入用副本，不在 `db/` 里做 |
 | `git 不在 PATH 上` 或 `git 命令跑不起来`；生成看板时 `node` 不是可识别的命令 | 没装 Git 或 Node.js，或终端没刷新：装好后新开终端运行 `git --version`、`node --version` |
 | `[黄] 没找到 DSH，请人工确认` | 不是红项；确认 DSH 能启动、能开会话，装在别处就在问题清单里写明位置 |
-| `setup --status` 退出码为 1，或 `section links` 不是 all resolve；`gstack-doctor` 末行 `fail` 不是 0 | gstack 本身有问题，不要自己重装：整段输出贴进 `issues.md`，请讲师处理 |
-| 找不到 `~/.claude/skills/gstack`，或 DSH 里 `gstack`、`gstack-sprint` 不在技能列表 | 没装到这台机器，或技能管理器的源被关：看步骤 3 的两个源，仍不对就换用已通过自检的机器，并记入 `issues.md` |
+| `setup --status` 退出码为 1，或 `section links` 不是 all resolve；`gstack-doctor` 末行 `fail` 不是 0 | gstack 本身有问题；课堂机上不要自己重装：整段输出贴进 `issues.md`，请讲师处理。自己的机器：回到“环境准备”段 3，先请 DSH 把 `~/.claude/skills/gstack` 改名移走（不删除），再发一遍段 3 的提示词 |
+| 找不到 `~/.claude/skills/gstack`，或 DSH 里 `gstack`、`gstack-sprint` 不在技能列表 | 没装到这台机器，或技能页里的来源被关：看步骤 3 的技能页，“Claude Code”与“Shared Agent”都要开启。自己的机器回到“环境准备”段 3、段 4 补装；课堂机仍不对就换用已通过自检的机器，并记入 `issues.md` |
 
 文件级 SHA-256 与登记值不同而内容校验和一致，不是红项：数据相同、文件字节不同，脚本会在“数据内容校验和一致”下面注明。判断不了的红项，把脚本整段输出（含末行结论）贴出来，比描述“打不开数据库”更有用。
 
@@ -304,7 +639,7 @@ $r = Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyCon
 
 ## 本章小结
 
-- 渔具包十项：DSH、gstack、课程版 gstack-sprint、看板生成器、课程数据包、学员工具箱、Git、Python 3.12、浏览器、大模型接口；gstack 与课程版技能由讲师预装，你只做自检。
+- 渔具包十项：DSH、gstack、课程版 gstack-sprint、看板生成器、课程数据包、学员工具箱、Git、Python 3.12、浏览器、大模型接口；gstack 与课程版技能课堂上由讲师预装，你只做自检；自学时按“环境准备”一节自己装。
 - gstack 是一套技能；技能是 DSH 按名字加载的说明文件；gstack-sprint 是把一次交付拆成 8 环的课程版技能；看板是 `board.json` 加两份生成物。
 - 问“是不是同一份数据”看内容校验和；问“文件有没有被改”用文件指纹前后对比；只读打开只管所打开的那个库；凭据只放在被忽略的本地配置文件里。
 - 任务书栏 8 写你们机器上的事实：系统与命令行、有哪些运行环境、默认端口；起服务前先查端口，被占用就换空闲端口并告诉你，同一时刻一个实例，用完复查释放。各章照抄这一栏。

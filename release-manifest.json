@@ -1,11 +1,11 @@
 {
-  "tag": "v1",
+  "tag": "v2",
   "repo": "cloudzun/ai-team-coding",
-  "content_digest": "b36a646e5f50aa8f4727daadb0bfb4a435f17875214be259e82ef8f3a2b475a2",
+  "content_digest": "2a483b73dacfa16e9084a531087e90cacceedc1c819ddff083e546203b9c4b9a",
   "materials": {
     "file": "ai-team-coding-materials.zip",
-    "bytes": 12100433,
-    "sha256": "171afde1e788ca2953250508c789594c07159597b7d64b344757abb416ae7948",
+    "bytes": 12134893,
+    "sha256": "77c1e5d004a2432ea66b5fe529d79be562ef0f0069ea7f714908a572a666be48",
     "db_path": "v2/kit/db/homestay.db",
     "entries": [
       {
@@ -565,12 +565,28 @@
         "bytes": 39538688
       },
       {
+        "name": "v2/kit/gstack-sprint/SKILL.md",
+        "bytes": 66721
+      },
+      {
         "name": "v2/kit/student-pack/指标口径表.md",
         "bytes": 3957
       },
       {
         "name": "v2/kit/student-pack/运营手册.md",
         "bytes": 3483
+      },
+      {
+        "name": "v2/kit/tools/demo/BOARD.html",
+        "bytes": 9341
+      },
+      {
+        "name": "v2/kit/tools/demo/BOARD.md",
+        "bytes": 2479
+      },
+      {
+        "name": "v2/kit/tools/demo/board.json",
+        "bytes": 3354
       },
       {
         "name": "v2/kit/tools/gen-board.mjs",
@@ -728,7 +744,7 @@
   },
   "offline": {
     "file": "ai-team-coding-offline.zip",
-    "bytes": 13893777,
-    "sha256": "a3e6a123882d45dc629e569de5d9e61320b2b666e42a409b4a793f3c7650524a"
+    "bytes": 13990238,
+    "sha256": "dced3efc69f20fc71fb6ee475d75138993f27b24586446670749dccb3f4c77f2"
   }
 }
