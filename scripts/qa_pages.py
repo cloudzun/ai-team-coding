@@ -162,6 +162,16 @@ def main():
     else:
         ok("孤儿页", "0")
 
+    # 首页：不放“四个单元一张图”表（表只在第 1 章 1.3 节），保留“从这里进”四张卡
+    home_html = (DIST / "index.html").read_text(encoding="utf-8")
+    home_cards = len(re.findall(r'<a class="card(?: card-dark)?" href="[^"]+">', home_html))
+    if "四个单元一张图" in home_html:
+        bad("首页", "不应再有“四个单元一张图”")
+    elif "从这里进" not in home_html or home_cards != 4:
+        bad("首页", f"“从这里进”卡片 {home_cards} 张，应含 4 张")
+    else:
+        ok("首页", "无 1.3 表，含从这里进四张卡")
+
     # 演示页只从第 2b 章（8 环演示）链接
     demo_in = [r for r, pg in parsed.items() if any(v.endswith("demo/index.html") for _, _, v in pg.links)]
     if demo_in == ["textbook/ch2b.html"]:

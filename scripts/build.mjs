@@ -502,16 +502,7 @@ function ringSvg() {
 ${nodes}</svg>`
 }
 {
-  const ch1 = chapterById.ch1
-  const hs = findHeading(ch1, '1.3 四个单元一张图')
-  let tableHtml = ''
-  if (hs.length !== 1) fail(`首页：第 1 章 1.3 标题命中 ${hs.length} 次`)
-  else {
-    const tb = sectionTokens(ch1, hs[0]).find((t) => t.type === 'table')
-    if (!tb) fail('首页：第 1 章 1.3 里没有表')
-    else tableHtml = renderTokens([tb])
-  }
-  const hid = hs[0] ? hs[0].id : ''
+  // 首页不再放“四个单元一张图”那张表（表只留在第 1 章 1.3 节，教材不改）
   const body = `<section class="hero">
   <div class="hero-l">
     <p class="eyebrow">课件网站 · 教材 / 演示 / 实验 / 下载</p>
@@ -520,12 +511,6 @@ ${nodes}</svg>`
     <p class="cta"><a class="btn btn-a" href="textbook/ch1.html">从第 1 章开始读</a><a class="btn btn-d" href="textbook/ch2b.html">看 8 环演示</a></p>
   </div>
   <div class="hero-r">${ringSvg()}</div>
-</section>
-<section class="band">
-  <h2 class="band-h"><span class="tick"></span>四个单元一张图</h2>
-  <p class="band-s">做出什么、侧重哪几栏、跑哪条检查命令、坏夹具与存档点，四个单元并排。</p>
-  ${tableHtml}
-  <p class="origin">出处：<a href="textbook/ch1.html#${esc(hid)}">第 1 章 1.3 节</a>（表格原文，未改）</p>
 </section>
 <section class="band">
   <h2 class="band-h"><span class="tick"></span>从这里进</h2>
@@ -701,6 +686,14 @@ for (const f of htmlFiles) {
   const allowedExt = RELEASE_MODE ? new Set([releaseUrl(RELEASE_TAG, MATERIALS_FILE), releaseUrl(RELEASE_TAG, OFFLINE_FILE)]) : new Set()
   for (const u of extLinks) if (!allowedExt.has(u)) fail(`${f}：有外链 ${u}`)
 }
+// 首页：不再出现“四个单元一张图”表（表只在第 1 章 1.3 节），保留“从这里进”四张卡
+{
+  const home = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8')
+  if (home.includes('四个单元一张图')) fail('首页：不应再有“四个单元一张图”')
+  if (!home.includes('从这里进')) fail('首页：缺“从这里进”')
+  const cards = (home.match(/<a class="card(?: card-dark)?" href="[^"]+">/g) || []).length
+  if (cards !== 4) fail(`首页：“从这里进”卡片 ${cards} 张，应为 4 张`)
+}
 const demoSrc = fs.readFileSync(path.join(CONTENT, 'demo/8环演示.html'))
 if (sha256(demoSrc) !== sha256(fs.readFileSync(path.join(DIST, 'demo/index.html')))) fail('演示页与源文件不一致')
 for (const p of RELEASE_MODE ? PACKS : [...PACKS, ALL]) if (!fs.existsSync(path.join(DIST, 'downloads', p.file))) fail(`缺下载包 ${p.file}`)
@@ -725,7 +718,7 @@ if (errors.length) {
 // ───────────────────────── 离线包与发布清单（仅本地带库模式） ─────────────────────────
 if (RELEASE_MODE) {
   console.log(`构建完成（发布模式 ${RELEASE_TAG}）：${htmlFiles.length} 页，${PACKS.length} 个下载包；总包与离线包不在 dist 里，下载按钮指向 GitHub Release`)
-  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 17 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
+  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 17 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
 } else {
   fs.rmSync(RELEASE, { recursive: true, force: true })
   fs.mkdirSync(RELEASE, { recursive: true })
@@ -743,5 +736,5 @@ if (RELEASE_MODE) {
   }
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n')
   console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，总包 ${fmtBytes(ALL.bytes)} 字节，离线包 ${fmtBytes(offZip.length)} 字节；已写 release-manifest.json（tag=${LOCAL_TAG}）`)
-  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 17 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
+  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 17 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
 }
