@@ -1,17 +1,37 @@
-# 单元二 问答记录夹具 `good_answers.jsonl` / `bad_answers.jsonl`
+# 单元二 问答记录夹具 `good_answers.jsonl` / `bad_answers.jsonl` / `bad_nodata_answers.jsonl`
 
 > 这是随工具箱发给学员的对照夹具：给 `u2_check.py` 第 3 项（回答里的数字可追溯）做“写得对判得绿、装坏必判红”的对照；G2 前用它确认检查命令“装坏必判红”。
 
-两份文件都是**一份问答记录**，形状就是 `POST /api/ask` 的原始返回（`question / mode / answer / steps[] / citations[] / diagnosis / meta`），一行一条 JSON：
+三份文件都是**一份问答记录**，形状就是 `POST /api/ask` 的原始返回（`question / mode / answer / steps[] / citations[] / diagnosis / meta`），一行一条 JSON：
 
 | 文件 | 内容 | 第 3 项应得 |
 |---|---|---|
 | `good_answers.jsonl` | 2 条：D08 2025 年二季度入住率与平均房价（同比 2024 年二季度）、该区该季有效评分条数与平均分。回答里的数字都能在结果行里找到（原值、同行两列之差、行数） | **PASS**（退出码 0，三项全绿） |
 | `bad_answers.jsonl` | 1 条：同上第一条，但把“下降 4.65 个百分点”改成了“下降 **11.4** 个百分点”——结果行里算不出这个数；这条的 `meta.untraceable` 故意留空 | **FAIL**：`第 1 条有无法追溯的数字：11.4 个百分点`（退出码 1） |
+| `bad_nodata_answers.jsonl` | 1 条：D08 2025Q2 的定量问句被答成“**查不到**……请写明区与期间”（`mode=query`、`steps[].rows` 为空、回答里没有数字） | **FAIL**：`第 1 条没答出数据：回答里说“查不到”`（退出码 1） |
 
 ## 为什么坏的那条要故意留空 `meta.untraceable`
 
 服务自己也会做一遍数字可追溯检查，并把结果写进 `meta.untraceable`。**读那个字段的检查器，在被测方自报干净时会放过编造数字。** `bad_answers.jsonl` 里 `untraceable` 是空的、`degraded` 是 `false`，就是要证明 `u2_check.py` 不看它、自己从结果行算。
+
+## 为什么“查不到”也算红
+
+`bad_nodata_answers.jsonl` 对应的是另一种假绿：接口正常回 `200`、`mode=query`，但回答只说“查不到／无数据／样本不足／没有找到／结果为空”这类话，结果表 0 行、回答里也没有数字。旧版 `u2_check.py` 从这种回答里抽不出数字，于是第 3 项照样 PASS（`v2/reviews/trial_u2_diagnosis.md` 第 5 节缺口 2：机器假绿、人眼必红）。
+
+现在第 3 项对**查询类**回答（自问的定量／评论两句，或 `--answers` 里的查询记录）只在**结果表一行都没有**时多判一层：回答里出现上述词，或者回答里没有可核对的数字，就判 `FAIL` 并写明第几条、为什么红。**结果表有行时一律不按这些词判红**——评论题可能合理地答“没有找到明显的负面主题”，只要结果行在、数字追得回就是合法回答（正面用例：3 行评论、回答含“没有找到明显的负面主题”并引用评论编号，不判红）。结果表行数取 `steps[].rows`（没有该字段时退回 `steps[].row_count`），所以 `--answers` 夹具只要照原样保存 `rows` / `row_count` 就能离线复现。关键词表在 `u2_check.py` 的 `NO_DATA_WORDS`，改词表要同步改本段。应当被拒的写意图三句不受这条影响（`mode=refused` 或问句就是 `WRITE_QUESTIONS` 的记录跳过）。
+
+离线只看第 3 项（另两项会打印“未检查”，退出码本来就是 1，所以看第三行，不要只看退出码）：
+
+```powershell
+py -3.12 v2\lab\tools\u2_check.py --answers v2\lab\fixtures\u2\bad_nodata_answers.jsonl
+# [FAIL] 回答数字可追溯：第 1 条没答出数据：回答里说“查不到”
+```
+
+改前这条是 PASS——这正是要堵的洞。自问模式的同类判红长这样（第 1 句是定量）：
+
+```text
+[FAIL] 回答数字可追溯：自问第 1 句（定量）没答出数据：回答里说“查不到”（合理的问句应当能查到，接口回 200 不等于答出了内容；回答开头：查不到钱塘区 2025 年第二季度的入住率和平均房价，请写明区与期间后再问。）
+```
 
 ## 数字怎么来的
 
@@ -27,6 +47,8 @@
 
 问句与数字**没有**取自讲师答案：`instructor-kit/out/golden_qa.json` 里没有 D08、没有 2025Q2（两处计数都是 0），`stories.json` 里 D08 也是 0 次（7 个故事只点到 D03）。两份文件只用于避让，正文一个字没抄。
 
+`bad_nodata_answers.jsonl` 不含任何数字，是静态写的，不由 `make_answers.py` 生成（换库或换窗口都不用重算）；重新生成 good/bad 时它保持不变。
+
 重新生成（换库或想换窗口时）：
 
 ```powershell
@@ -35,9 +57,9 @@ py -3.12 v2\lab\fixtures\u2\make_answers.py <业务库 homestay.db 路径> v2\la
 
 生成脚本只读打开业务库，只写输出目录里的两个 `.jsonl`。
 
-## 怎么跑（负向演练：一条命令，学员自己在 G2 之前跑）
+## 怎么跑（负向演练：G2 之前跑，可交 qa 跑）
 
-**这一步由学员自己在 G2 之前、在项目外跑一条命令；不交给 builder，也不由 lead 代跑。** 目的只有一个：亲眼确认检查命令「装坏必判红」——坏夹具必须判红（退出码 1），正夹具必须判绿（退出码 0）。
+**这一步在 G2 之前跑，命令可以交给 qa 跑，不交给 builder；输出由命令写进抽验记录，学员自己读输出、写人眼三问与结论。** 目的只有一个：亲眼确认检查命令「装坏必判红」——坏夹具必须判红（退出码 1），正夹具必须判绿（退出码 0）。
 
 先起服务、再存一次基线（只在动手前做一次），然后一条命令跑负向演练（端口示例写 8801，被占用就换空闲端口，命令里的端口同步换；`<运行目录>` 换成项目目录的 `sprint-runs` 下最新的那个子目录，命令把命令行、输出和退出码写进它的 `evidence\user-check.md`）：
 
@@ -45,6 +67,8 @@ py -3.12 v2\lab\fixtures\u2\make_answers.py <业务库 homestay.db 路径> v2\la
 py -3.12 v2\lab\tools\db_fingerprint.py data\homestay.db > before.txt
 py -3.12 v2\lab\tools\u2_check.py --db data\homestay.db --base http://127.0.0.1:8801 --before before.txt --answers v2\lab\fixtures\u2\bad_answers.jsonl --record <运行目录>\evidence\user-check.md
 ```
+
+`--record` 新建 `evidence\user-check.md` 时只写三节骨架：`## 1 命令与输出`（命令自己写）、`## 2 人眼三问`（三行，学员写）、`## 3 结论`（一行，学员写）；文件已存在就只往第 1 节追加，不碰第 2、3 节。
 
 应得：`[FAIL] 回答数字可追溯：第 1 条有无法追溯的数字：11.4 个百分点`，退出码 1。
 

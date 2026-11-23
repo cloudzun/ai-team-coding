@@ -1,11 +1,11 @@
 {
-  "tag": "v3",
+  "tag": "v4",
   "repo": "cloudzun/ai-team-coding",
-  "content_digest": "e780b0e1707b59038a57655df9ef19b3f87202b25f9bcbcec73cb08704ac38e4",
+  "content_digest": "9fab644f827d9f1acd3a3d6189a53780df5adfd47019a2848ee65bb2b037bca9",
   "materials": {
     "file": "ai-team-coding-materials.zip",
-    "bytes": 12134893,
-    "sha256": "77c1e5d004a2432ea66b5fe529d79be562ef0f0069ea7f714908a572a666be48",
+    "bytes": 12149142,
+    "sha256": "bc16b90e164596d24c7b755df74c8283c173e05f3ccab1d14545a6250e8f9db5",
     "db_path": "v2/kit/db/homestay.db",
     "entries": [
       {
@@ -566,7 +566,7 @@
       },
       {
         "name": "v2/kit/gstack-sprint/SKILL.md",
-        "bytes": 66721
+        "bytes": 81084
       },
       {
         "name": "v2/kit/student-pack/指标口径表.md",
@@ -598,11 +598,11 @@
       },
       {
         "name": "v2/kit/交付约定_单元二.md",
-        "bytes": 3944
+        "bytes": 5722
       },
       {
         "name": "v2/kit/交付约定_单元四.md",
-        "bytes": 3656
+        "bytes": 9625
       },
       {
         "name": "v2/kit/导出契约.md",
@@ -614,11 +614,15 @@
       },
       {
         "name": "v2/lab/fixtures/u2/README.md",
-        "bytes": 5026
+        "bytes": 7986
       },
       {
         "name": "v2/lab/fixtures/u2/bad_answers.jsonl",
         "bytes": 3921
+      },
+      {
+        "name": "v2/lab/fixtures/u2/bad_nodata_answers.jsonl",
+        "bytes": 724
       },
       {
         "name": "v2/lab/fixtures/u2/good_answers.jsonl",
@@ -626,7 +630,7 @@
       },
       {
         "name": "v2/lab/fixtures/u3/README.md",
-        "bytes": 3384
+        "bytes": 3694
       },
       {
         "name": "v2/lab/fixtures/u3/bad_ops.db",
@@ -634,7 +638,7 @@
       },
       {
         "name": "v2/lab/fixtures/u4/README.md",
-        "bytes": 1690
+        "bytes": 1720
       },
       {
         "name": "v2/lab/fixtures/u4/bad_card.json",
@@ -670,31 +674,31 @@
       },
       {
         "name": "v2/lab/templates/人眼抽查记录表_单元一.md",
-        "bytes": 2753
+        "bytes": 1707
       },
       {
         "name": "v2/lab/templates/任务书模板.md",
-        "bytes": 5596
+        "bytes": 7472
       },
       {
         "name": "v2/lab/templates/任务书自查清单.md",
-        "bytes": 3856
+        "bytes": 4258
       },
       {
         "name": "v2/lab/templates/关键决策卡_单元一.md",
-        "bytes": 2998
+        "bytes": 2992
       },
       {
         "name": "v2/lab/templates/判据清单模板_单元一.md",
-        "bytes": 3612
+        "bytes": 3860
       },
       {
         "name": "v2/lab/templates/判据筛查清单.md",
-        "bytes": 3226
+        "bytes": 3241
       },
       {
         "name": "v2/lab/templates/口号改写对比卡.md",
-        "bytes": 3673
+        "bytes": 3774
       },
       {
         "name": "v2/lab/templates/数据事实卡模板.md",
@@ -702,7 +706,7 @@
       },
       {
         "name": "v2/lab/templates/示范任务书_单元一.md",
-        "bytes": 8877
+        "bytes": 9678
       },
       {
         "name": "v2/lab/templates/示范需求_单元一.md",
@@ -710,7 +714,7 @@
       },
       {
         "name": "v2/lab/templates/结业汇报模板.md",
-        "bytes": 1807
+        "bytes": 1919
       },
       {
         "name": "v2/lab/templates/需求清单模板.md",
@@ -718,7 +722,7 @@
       },
       {
         "name": "v2/lab/tools/chart_check.py",
-        "bytes": 48344
+        "bytes": 49388
       },
       {
         "name": "v2/lab/tools/db_fingerprint.py",
@@ -730,21 +734,21 @@
       },
       {
         "name": "v2/lab/tools/u2_check.py",
-        "bytes": 47625
+        "bytes": 53363
       },
       {
         "name": "v2/lab/tools/u3_check.py",
-        "bytes": 28978
+        "bytes": 30022
       },
       {
         "name": "v2/lab/tools/u4_check.py",
-        "bytes": 32592
+        "bytes": 33636
       }
     ]
   },
   "offline": {
     "file": "ai-team-coding-offline.zip",
-    "bytes": 13997720,
-    "sha256": "cfb68d31f3a2ead43acac380484037186030c93a824afafb458a9152b3732df6"
+    "bytes": 14047205,
+    "sha256": "d15006e0a9b94a298a4cfeecee397b45b39a31be0bfc020d8b6cc87ece2f5f24"
   }
 }

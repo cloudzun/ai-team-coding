@@ -58,10 +58,9 @@ labs:
       - label: 要做的事：成品任务书
         chapter: ch4
         heading: "3 成品任务书"
-      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+      - label: G2 之前：读检查输出、写人眼三问、亲口放行
         chapter: ch4
-        heading: "4.4 G2 之前：用户抽验与放行"
-        code_match: ["chart_check.py --db"]
+        heading: "4.4 G2 之前：读检查输出、写人眼三问、亲口放行"
       - label: 坏夹具：单元一没有夹具目录，用样例页与 --swap
         file: lab/sample/README.md
       - label: 接着走：推进顺序与卡住时怎么办
@@ -81,10 +80,9 @@ labs:
       - label: 要做的事：成品任务书
         chapter: ch5
         heading: "3 成品任务书"
-      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+      - label: G2 之前：命令跑两次，读输出，写三问，亲口放行
         chapter: ch5
-        heading: "4.4 G2 之前：一条命令跑两次，看三句回答"
-        code_match: ["项目目录示例叫 unit2-ask", "# 正向", "# 负向"]
+        heading: "4.4 G2 之前：命令跑两次，读输出，写三问，亲口放行"
       - label: 坏夹具
         file: lab/fixtures/u2/README.md
       - label: 接着走：推进顺序与卡住时怎么办
@@ -104,10 +102,9 @@ labs:
       - label: 要做的事：成品任务书
         chapter: ch6
         heading: "3 成品任务书"
-      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+      - label: G2 之前：亲手走一遍，命令跑两次，读输出，写三问，亲口放行
         chapter: ch6
-        heading: "4.4 G2 之前：亲手走一遍，一条命令跑两次"
-        code_match: ["u3_check.py"]
+        heading: "4.4 G2 之前：亲手走一遍，命令跑两次，读输出，写三问，亲口放行"
       - label: 坏夹具
         file: lab/fixtures/u3/README.md
       - label: 接着走：推进顺序与卡住时怎么办
@@ -127,10 +124,9 @@ labs:
       - label: 要做的事：成品任务书
         chapter: ch7
         heading: "3 成品任务书"
-      - label: 那一条检查命令：G2 之前跑，一条命令跑两次
+      - label: G2 之前：装插件，说三句话，命令跑两次，读输出，写三问，亲口放行
         chapter: ch7
-        heading: "4.4 G2 之前：装插件，说三句话，一条命令跑两次"
-        code_match: ["u4_check.py"]
+        heading: "4.4 G2 之前：装插件，说三句话，命令跑两次，读输出，写三问，亲口放行"
       - label: 坏夹具
         file: lab/fixtures/u4/README.md
       - label: 接着走：推进顺序与卡住时怎么办

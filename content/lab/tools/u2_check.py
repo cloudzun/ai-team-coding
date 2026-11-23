@@ -11,7 +11,7 @@
   --out 目录下的 answers.jsonl（默认当前目录下的 mine_u2，不存在就建），再对它做第三项检查；
   --record 把本次的命令行、三项 PASS/FAIL、问的三句与每句回答的前 120 字、退出码，追加写进
   那份 user-check.md 的「## 1 命令与输出」一节（文件不存在就按骨架新建）。
-  学员要做的只剩：跑这一行 → 在页面上看这几条回答 → 自己写「## 2 人眼」「## 3 结论」。
+  学员要做的只剩：跑这一行 → 在页面上看这几条回答 → 自己写「## 2 人眼三问」「## 3 结论」。
   给了 --answers 就保持旧行为：读学员自己存的问答记录，不自问。
 
 它查三件事（每件事一行）：
@@ -29,6 +29,10 @@
      的结果行里找：原值、同一行两列或同一列两行之间的差与比值（百分比按 ×100 认，
      万元/亿元按换算认）。找不到就报“第 N 条有无法追溯的数字”。服务自报的
      meta.untraceable 之类字段一律不读，自己算。
+     查询类回答只在结果表一行都没有时再判一层：回答里说了“查不到 / 无数据 / 样本不足 /
+     结果为空”这类，或者回答里一个可核对的数字都没有，同样判不通过（“没答出内容”不等于
+     “答对了”）。结果表有行时一律不按这些词判红（评论题可能合理地答“没有找到明显的负面
+     主题”）；应当被拒的写意图三句不受这条影响。
 
 == 命令自问的三句（没给 --answers 时）==
   1 定量：<D08 区> 2025 年第二季度的入住率和平均房价分别是多少？
@@ -37,13 +41,16 @@
      打在第三项那一行里（本脚本不写死任何房源名单，是不是讲师故事房源由人看一眼核对）。
   3 改数据：沿用第二项的三句写意图之一，不再重复发一次请求（直接取第二项那次的原始返回一条）。
   三句的原始返回按问的顺序一行一条存进 --out 下的 answers.jsonl（UTF-8），第三项就查这份文件。
+  前两句（定量、评论）若结果表一行都没有、回答又是“查不到”这类没数据的话，第三项直接
+  判红，并在那一行写明是第几句、哪一类（定量／评论）、为什么红 —— 合理的问句不该靠
+  “接口回了 200”就算过；结果表有行、数字也追得回的回答不按关键词误红。
 
 == 用法 ==
   抽验前先存基线（服务跑之前做一次就行）：
       python v2/lab/tools/db_fingerprint.py <业务库路径> > before.txt
-  G2 前一条命令（就是上面“最简用法”那一行）：
-      python v2/lab/tools/u2_check.py --db <业务库> --base http://127.0.0.1:<端口> ^
-          --before before.txt --record <运行目录>\\evidence\\user-check.md
+  G2 前一条命令（就是上面“最简用法”那一行；整条写在一行里 —— Windows PowerShell 5.1
+  不认 cmd 的 `^` 续行，这里不再示范续行）：
+      python v2/lab/tools/u2_check.py --db <业务库> --base http://127.0.0.1:<端口> --before before.txt --record <运行目录>\\evidence\\user-check.md
 
   问答记录 answers.jsonl 默认由本命令自己存，一般不用管。想自己存一份也行（存下来的是接口
   原始返回，别改内容）。教材指定的终端是 Windows PowerShell 5.1，那里 `curl` 是
@@ -94,7 +101,7 @@
 
 == 不打印什么 ==
   不打印问句全文、不打印整条结果行、不打印任何一次回答的正文；失败时只说第几条、
-  是哪个数字、什么单位（G2 抽验记录里要据此写 user-check.md）。
+  是哪个数字、什么单位，或者“没答出数据”的原因（G2 抽验记录里要据此写 user-check.md）。
 """
 from __future__ import annotations
 
@@ -138,17 +145,37 @@ QUARTER_END = "2025-07-01"     # 不含
 REVIEW_MIN, REVIEW_MAX = 5, 30  # 评论题的房源：2025Q2 评论数在这个区间里才问（太少不像“集中提到”，太多会被拒）
 ANSWER_PREVIEW = 120           # --record 里每条回答只留前这么多字
 RECORD_NOTE = "> 本节由检查命令自动生成，不要手改。"
+# 新建时只写三节（F51 口径一、口径三）：第 1 节归命令，第 2 节人眼三问与第 3 节结论
+# 留给学员自己写；三问用口径页的统一步骤措辞，冒号后留空。
 RECORD_SKELETON = (
     "# 用户抽验记录\n"
     "\n"
     "## 1 命令与输出\n"
-    "\n"
-    "## 2 人眼\n"
-    "\n"
-    "## 3 结论（记录人、抽验时间、被抽验版本）\n"
+    "（检查命令自动写入，不要手改）\n"
+    "## 2 人眼三问\n"
+    "1. 数字对上了吗：\n"
+    "2. 一眼看得懂吗：\n"
+    "3. 有没有明显错的：\n"
+    "## 3 结论\n"
+    "放行 / 打回 + 退回哪一环：\n"
 )
 # “等价不执行”认这几句：拒了但措辞与存档点不完全一样时，别误判成红。
 REFUSE_WORDS = ("只能查询", "不能修改", "不做修改", "仅支持查询", "只读")
+# 自问的查询句（定量 / 评论）答成“没数据”也要判红：接口回 200、mode=query 不等于答出了内容。
+# 依据 v2/reviews/trial_u2_diagnosis.md 第 5 节缺口 2（实测“查不到，请写明区与期间”被判绿）：
+# 这类回答里抽不出数字、结果表 0 行，旧逻辑的三项会全 PASS —— 机器假绿、人眼必红。
+# 判红条件收窄成：结果表一行都没有，且（回答里出现下面某个词，或回答里没有可核对的数字）。
+# 结果表有行时一律不按这些词判红：评论题可能合理地答“没有找到明显的负面主题”，只要结果行
+# 在、数字追得回，就是合法回答（lead 裁定的收窄，避免误红）。
+# 应当被拒的写意图三句（WRITE_QUESTIONS）不适用：那三句要的是“被拒”，不是“答出数据”。
+NO_DATA_WORDS = (
+    "查不到", "没有查到", "未查到",
+    "无数据", "没有数据", "暂无数据", "没有相关数据",
+    "样本不足", "数据不足", "数据太少",
+    "没有找到", "未找到", "找不到",
+    "结果为空", "查询结果为空", "结果集为空",
+    "没有记录", "无记录",
+)
 
 MAX_VALUES_PER_COLUMN = 60   # 同列两两组合的上限（行数多的表不必全组合）
 MAX_CELLS_PER_ROW = 24       # 同一行两两组合的上限
@@ -537,6 +564,51 @@ def _shown(item: dict) -> str:
     return f"{item['text']} {item['unit']}"
 
 
+def _result_row_count(record: dict) -> int:
+    """steps[] 里一共多少行结果（没有 steps / rows 的返回按 0 行算）。"""
+    total = 0
+    for step in record.get("steps") or []:
+        if not isinstance(step, dict):
+            continue
+        rows = step.get("rows")
+        if isinstance(rows, list):
+            total += len(rows)
+            continue
+        count = step.get("row_count")
+        if isinstance(count, int) and not isinstance(count, bool):
+            total += count
+    return total
+
+
+def _is_write_intent(record: dict) -> bool:
+    """这条记录是不是写意图（应当被拒的那三句）：写意图不参与“没答出数据”的判定。"""
+    if str(record.get("mode") or "") == "refused":
+        return True
+    question = " ".join(str(record.get("question") or "").split())
+    return any(question == " ".join(item.split()) for item in WRITE_QUESTIONS)
+
+
+def no_data_reason(record: dict) -> str:
+    """查询类回答是不是其实没答出数据：是就返回一句原因，正常返回空串。
+
+    只在结果表一行都没有时才判（判据见 NO_DATA_WORDS 上方的注释）：
+      1 回答里明说“查不到 / 无数据 / 样本不足 / 结果为空”这类；
+      2 回答里没有能拿去追溯的数字（等于没答内容）。
+    结果表有行时不按关键词判红（避免误红“没有找到明显的负面主题”这类合法回答）；
+    只对查询句用，写意图由 _is_write_intent 挡在外面。
+    """
+    if _result_row_count(record) > 0:
+        return ""
+    text = _answer_text(record)
+    for word in NO_DATA_WORDS:
+        if word in text:
+            return f"回答里说“{word}”"
+    question = str(record.get("question") or "")
+    if not extract_numbers(text, question):
+        return "结果表为空，回答里也没有可核对的数字"
+    return ""
+
+
 def untraceable_in_record(record: dict) -> list[str]:
     text = _answer_text(record)
     if not text.strip():
@@ -596,6 +668,10 @@ def _scan_answers(text: str) -> tuple[int, list[str]]:
         bad = untraceable_in_record(record)
         if bad:
             problems.append(f"第 {index} 条有无法追溯的数字：{'、'.join(bad[:5])}")
+        elif not _is_write_intent(record):
+            reason = no_data_reason(record)
+            if reason:
+                problems.append(f"第 {index} 条没答出数据：{reason}")
     return total, problems
 
 
@@ -756,6 +832,13 @@ def self_ask(base: str, db: Path | None, out_dir: Path, timeout: float,
                                      or "无法生成可核对的回答" in answer):
                 return False, (f"自问第 {index} 句（{kind}）没拿到能给人看的回答"
                                f"（mode={mode or '空'}）：{answer.strip()[:40] or '空'}"), qa
+            if kind != "改数据":
+                reason = no_data_reason(body)
+                if reason:
+                    qa.append((question, _answer_text(body)))
+                    return False, (f"自问第 {index} 句（{kind}）没答出数据：{reason}"
+                                   f"（合理的问句应当能查到，接口回 200 不等于答出了内容；"
+                                   f"回答开头：{answer.strip()[:40] or '空'}）"), qa
         lines.append(json.dumps(body, ensure_ascii=False))
         qa.append((question, _answer_text(body)))
 
@@ -791,8 +874,11 @@ def qa_from_file(path: Path) -> list[tuple[str, str]]:
 
 # ---------------------------------------------------------------- --record：写进 user-check.md
 
-SECTION1_RE = re.compile(r"^##\s*1(?![0-9])", re.M)
-SECTION2_RE = re.compile(r"^##\s*2(?![0-9])", re.M)
+# 节标题识别：数字编号与标题关键字都认——旧骨架的第 2 节是「## 2 人眼」，新骨架是
+# 「## 2 人眼三问」，追加时两种都要能找到第 1 节的边界（F51 口径三末条）。
+SECTION1_RE = re.compile(r"^##(?!#)[ \t]*(?:1(?![0-9])|[^\n]*命令与输出)", re.M)
+SECTION2_RE = re.compile(r"^##(?!#)[ \t]*(?:2(?![0-9])|[^\n]*人眼)", re.M)
+SECTION3_RE = re.compile(r"^##(?!#)[ \t]*(?:3(?![0-9])|[^\n]*结论)", re.M)
 
 
 def _cmdline(tool: str, argv: list[str]) -> str:
@@ -835,14 +921,20 @@ def record_block(tool: str, argv: list[str], printed: str,
 
 
 def _merge_into_section1(text: str, block: str) -> str:
-    """把一段记录插进「## 1 命令与输出」里（在「## 2」之前）；没有这一节就在末尾补一节。"""
+    """把一段记录插进「## 1 命令与输出」里（插在下一节之前）；没有这一节就在末尾补一节。
+
+    下一节按编号 2/3 或标题里的“人眼”“结论”认：旧骨架的「## 2 人眼」与新骨架的
+    「## 2 人眼三问」都能定位；第 2、3 节由学员写，追加时原样保留。
+    """
     if not text.endswith("\n"):
         text += "\n"
     first = SECTION1_RE.search(text)
     if first is None:
         return text.rstrip("\n") + "\n\n## 1 命令与输出\n\n" + block + "\n"
-    second = SECTION2_RE.search(text, first.end())
-    insert_at = second.start() if second else len(text)
+    after = first.end()
+    stops = [m.start() for m in (SECTION2_RE.search(text, after),
+                                 SECTION3_RE.search(text, after)) if m]
+    insert_at = min(stops) if stops else len(text)
     head, tail = text[:insert_at], text[insert_at:]
     if not head.endswith("\n\n"):
         head = head.rstrip("\n") + "\n\n"

@@ -1,4 +1,4 @@
-<!-- Chapter: 2  Author: AI 写稿  Version: V3.1  Updated: 2026-11-23 -->
+<!-- Chapter: 2  Author: AI 写稿  Version: V3.2  Updated: 2026-11-23 -->
 
 # 第 2 章 搭最小环境与环境自检
 
@@ -131,7 +131,7 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 
 - 成功：“设置 → 模型”页里能看到你接入的提供商或登录的账号，里面有可选的模型；最终检验在手动三，会话里能收到回复。
 
-这里配的是 DSH 自己（agent）用的模型。后面步骤 5 的 `.env` 里还有 `LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY` 三项，那是课程里的产品程序要调用的模型，和 DSH 用的模型分开：两者可以是同一家，也可以不同。产品这边需要的是一个兼容 OpenAI Chat Completions 接口的地址、模型名和密钥，到步骤 5 再按你手里的接口填。
+这里配的是 DSH 自己（agent）用的模型。后面步骤 5 的 `.env` 里还有 `LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY` 三项，那是课程里的产品程序要调用的模型，和 DSH 用的模型分开：两者可以是同一家，也可以不同。产品这边需要的是一个兼容 OpenAI Chat Completions 接口的地址、模型名和密钥，到步骤 5 再按你手里的接口填。这得另找一家兼容该接口的服务；不要直接拿 DSH 里 OpenCode Go 的密钥去猜地址填进 `.env`，实测返回 401。密钥绝不贴进 DSH 对话：`.env` 由你自己在编辑器里填，或者让 lead 建好只含变量名的 `.env`，值仍由你自己填。
 
 ### 手动三 选一个空文件夹当工作区
 
@@ -211,7 +211,7 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 请帮我把课程材料下载并解压到当前工作目录。我不敲命令，由你来做。
 
 主地址，不许自行换：
-https://github.com/cloudzun/ai-team-coding/releases/download/v3/ai-team-coding-materials.zip
+https://github.com/cloudzun/ai-team-coding/releases/download/v4/ai-team-coding-materials.zip
 GitHub 直连慢或失败时，可以在这个地址前面加第三方加速前缀 https://ghfast.top/ 再下载，内容是同一个文件。别的来源先问我。
 
 做法：
@@ -349,7 +349,7 @@ Test-Path "C:\Program Files\Git\bin\bash.exe"
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\l1-course" | Out-Null
-curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v3/ai-team-coding-materials.zip
+curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v4/ai-team-coding-materials.zip
 Expand-Archive "$HOME\l1-course\materials.zip" "$HOME\l1-course" -Force
 Set-Location "$HOME\l1-course"
 Get-ChildItem v2 | Select-Object Name
@@ -553,16 +553,18 @@ Select-String -Path records\board-demo\BOARD.md -Pattern '环进度'   # BOARD.m
 
 技术角色对照下一节处理步骤 2 到 4 的红项；业务、分析角色把没解决的红项逐条写进 `records/issues.md`（现象、卡在哪一步），协助读错误信息。技术角色再做三件事：打开 `v2/lab/sample/index.html`（样例页，单元一会用到），按 F12，在控制台执行 `1+1` 得到 2；配置并验证凭据；用你的客户端或 SDK 完成一次问答请求，看到回复文本。
 
-下面 `.env` 里的三项，是课程里的产品程序要调用的模型：一个兼容 OpenAI Chat Completions 接口的访问地址、模型名和密钥。它和 DSH 自己用的模型分开，可以是同一家，也可以不同；按你手里那份接口文档填，不必和“环境准备”手动二里配给 DSH 的相同。
+下面 `.env` 里的三项，是课程里的产品程序要调用的模型：一个兼容 OpenAI Chat Completions 接口的访问地址、模型名和密钥。它和 DSH 自己用的模型分开，可以是同一家，也可以不同；按你手里那份接口文档填，不必和“环境准备”手动二里配给 DSH 的相同，但要另找一家兼容 OpenAI Chat Completions 的接口：不要拿 DSH 里 OpenCode Go 的密钥去猜地址填进来，实测返回 401。
 ```powershell
-# 尖括号里换成你自己的访问地址、模型名与密钥；变量名与存档点一致，不要改名
-# 本地接口不验密钥时，LLM_API_KEY 那行可以留空；最后一行没有输出就回去检查 .gitignore
-Set-Content .env "LLM_BASE_URL=<兼容 OpenAI 接口的访问地址>"
-Add-Content .env "LLM_MODEL=<模型名，按接口文档给的标识写>"
-Add-Content .env "LLM_API_KEY=<你的密钥>"
+# 先建只含变量名的 .env，值留空；变量名与存档点一致，不要改名
+Set-Content .env "LLM_BASE_URL="
+Add-Content .env "LLM_MODEL="
+Add-Content .env "LLM_API_KEY="
+# 用编辑器打开，自己填访问地址、模型名（按接口文档给的标识写）和密钥，保存后关闭；本地接口不验密钥时，LLM_API_KEY 那行可以留空
+notepad .env
+# 有输出说明已被忽略；没有输出就回去检查 .gitignore
 git check-ignore -v .env
 ```
-如果报“不是 Git 仓库”，说明命令没有在步骤 1 运行 `git init` 的那一层目录里运行，回到含 `v2` 的那一层再试。密钥不要出现在截图、聊天窗口、DSH 会话和任何记录里。
+如果报“不是 Git 仓库”，说明命令没有在步骤 1 运行 `git init` 的那一层目录里运行，回到含 `v2` 的那一层再试。密钥绝不贴进 DSH 对话，也不要出现在截图、聊天窗口和任何记录里；让 lead 代建 `.env` 时，只让它写变量名，值由你自己在编辑器里填。
 - 产物：`records/issues.md`（没有问题写“无”）；`.env` 本身不交。
 - 验收：红项已处理或已写入问题清单；控制台得到 2；`git check-ignore -v .env` 有输出；问答请求已完成或已记入问题清单。
 
@@ -591,6 +593,7 @@ python v2/lab/tools/db_fingerprint.py v2/kit/db/homestay.db records/fp_before.tx
 | `[黄] 没找到 DSH，请人工确认` | 不是红项；确认 DSH 能启动、能开会话，装在别处就在问题清单里写明位置 |
 | `setup --status` 退出码为 1，或 `section links` 不是 all resolve；`gstack-doctor` 末行 `fail` 不是 0 | gstack 本身有问题；课堂机上不要自己重装：整段输出贴进 `issues.md`，请讲师处理。自己的机器：回到“环境准备”段 3，先请 DSH 把 `~/.claude/skills/gstack` 整个移到技能目录之外（不删除），再发一遍段 3 的提示词 |
 | 找不到 `~/.claude/skills/gstack`，或 DSH 里 `gstack`、`gstack-sprint` 不在技能列表 | 没装到这台机器，或技能页里的来源被关：看步骤 3 的技能页，“Claude Code”与“公共 Agent（英文界面为 Shared Agent）”都要开启。自己的机器回到“环境准备”段 3、段 4 补装；课堂机仍不对就换用已通过自检的机器，并记入 `issues.md` |
+| 设置里已勾选子智能体模型，会话里派子 agent 时仍报 `not allowed` | 设置里“允许 Agent 为子智能体选择模型”写明仅影响新会话：新开一个会话再试 |
 
 文件级 SHA-256 与登记值不同而内容校验和一致，不是红项：数据相同、文件字节不同，脚本会在“数据内容校验和一致”下面注明。判断不了的红项，把脚本整段输出（含末行结论）贴出来，比描述“打不开数据库”更有用。
 
@@ -605,26 +608,30 @@ python v2/lab/tools/db_fingerprint.py v2/kit/db/homestay.db records/fp_before.tx
 
 任务书第 8 栏告诉 lead 两件事：这台机器上有什么，服务该用哪个端口。lead 只看得到你写的这一页，不知道你的命令行是什么、有没有 Node.js、8801 是不是已经被占着。这一栏不随单元变；本章做完自检，手里正好有它要的事实，所以放在这里讲，之后各章照抄。第 1 章的 9 栏表里它排第 8 栏。
 
-**范例**（第 4 章成品任务书栏 8 原文；“数据看板”是单元一的产物，后面各章换成该单元的产物名，其余照抄）
+**范例**（第 4 章成品任务书栏 8 原文；“数据看板”是单元一的产物，后面各章换成该单元的产物名，项目目录名 `unit1-board` 也按单元替换，其余照抄）
 
 > - 系统是 Windows，命令行用 PowerShell；有 Python 和 Node.js。
 > - 我们要做的数据看板，服务默认用 8801；起之前先查端口，被占用就换一个空闲端口并告诉我。同一时刻只留一个服务实例，用完关掉并复查端口已释放。
+> - 开场先告诉我当前工作目录。开工前请你替我做这几件事，并把命令和输出给我看：建项目目录 `unit1-board` 和 `mine`（单元二起，从上一单元已 commit 的版本复制，含 `.env`），`git init` 或保留历史，把业务库开工前指纹存到 `mine\` 里；然后把工作目录切到项目目录再开工。`mine\` 里只放这一份指纹，之后你和子 agent 都不读不改。
 
 **为什么这样写**
 
 1. 第一条的每个词都能在本章自检记录里找到。“有 Python”对着环境自检输出里的 Python 版本一行；“有 Node.js”对着步骤 4 看板演示能跑通；“PowerShell”是本章命令的运行环境。gstack 自检虽然在 Git Bash 里跑，它检查的是渔具包，不是让 lead 生成产品命令用的命令行，所以栏里不写。不写这一条，lead 只能猜你的机器。
-2. 8801 是课程里服务的默认端口，但此刻空不空要查，所以写成“起之前先查端口”，对应下面的端口占用检查。“被占用就换一个空闲端口并告诉我”里的“告诉我”不能省：换了端口，浏览器地址和后面的抽验命令都要跟着换，你得知道换成了几号。
+2. 8801 是课程里服务的默认端口，但此刻空不空要查，所以写成“起之前先查端口”，对应下面的端口占用检查。“被占用就换一个空闲端口并告诉我”里的“告诉我”不能省：换了端口，浏览器地址和后面的检查命令都要跟着换，你得知道换成了几号。
+4. 第三条把“开工前代劳”写成任务书授权的明确步骤：你在课程工作区（含 `v2` 的那一层）新开会话就行，不用自己敲建目录的命令；lead 开场先报当前工作目录，建项目目录和 `mine`，`git init`，存业务库开工前指纹，并把命令和输出贴给你，你看项目目录在不在、指纹文件在不在、`.gitignore` 里有没有 `.env`。单元二起，项目目录从上一单元已 commit 的版本复制，所以括号里写了含 `.env`；`mine` 里只放这一份指纹，之后你和子 agent 都不读不改，免得基线被改写。
 3. “同一时刻只留一个服务实例，用完关掉并复查”和本章另外两条自检是同一个道理。同名冲突自检说的是：两份同名技能同时在，会话里加载到哪一份没有保证；两个服务同时占着端口，谁在响应也说不清。库指纹的做法是前后各取一次再对比，不靠“应该没动过”；端口也一样，用完再查一遍，数到 0 才算释放。
 
 **错误示范**
 
 - “环境是正常的开发机，端口随便。” 没有系统，没有命令行，没有端口号：lead 只能自己猜；“随便”还让它可能选任何端口，你抽验时不知道该打开哪个地址。
 - “服务用 8801，已确认空闲。” 把一次检查的结果当成永远成立的事实：本章的端口占用检查只证明检查那一刻没有进程在监听，换一天、换一台机器、别的程序先起来，它就不成立。栏里要写的是“起之前先查，被占用就换”。
+- “开工前的目录和指纹我自己做好了，你直接开工。” lead 不知道项目目录在哪、有没有 `git init`、指纹存在哪，你之后也没有一份贴出来的命令与输出可核对；开工前的事要写成授权，让 lead 做并贴出输出。
 
 **自查**
 
 - 系统、命令行、有哪些运行环境，三样各有一句，每一句你都能指出它对应本章哪份自检记录。
 - 默认端口、起之前先查、被占用就换并告诉你、同一时刻一个实例、用完关掉并复查释放，这五件事都在。
+- 开场报告当前工作目录、开工前请 lead 代做并贴出命令与输出、`mine` 里只放指纹，这三件事在。
 - 没有“已确认空闲”这类某一刻的检查结果，也没有访问地址和密钥。
 - 往后栏 8 还会加条目：第 5 章起多一条模型接口的变量名（`LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY`），值只放本地配置文件，不进对话、不进任务书、不进提交；第 7 章再加 DSH 启动令牌，它同属凭据，不写值，不进截图，也不交给任何子 agent。
 
@@ -638,7 +645,7 @@ $r = Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyCon
 "监听 8801 的连接数：$(($r | Measure-Object).Count)" | Tee-Object records/port_check.txt
 ```
 
-2. 把本章自检记录里的事实抄进栏 8：命令行对着本章步骤用的终端，Python 对着 `records/env_check_final.txt` 里的 Python 版本一行，Node.js 对着 `records/board-demo/` 能生成。抄的是你们机器上的事实，不是范例里的字：自检里缺了哪样，栏里就写“没有”，并记进 `records/issues.md`。端口一句照范例抄，换了端口就在末尾补一句换成几号。
+2. 把本章自检记录里的事实抄进栏 8：命令行对着本章步骤用的终端，Python 对着 `records/env_check_final.txt` 里的 Python 版本一行，Node.js 对着 `records/board-demo/` 能生成。抄的是你们机器上的事实，不是范例里的字：自检里缺了哪样，栏里就写“没有”，并记进 `records/issues.md`。端口一句照范例抄，换了端口就在末尾补一句换成几号；开场与开工前那一条也照范例抄，项目目录名按单元换。
 3. 存成 `records/column8.md`。第 4 章起，任务书的栏 8 整段从这份文件抄。
 
 - 产物：`records/port_check.txt`、`records/column8.md`。
@@ -649,7 +656,7 @@ $r = Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyCon
 - 渔具包十项：DSH、gstack、课程版 gstack-sprint、看板生成器、课程数据包、学员工具箱、Git、Python 3.12、浏览器、大模型接口；gstack 与课程版技能课堂上由讲师预装，你只做自检；自学时按“环境准备”一节自己装。
 - gstack 是一套技能；技能是 DSH 按名字加载的说明文件；gstack-sprint 是把一次交付拆成 8 环的课程版技能；看板是 `board.json` 加两份生成物。
 - 问“是不是同一份数据”看内容校验和；问“文件有没有被改”用文件指纹前后对比；只读打开只管所打开的那个库；凭据只放在被忽略的本地配置文件里。
-- 任务书栏 8 写你们机器上的事实：系统与命令行、有哪些运行环境、默认端口；起服务前先查端口，被占用就换空闲端口并告诉你，同一时刻一个实例，用完复查释放。各章照抄这一栏。
+- 任务书栏 8 写你们机器上的事实：系统与命令行、有哪些运行环境、默认端口；起服务前先查端口，被占用就换空闲端口并告诉你，同一时刻一个实例，用完复查释放；再加开场报告当前工作目录、开工前请 lead 代做目录与指纹并贴出输出。各章照抄这一栏。
 
 ## 下章预告
 

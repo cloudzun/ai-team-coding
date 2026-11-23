@@ -84,7 +84,7 @@
 == --record（可选，一条命令顺手写抽验记录） ==
   --record <运行目录>\\evidence\\user-check.md
   给了就把本次运行的命令行、这一屏输出（逐项 PASS/FAIL 与汇总）和退出码，追加写进那份
-  user-check.md 的「## 1 命令与输出」一节；文件不存在就按骨架新建（「## 2 人眼」
+  user-check.md 的「## 1 命令与输出」一节；文件不存在就按骨架新建（「## 2 人眼三问」
   「## 3 结论」留给学员自己写）。文件可能是 UTF-8（带不带 BOM 都行）或 UTF-16，
   写回时统一存成 UTF-8。不给 --record 时，输出与行为跟没有这个选项时完全一样。
   参数或输入文件有问题（退出码 2）时脚本没跑起来，不写记录。
@@ -666,17 +666,25 @@ def check_label(label, value, unit, tol):
 
 # --------------------------------------------------------------------------- --record：写进 user-check.md
 
-SECTION1_RE = re.compile(r"^##\s*1(?![0-9])", re.M)
-SECTION2_RE = re.compile(r"^##\s*2(?![0-9])", re.M)
+# 节标题识别：数字编号与标题关键字都认——旧骨架的第 2 节是「## 2 人眼」，新骨架是
+# 「## 2 人眼三问」，追加时两种都要能找到第 1 节的边界（F51 口径三末条）。
+SECTION1_RE = re.compile(r"^##(?!#)[ \t]*(?:1(?![0-9])|[^\n]*命令与输出)", re.M)
+SECTION2_RE = re.compile(r"^##(?!#)[ \t]*(?:2(?![0-9])|[^\n]*人眼)", re.M)
+SECTION3_RE = re.compile(r"^##(?!#)[ \t]*(?:3(?![0-9])|[^\n]*结论)", re.M)
 RECORD_NOTE = "> 本节由检查命令自动生成，不要手改。"
+# 新建时只写三节（F51 口径一、口径三）：第 1 节归命令，第 2 节人眼三问与第 3 节结论
+# 留给学员自己写；三问用口径页的统一步骤措辞，冒号后留空。
 RECORD_SKELETON = (
     "# 用户抽验记录\n"
     "\n"
     "## 1 命令与输出\n"
-    "\n"
-    "## 2 人眼\n"
-    "\n"
-    "## 3 结论（记录人、抽验时间、被抽验版本）\n"
+    "（检查命令自动写入，不要手改）\n"
+    "## 2 人眼三问\n"
+    "1. 数字对上了吗：\n"
+    "2. 一眼看得懂吗：\n"
+    "3. 有没有明显错的：\n"
+    "## 3 结论\n"
+    "放行 / 打回 + 退回哪一环：\n"
 )
 
 
@@ -724,14 +732,20 @@ def record_block(tool: str, argv: list[str], printed: str, exit_code: int) -> st
 
 
 def _merge_into_section1(text: str, block: str) -> str:
-    """把一段记录插进「## 1 命令与输出」里（在「## 2」之前）；没有这一节就在末尾补一节。"""
+    """把一段记录插进「## 1 命令与输出」里（插在下一节之前）；没有这一节就在末尾补一节。
+
+    下一节按编号 2/3 或标题里的“人眼”“结论”认：旧骨架的「## 2 人眼」与新骨架的
+    「## 2 人眼三问」都能定位；第 2、3 节由学员写，追加时原样保留。
+    """
     if not text.endswith("\n"):
         text += "\n"
     first = SECTION1_RE.search(text)
     if first is None:
         return text.rstrip("\n") + "\n\n## 1 命令与输出\n\n" + block + "\n"
-    second = SECTION2_RE.search(text, first.end())
-    insert_at = second.start() if second else len(text)
+    after = first.end()
+    stops = [m.start() for m in (SECTION2_RE.search(text, after),
+                                 SECTION3_RE.search(text, after)) if m]
+    insert_at = min(stops) if stops else len(text)
     head, tail = text[:insert_at], text[insert_at:]
     if not head.endswith("\n\n"):
         head = head.rstrip("\n") + "\n\n"
@@ -800,7 +814,7 @@ def build_parser():
             "抽验记录（可选）\n"
             "  --record <运行目录>\\evidence\\user-check.md\n"
             "  把本次的命令行、上面这一屏输出（逐项 PASS/FAIL 与汇总）与退出码，追加写进那份\n"
-            "  user-check.md 的「## 1 命令与输出」；文件不存在就按骨架新建（「## 2 人眼」\n"
+            "  user-check.md 的「## 1 命令与输出」；文件不存在就按骨架新建（「## 2 人眼三问」\n"
             "  「## 3 结论」留给学员自己写）。文件是 UTF-8（带不带 BOM）或 UTF-16 都读得进，\n"
             "  写回统一存成 UTF-8。不给 --record 时不写文件，输出与此前完全一样。\n"
             "  参数或输入文件有问题（退出码 2）时不写记录。\n"

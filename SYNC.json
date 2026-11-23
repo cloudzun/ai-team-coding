@@ -1,24 +1,24 @@
 {
-    "synced_at":  "2026-11-23T10:48:44+08:00",
+    "synced_at":  "2026-11-23T17:14:38+08:00",
     "source":  "l1-textbook/v2",
-    "source_commit":  "750e59d31f965b0bfde3e2875a7512b04ef73ef7",
+    "source_commit":  "77387950dd38c230bc190589a74605ce14a10397",
     "source_dirty":  false,
-    "file_count":  192,
+    "file_count":  193,
     "files":  [
                   {
                       "path":  "chapters/ch1_任务书与流程.md",
-                      "sha256":  "228722cc8c594ba7a893514764f63e3841303cd21e24670e9b50e4027caf398d",
-                      "bytes":  34061
+                      "sha256":  "b12b946fe73fa90e565c6170febad0c917ce1f857d6200bade2ba17ace57def8",
+                      "bytes":  35269
                   },
                   {
                       "path":  "chapters/ch2_搭最小环境.md",
-                      "sha256":  "405d7f78f7c5ae74c9c5497aeda0c47fa9bbc90a1c26364fde6b50b7b84146f8",
-                      "bytes":  68397
+                      "sha256":  "519c5c496b68df23c2f9bc466c46a622e848bd25c04c20b9b7a533c2ebd46637",
+                      "bytes":  70848
                   },
                   {
                       "path":  "chapters/ch2b_8环演示.md",
-                      "sha256":  "56c70cb5f0d410c5a326f8b14da1d1bacefc85caf08c6be63f90f2ab3d824034",
-                      "bytes":  10361
+                      "sha256":  "0999bf793be3d0376d67ff889c668ac6c3769759d61dd72db102be9d1235b647",
+                      "bytes":  10970
                   },
                   {
                       "path":  "chapters/ch3_业务数据与需求.md",
@@ -27,28 +27,28 @@
                   },
                   {
                       "path":  "chapters/ch4_单元一_看板任务书.md",
-                      "sha256":  "a227e0066eac7847ff1c7ced6c4881299f74a9701bb6429b66176842bd37c66c",
-                      "bytes":  92368
+                      "sha256":  "2c6ee131f45e16364229f4fc9cf9e580c37b9f196f3b5057630227289c51143d",
+                      "bytes":  93065
                   },
                   {
                       "path":  "chapters/ch5_单元二_问数任务书.md",
-                      "sha256":  "f17e3572b703b8ecfffe348a06a55d23970e158612e57651e57f5f51dc86a4e2",
-                      "bytes":  76191
+                      "sha256":  "a1f384836e91df4bddfc67f7adb43e5231d200ed553206cf0aa4f80c8f8f8a84",
+                      "bytes":  83281
                   },
                   {
                       "path":  "chapters/ch6_单元三_巡检任务书.md",
-                      "sha256":  "36b974e6dd5c2c8f315415546844af36b86b01591d1f3c874b6f36a7d18f6516",
-                      "bytes":  73108
+                      "sha256":  "f07a52d9e62ef1822e85e5f2da71d5f7c908bd0a0391e67c1ecce4d4b50d839c",
+                      "bytes":  79237
                   },
                   {
                       "path":  "chapters/ch7_单元四_插件任务书.md",
-                      "sha256":  "ed4a7e072c0a2f583256e6f0d4b88c62c4f3412ffb152a54f452f85687c1cbb1",
-                      "bytes":  77363
+                      "sha256":  "3dd27198f9c6e75e6f5bf44e3a9be57e2170ac885a152f0aaa4757deca5f0d90",
+                      "bytes":  84480
                   },
                   {
                       "path":  "chapters/ch8_复盘与展望.md",
-                      "sha256":  "112ae80048b906ec58ae3aec1f22507562877353de756cfc12a949f466860857",
-                      "bytes":  44157
+                      "sha256":  "59be6eabb0aa75c707ee2489729430f9e2640e7d1f5ea3080a93895926980493",
+                      "bytes":  45449
                   },
                   {
                       "path":  "checkpoints/stage1/.gitignore",
@@ -722,8 +722,8 @@
                   },
                   {
                       "path":  "demo/8环演示.html",
-                      "sha256":  "98afc6dd2f0253670da3db09ae1a364463584513f06343294ea7b57d12481fd3",
-                      "bytes":  59289
+                      "sha256":  "ed7741b0bee13bb7f53ecc28b73d9f5b31ce01e68540791d29140ddf6d655e15",
+                      "bytes":  59561
                   },
                   {
                       "path":  "kit/.gitignore",
@@ -742,8 +742,8 @@
                   },
                   {
                       "path":  "kit/gstack-sprint/SKILL.md",
-                      "sha256":  "89039310c420d562c86f871b890fc9f2a4063812cd81d2ea434b56c7e09fa6e9",
-                      "bytes":  66721
+                      "sha256":  "3ddb6578df02671f021af29399c23e65fe167e4dd23d177a69ea2b36d5f39f9e",
+                      "bytes":  81084
                   },
                   {
                       "path":  "kit/README.md",
@@ -787,13 +787,13 @@
                   },
                   {
                       "path":  "kit/交付约定_单元二.md",
-                      "sha256":  "304c2b75dd4f9567c88d384be789385ac19a9635ada8960c4d3787d9f65e69ee",
-                      "bytes":  3944
+                      "sha256":  "b3948c3c3c78fc78ae82f7a740bc381be946c5e2c049a58923e36d9ab1864f03",
+                      "bytes":  5722
                   },
                   {
                       "path":  "kit/交付约定_单元四.md",
-                      "sha256":  "e44188999f74f6b03fff0000f5eeb7f1855e3554b03575f0b8cf723e2dce6eb2",
-                      "bytes":  3656
+                      "sha256":  "598fa1e0caea4da40e19bfe570ee74379828f9eb421bf5fbebae496cb192459c",
+                      "bytes":  9625
                   },
                   {
                       "path":  "kit/导出契约.md",
@@ -811,14 +811,19 @@
                       "bytes":  3921
                   },
                   {
+                      "path":  "lab/fixtures/u2/bad_nodata_answers.jsonl",
+                      "sha256":  "d7c6ad04bdfd00e73a1aff9f351e66925c0fe613352822ee6fd4d0b697a17991",
+                      "bytes":  724
+                  },
+                  {
                       "path":  "lab/fixtures/u2/good_answers.jsonl",
                       "sha256":  "2b9b2f606f6437b2f88d193c9df59dc34a0aaf34db3f785d5e2f46b4b486f56c",
                       "bytes":  4745
                   },
                   {
                       "path":  "lab/fixtures/u2/README.md",
-                      "sha256":  "de510411ad0d1259222ddaeac373a6c10217295a15beaa7c70fcea8ef95c2a1f",
-                      "bytes":  5026
+                      "sha256":  "a7897a222ee7a836cfcfdb9d0b553465d1a71057ed25c54e204e37ab45a7a179",
+                      "bytes":  7986
                   },
                   {
                       "path":  "lab/fixtures/u3/bad_ops.db",
@@ -827,8 +832,8 @@
                   },
                   {
                       "path":  "lab/fixtures/u3/README.md",
-                      "sha256":  "b7a5e17bd7d5e05eb6e6b65be3696c7aeebf46a35f0caf397c0bc15f15ad352b",
-                      "bytes":  3384
+                      "sha256":  "c81fee839743304a6c77f46a0fe0717d894e3af43ec3e2e9689f4bc580d4c52d",
+                      "bytes":  3694
                   },
                   {
                       "path":  "lab/fixtures/u4/bad_card.json",
@@ -842,8 +847,8 @@
                   },
                   {
                       "path":  "lab/fixtures/u4/README.md",
-                      "sha256":  "59fddf48df98fbc75c89ae92ca166ee3494fcacffce16683dd662cf068fdd01b",
-                      "bytes":  1690
+                      "sha256":  "eaab66d3701cfdc25a86c7b25cf425799f4cda0a2a2165249962d85cb97cb662",
+                      "bytes":  1720
                   },
                   {
                       "path":  "lab/sample/index.html",
@@ -877,38 +882,38 @@
                   },
                   {
                       "path":  "lab/templates/人眼抽查记录表_单元一.md",
-                      "sha256":  "6cbec185044d42eaae444c478f1c83dc877fd8d81724415e1bafa286a1678fa5",
-                      "bytes":  2753
+                      "sha256":  "f2a21746c5acf1a9b1db7667b30753bae81fc65a31945efc74815b10be274a99",
+                      "bytes":  1707
                   },
                   {
                       "path":  "lab/templates/任务书模板.md",
-                      "sha256":  "077ad11dff533614d19dc7ee92da1c921a8e08a3526b3740cdb773ff2b6d944f",
-                      "bytes":  5596
+                      "sha256":  "403f3c4248a114abfc1df102565b1365046184c36ba287571bcf417f12a6b7ca",
+                      "bytes":  7472
                   },
                   {
                       "path":  "lab/templates/任务书自查清单.md",
-                      "sha256":  "579731c871acb3bca9c430cd82535d666b540425788d4de52f46b6ea61076962",
-                      "bytes":  3856
+                      "sha256":  "7271bb6d834a5e3595b3b139fccef89f9eed5a07d0b18d647b3a4d2d0e78f084",
+                      "bytes":  4258
                   },
                   {
                       "path":  "lab/templates/关键决策卡_单元一.md",
-                      "sha256":  "6dacd785a2663154a8edf84d61e566582be8dd68c6e633557cd25f5e6490f07b",
-                      "bytes":  2998
+                      "sha256":  "65f12649537a63e9ab89c9ce2c82f840e487a96f45f2041959a34b2f9015e9cd",
+                      "bytes":  2992
                   },
                   {
                       "path":  "lab/templates/判据清单模板_单元一.md",
-                      "sha256":  "4218ff25618185a9042c2b9a0ae7c8c6e09a7985e409fc260fe327f68a15960b",
-                      "bytes":  3612
+                      "sha256":  "0524f9d2a69478fe22be42f300d0de41ffa7d3f06cc29cec4ecd43f959c149b0",
+                      "bytes":  3860
                   },
                   {
                       "path":  "lab/templates/判据筛查清单.md",
-                      "sha256":  "7dbd96ba93cfd5d29cd880f0cf458eda0dea1a9d11f09c7f464dac3e99318ffb",
-                      "bytes":  3226
+                      "sha256":  "94dee99c942e31d3f2bef64da877bee060be7fdb07738d0de79183bd526494ed",
+                      "bytes":  3241
                   },
                   {
                       "path":  "lab/templates/口号改写对比卡.md",
-                      "sha256":  "f5098e2d568770704f041bf9ac4ed07f26f408fb0d63812601c8f0d764add714",
-                      "bytes":  3673
+                      "sha256":  "e49003c11d52dd17e620116cff3c0a51308f881eec247792056d3ceb3760452c",
+                      "bytes":  3774
                   },
                   {
                       "path":  "lab/templates/数据事实卡模板.md",
@@ -917,8 +922,8 @@
                   },
                   {
                       "path":  "lab/templates/示范任务书_单元一.md",
-                      "sha256":  "e33f35dfd1f37c2fc0192697ac3672f79581a3e6ee3fbc7ebb69d8228d3861b5",
-                      "bytes":  8877
+                      "sha256":  "20909d3f2ac567e10713d74af92503777e2ca0339a4dea31771ed1358317e482",
+                      "bytes":  9678
                   },
                   {
                       "path":  "lab/templates/示范需求_单元一.md",
@@ -927,8 +932,8 @@
                   },
                   {
                       "path":  "lab/templates/结业汇报模板.md",
-                      "sha256":  "bdd92031ef7da8f4be1cb57120dc3bc2d306f309dcc813098322d54953267038",
-                      "bytes":  1807
+                      "sha256":  "5a502ecd52566c03c5e7dae0479f7b0d9bc826efa3fa9eb84e0cbf77bbb1aa3a",
+                      "bytes":  1919
                   },
                   {
                       "path":  "lab/templates/需求清单模板.md",
@@ -937,8 +942,8 @@
                   },
                   {
                       "path":  "lab/tools/chart_check.py",
-                      "sha256":  "ad63b1f7f12c3360f8f44c2451b21d52b26890bdcb5ce8afdf6e259754c923b8",
-                      "bytes":  48344
+                      "sha256":  "9af5a1e18a3cf22cdbefbc0e1556d9642936d1237cfeafabbe64fb9a178ea2a3",
+                      "bytes":  49388
                   },
                   {
                       "path":  "lab/tools/db_fingerprint.py",
@@ -952,18 +957,18 @@
                   },
                   {
                       "path":  "lab/tools/u2_check.py",
-                      "sha256":  "43ec9e4ff6bf6990a8aac284e2ee598fc3ff3fbfe12f2b90a8de3e21b7fca18b",
-                      "bytes":  47625
+                      "sha256":  "5367e59a8d6ea3a0c7151f7dba3f1fc5230550253195f2043e352c617b7ac6a6",
+                      "bytes":  53363
                   },
                   {
                       "path":  "lab/tools/u3_check.py",
-                      "sha256":  "dbab0a6674325e5ff3d47b3a558ea8c7761067a329c131b8509e97ce4c4977d3",
-                      "bytes":  28978
+                      "sha256":  "2a853ba3954b928f55fe3aaa069e709194e672ef3bb3327b1c30977506ff8953",
+                      "bytes":  30022
                   },
                   {
                       "path":  "lab/tools/u4_check.py",
-                      "sha256":  "0bb690dba96ee144281cebe56297735cfd112428aeb2b63f268761ce8a6bc96e",
-                      "bytes":  32592
+                      "sha256":  "70d5b78916954c3c20d392c388384df81127aa30c2541b4a0024158bfbf80d28",
+                      "bytes":  33636
                   }
               ]
 }

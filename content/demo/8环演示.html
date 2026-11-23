@@ -537,7 +537,7 @@ table.bd td.v{color:var(--green)}
           <div class="blk live"><h3><i class="tag t-live">现场实演</i></h3><ul>
             <li>红只在房东数一行，区数和库指纹仍是绿。</li>
             <li>换一种读法，检查就变红：说明它分得出两种读法，页面上的两个数是按你裁定的那一种对上的。栏 2 要证明的就是这个。</li>
-            <li>放行还要两个前置条件：抽验记录三块齐全，人眼两问有结论。</li></ul></div>
+            <li>放行还要两个前置条件：抽验记录三块齐全，其中人眼三问和结论是你自己写的；“待人眼”的判据有结论。</li></ul></div>
           <div class="blk live"><h3><i class="tag t-live">如果选另一个 · 现场实演</i></h3><ul>
             <li>A：这次的红是设计里要的红。红了，才算检查有用。</li>
             <li>C：同一份读法文件连跑两次，两次都全绿、退出码都是 0：检查分不出两种读法，就是栏 2 说的“没做到”，不放行。</li></ul></div>
@@ -582,9 +582,9 @@ table.bd td.v{color:var(--green)}
       <div class="right">
         <div class="qh"><small>问题</small><h2>此刻你选哪个？</h2></div>
         <div class="opts">
-          <button class="opt" data-k="A" data-mk="ok" tabindex="-1"><span class="l">A</span><span class="t">自己跑检查命令，再放行。</span><span class="s">自己跑检查命令，再放行</span><i class="pk">我们举牌的</i><i class="mk">范例</i></button>
+          <button class="opt" data-k="A" data-mk="ok" tabindex="-1"><span class="l">A</span><span class="t">检查命令跑起来（让 qa 跑也行，自己跑也行），我读输出、自己写人眼三问和结论，再放行。</span><span class="s">命令跑起来，三问和结论自己写</span><i class="pk">我们举牌的</i><i class="mk">范例</i></button>
           <button class="opt" data-k="B" data-mk="real" tabindex="-1"><span class="l">B</span><span class="t">明说“豁免”，本轮不跑。</span><span class="s">明说“豁免”，本轮不跑</span><i class="pk">我们举牌的</i><i class="mk">实际选了</i></button>
-          <button class="opt" data-k="C" data-mk="no" tabindex="-1"><span class="l">C</span><span class="t">让 qa 代跑一遍。</span><span class="s">让 qa 代跑一遍</span><i class="pk">我们举牌的</i><i class="mk">不算数</i></button>
+          <button class="opt" data-k="C" data-mk="no" tabindex="-1"><span class="l">C</span><span class="t">让 qa 代跑一遍，三问和结论也请它一并写好，我回“放行”。</span><span class="s">让 qa 代跑，三问和结论代写</span><i class="pk">我们举牌的</i><i class="mk">不算数</i></button>
         </div>
         <div class="acts"><button class="rb" tabindex="-1">揭晓<kbd>Enter</kbd></button><span class="nobar">点选项，标出“我们举牌的”，不计票</span></div>
         <div class="answer">
@@ -594,8 +594,8 @@ table.bd td.v{color:var(--green)}
             <li>后果都在记录里：“换一种读法必须变红”只有 qa 自写的对账器证过，<b>没经过你的工具箱</b>；这一笔留在了看板、commit 信息和交接文档里。</li>
             <li>那次页面本身是对的，两个数和页脚声明都核对过。“没问题”和“没证明”是两回事。</li></ul></div>
           <div class="blk inf"><h3><i class="tag t-inf">如果选另一个 · 推断</i></h3><ul>
-            <li>A：命令是你自己跑的，留下正向 PASS、反向变红、指纹三项原始输出。第 4 章 4.4 就这样做。</li>
-            <li>C：不算数。lead 在“提问与回绝”那一屏已说明：记录证明不了你本人抽验过。</li></ul></div>
+            <li>A：第 4 章 4.4 就是这样做：命令可以交给 qa 跑，输出由命令自己写进记录，你要读，三问和结论你自己写。</li>
+            <li>C：不算数。命令让 qa 跑没问题，但三问和结论被代写，记录就证明不了你本人读过、看过。</li></ul></div>
           <div class="foot">放行条件是你自己在任务书里定的，豁免等于自己拆自己的门槛。</div>
         </div>
       </div>

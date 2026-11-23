@@ -1,7 +1,7 @@
 name: Pages
 
 # push 到 main 时：npm ci -> 发布模式 build -> 门禁 -> 部署 Pages。
-# 发布模式不需要课程库：总包与离线包是 Release 附件（tag v3），数值取自入库的 release-manifest.json。
+# 发布模式不需要课程库：总包与离线包是 Release 附件（tag v4），数值取自入库的 release-manifest.json。
 # 一次性前提（需仓库所有者在网页上做）：Settings -> Pages -> Source 选 “GitHub Actions”。
 
 on:
@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Build (release mode, no course DB needed)
-        run: node scripts/build.mjs --release-assets v3
+        run: node scripts/build.mjs --release-assets v4
 
       - name: QA gate
         run: python scripts/qa_pages.py local

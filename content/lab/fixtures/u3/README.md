@@ -8,7 +8,7 @@
 
 ## 应得结果
 
-**这一步由学员自己在 G2 之前、在项目外跑一条命令；不交给 builder，也不由 lead 代跑。**
+这一步在 G2 之前跑，命令可以交给 qa 跑，不交给 builder；输出由命令写进抽验记录，学员自己读输出、写人眼三问与结论。
 先存指纹基线（只在巡检开跑之前做一次，`u3_check.py` 缺 `--before` 会判红），再一条命令跑负向演练
 （端口示例写 8801，被占用就换空闲端口，命令里的端口同步换；`<运行目录>` 换成项目目录的 `sprint-runs` 下最新的那个子目录，命令把命令行、输出和退出码写进它的 `evidence\user-check.md`）：
 
@@ -16,6 +16,8 @@
 py -3.12 v2\lab\tools\db_fingerprint.py data\homestay.db > before.txt
 py -3.12 v2\lab\tools\u3_check.py --db data\homestay.db --ops v2\lab\fixtures\u3\bad_ops.db --base http://127.0.0.1:8801 --before before.txt --record <运行目录>\evidence\user-check.md
 ```
+
+`--record` 新建 `evidence\user-check.md` 时只写三节骨架：`## 1 命令与输出`（命令自己写）、`## 2 人眼三问`（三行，学员写）、`## 3 结论`（一行，学员写）；文件已存在就只往第 1 节追加，不碰第 2、3 节。
 
 `--db` 填**产品运行时实际打开的那份业务库**：存档点与按书施工的产品是 `data\homestay.db`；
 若产品直接读 `kit\db\homestay.db` 就填它（两份库初始内容相同，基线可以通用）。

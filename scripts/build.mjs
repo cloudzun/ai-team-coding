@@ -91,7 +91,7 @@ const argv = process.argv.slice(2)
 const argOf = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined }
 const RELEASE_TAG = argOf('--release-assets') || process.env.RELEASE_ASSETS_TAG || ''
 const RELEASE_MODE = Boolean(RELEASE_TAG)
-const LOCAL_TAG = argOf('--tag') || 'v2'
+const LOCAL_TAG = argOf('--tag') || 'v4'
 const REPO_SLUG = process.env.RELEASE_REPO || 'cloudzun/ai-team-coding'
 const MATERIALS_FILE = 'ai-team-coding-materials.zip'
 const OFFLINE_FILE = 'ai-team-coding-offline.zip'
@@ -124,7 +124,7 @@ if (RELEASE_MODE) {
   const dbSource = argOf('--db-source') || process.env.HOMESTAY_DB
   if (!dbSource) {
     console.error('缺课程库：请用 --db-source <库文件路径> 或环境变量 HOMESTAY_DB 指定（由维护者提供，库不入库）。')
-    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v2')
+    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v4')
     process.exit(1)
   }
   if (!fs.existsSync(dbSource)) { console.error('课程库文件不存在（--db-source / HOMESTAY_DB 指向的路径）'); process.exit(1) }

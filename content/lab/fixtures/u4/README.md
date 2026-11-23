@@ -1,7 +1,7 @@
 # 单元四 负向对照夹具 `bad_card.json`
 
 > 这是随工具箱发给学员的坏样例：给 `u4_check.py` 做“卡片上的数被改了一位也判得出来”的对照。
-> **学员 G2 之前自己跑，不交给 builder，也不由 lead 代跑。**
+> **G2 之前跑，可交 qa 跑，不交给 builder；学员自己读输出、写人眼三问与结论。**
 
 两个文件，形状就是 `window.__cardExport()` 的返回（`tool`、`params`、`rows[{key,label,value}]`）：
 
