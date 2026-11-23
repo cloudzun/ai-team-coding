@@ -28,7 +28,7 @@ npm install
 | 模式 | 命令 | 用在哪 | 行为 |
 |---|---|---|---|
 | 本地默认（带库） | `npm run build -- --db-source <课程库文件路径>` | 维护者本机 | 校验库后生成 9 个分包、总包、离线包，并写 `release-manifest.json` |
-| 发布模式 | `node scripts/build.mjs --release-assets v2` | CI | 不需要库；dist 里不生成总包与离线包；下载页“一次下载全部”按钮和“离线包”链接指向 Release 附件 `https://github.com/cloudzun/ai-team-coding/releases/download/v1/…`，字节数与 SHA-256 取自 `release-manifest.json`；9 个分包照常生成 |
+| 发布模式 | `node scripts/build.mjs --release-assets v3` | CI | 不需要库；dist 里不生成总包与离线包；下载页“一次下载全部”按钮和“离线包”链接指向 Release 附件 `https://github.com/cloudzun/ai-team-coding/releases/download/v1/…`，字节数与 SHA-256 取自 `release-manifest.json`；9 个分包照常生成 |
 
 发布模式会核对 `release-manifest.json` 的 tag 与 `content/` 指纹：`content/` 变了而 manifest 没重新生成，构建失败，提示回本地带库重建。
 
@@ -63,8 +63,8 @@ gh release create v2 dist\downloads\ai-team-coding-materials.zip release\ai-team
   --repo cloudzun/ai-team-coding --title "课程材料 v2" --notes "<说明与两个 SHA-256>"
 
 # 或：
-powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v2            # 构建 + 门禁，只打印 gh 命令
-powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v2 -Publish   # 真正创建 Release
+powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v3            # 构建 + 门禁，只打印 gh 命令
+powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v3 -Publish   # 真正创建 Release
 ```
 
 3. 提交 `release-manifest.json` 等改动，push 到 main；`.github/workflows/pages.yml` 会：`npm ci` → 发布模式 build → `qa_pages.py local`（发布模式跳过总包内容检查，改查下载按钮链接格式与 manifest 数值）→ `scan_sensitive.py` → 上传并部署 Pages（Python 3.12、Node 22）。

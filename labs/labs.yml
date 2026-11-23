@@ -8,34 +8,37 @@ labs:
   - id: u0
     title: 环境准备　自己的机器从零装起
     chapter: ch2
-    intro: 本页按顺序摆出第 2 章“环境准备”的主路线：手动三步，加段 1–4 四段提示词，再附备用做法八步与后面的环境自检，原文不改，每段末尾回链到出处。课堂上由讲师预装的，自学或用自己的机器时先做这一页。
+    intro: 本页按顺序摆出第 2 章“环境准备”的主路线：手动四步，加段 1–4 四段提示词，再附备用做法五步与后面的环境自检，原文不改，每段末尾回链到出处。课堂上由讲师预装的，自学或用自己的机器时先做这一页。
     slices:
       - label: 先读：这条主路线怎么走
         chapter: ch2
-        heading: "环境准备：自己的机器从零装起"
+        heading: "环境准备：在自己的机器上装齐渔具包"
         intro: true
       - label: 手动一 装 DSH
         chapter: ch2
         heading: "手动一 装 DSH"
-      - label: 手动二 给 DSH 配大模型接口
+      - label: 手动二 给 DSH 配大模型
         chapter: ch2
-        heading: "手动二 给 DSH 配大模型接口"
+        heading: "手动二 给 DSH 配大模型"
       - label: 手动三 选一个空文件夹当工作区
         chapter: ch2
         heading: "手动三 选一个空文件夹当工作区"
-      - label: 段 1 装工具：把提示词发给 DSH
+      - label: 手动四 打开团队协作
         chapter: ch2
-        heading: "段 1 装工具"
+        heading: "手动四 打开团队协作"
+      - label: 段 1 查工具：把提示词发给 DSH
+        chapter: ch2
+        heading: "段 1 查工具，缺啥装啥"
       - label: 段 2 下载课程材料
         chapter: ch2
         heading: "段 2 下载课程材料"
-      - label: 段 3 装 gstack 并放入课程版技能
+      - label: 段 3 用上 gstack 并放入课程版技能
         chapter: ch2
-        heading: "段 3 装 gstack 并放入课程版技能"
+        heading: "段 3 用上 gstack，并放入课程版技能"
       - label: 段 4 装 Skills Manager
         chapter: ch2
         heading: "段 4 装 Skills Manager"
-      - label: 备用做法：自己动手装（准备 1–8）
+      - label: 备用做法：自己动手装（准备 1–5）
         chapter: ch2
         heading: "备用做法：自己动手装"
       - label: 环境自检：实操步骤 1–6

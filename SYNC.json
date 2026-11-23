@@ -1,8 +1,8 @@
 {
-    "synced_at":  "2026-11-22T20:20:45+08:00",
+    "synced_at":  "2026-11-23T10:48:44+08:00",
     "source":  "l1-textbook/v2",
-    "source_commit":  "3426afa1de942fc39d97ad717c041aa68690f462",
-    "source_dirty":  true,
+    "source_commit":  "750e59d31f965b0bfde3e2875a7512b04ef73ef7",
+    "source_dirty":  false,
     "file_count":  192,
     "files":  [
                   {
@@ -12,8 +12,8 @@
                   },
                   {
                       "path":  "chapters/ch2_搭最小环境.md",
-                      "sha256":  "f7e1bbdc846903864ffd99d5b180cc3b452769d0d2ebe35c7182be6ffd66b7e7",
-                      "bytes":  59725
+                      "sha256":  "405d7f78f7c5ae74c9c5497aeda0c47fa9bbc90a1c26364fde6b50b7b84146f8",
+                      "bytes":  68397
                   },
                   {
                       "path":  "chapters/ch2b_8环演示.md",
