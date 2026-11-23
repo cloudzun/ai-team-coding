@@ -1,7 +1,7 @@
 {
-  "tag": "v4",
+  "tag": "v5",
   "repo": "cloudzun/ai-team-coding",
-  "content_digest": "9fab644f827d9f1acd3a3d6189a53780df5adfd47019a2848ee65bb2b037bca9",
+  "content_digest": "1689e3d1c21737c016a83d119b627cee1f86b09b569e9d1d1ae49340f559517a",
   "materials": {
     "file": "ai-team-coding-materials.zip",
     "bytes": 12149142,
@@ -748,7 +748,7 @@
   },
   "offline": {
     "file": "ai-team-coding-offline.zip",
-    "bytes": 14046549,
-    "sha256": "000bf639be60249817054ee02dea4764acc1462a2c67452fcdbcd5971e4e4a62"
+    "bytes": 14053114,
+    "sha256": "068d5da635a6093905c13795d8485cbaf61115a300320150f035ef888ecc869a"
   }
 }

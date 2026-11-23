@@ -1,4 +1,4 @@
-<!-- Chapter: 4  Author: AI 写稿  Version: V1.6  Updated: 2026-11-23 -->
+<!-- Chapter: 4  Author: AI 写稿  Version: V1.7  Updated: 2026-11-23 -->
 
 # 第 4 章 单元一：数据看板——逐栏写任务书
 
@@ -548,7 +548,22 @@ G2 是 commit 前看证据再放行。lead 摆出的证据包有五样：演示�
 
 lead 在问你 G2 之前应已核对这两条。你也可以自己核对，缺了就回“先补抽验”。
 
-**一、命令由 `qa` 跑，你不敲。** 页面服务和检查命令都交给 `qa` 子 agent：它起页面、导出页面数据，对参考 SQL 跑一次正向，再加 `--swap "本期,上年同期"` 跑一次负向。两次都带 `--before`（开工前存下的库指纹）和 `--record`：前者让命令把库指纹也查了，后者让命令自己把命令行、输出和退出码写进 `evidence/user-check.md` 的第 1 节，文件和 `evidence` 目录第一次运行时由命令建好。第 1 节每段带一句“不要手改”，你、lead、`qa` 都不抄、不改。选区后对比图是否仍是 8 个区，也由 `qa` 在规格判据里验；选区那条命令只给 `qa` 用，不是你的步骤。想自己动手跑一遍的组，命令备选在讲师手里。
+**一、服务由 `qa` 起，检查命令交 `qa` 跑，你不敲。** 页面服务和检查命令都交给 `qa` 子 agent：它起页面、导出页面数据，对参考 SQL 跑一次正向，再加 `--swap "本期,上年同期"` 跑一次负向。两次都带 `--before`（开工前存下的库指纹）和 `--record`：前者让命令把库指纹也查了，后者让命令自己把命令行、输出和退出码写进 `evidence/user-check.md` 的第 1 节，文件和 `evidence` 目录第一次运行时由命令建好。第 1 节每段带一句“不要手改”，你、lead、`qa` 都不抄、不改。选区后对比图是否仍是 8 个区，也由 `qa` 在规格判据里验；选区那条命令只给 `qa` 用，不是你的步骤。
+
+页面做好、`qa` 的验收也走完之后，把下面这段话复制发给 lead，由它派 `qa` 去办：
+
+```text
+请派 qa 子 agent 替我跑 G2 之前的检查，命令由它敲，我不敲。
+命令在含 v2 的那一层目录（课程工作区根目录）执行；项目目录是 unit1-board。
+1. 起页面服务，回报服务地址和停止办法；在页面控制台导出页面数据，存到最新运行目录的 tmp\export.json（不放进 mine\），位置写进回报。
+2. 用 v2\lab\tools\chart_check.py 对账：业务库 v2\kit\db\homestay.db，参考 SQL 用最新运行目录 ref\ 下的 ref.sql，导出用上一步的 export.json。
+3. 先正向跑一次；再用同一条命令加 --swap "本期,上年同期" 跑一次负向。
+4. 两次都带 --before mine\开工前.txt（开工前的库指纹文件）和 --record，记录写到最新运行目录的 evidence\user-check.md。
+5. 跑完把两次输出的汇总行和最后一行原文贴给我，不要改写。
+6. evidence\user-check.md 的第 2、3 节留空，由我自己写，不许代写。
+```
+
+想自己跑命令的组，命令在本章末尾的附录“想自己跑命令”。
 
 **二、读输出。** 页面和命令都准备好后，打开 `evidence/user-check.md`，第 1 节有两段：正向一段，`--swap` 一段。正向每个对象一行 PASS，接着一行“[PASS] 业务库指纹：与基线一致……”，汇总行写“全部通过（退出码 0）”；负向图表那一行 FAIL，业务库指纹仍是 PASS，汇总行写“不通过（退出码 1）”，下一行写“装反后有 N 个对象转红，符合预期”。屏幕最后一行“记录：已写进……”说明写成了；写“没写成”，让 `qa` 先看记录路径对不对。
 
@@ -734,7 +749,7 @@ python v2\lab\tools\db_fingerprint.py dashboard_ckpt\data\homestay.db > mine\开
 Set-Location dashboard_ckpt   # 数据库路径是相对路径，必须在存档点根目录启动
 ```
 
-建环境、装依赖和启动命令照存档点 `README.md` 第 2 节，缺省端口 8801，被占用就换空闲端口。存档点里的库是一份副本，库指纹要对这份副本另做一次（上面那条命令已做）；起服务后回到含 `v2` 的那一层目录跑 4.4 的命令，其中 `$db` 换成 `dashboard_ckpt\data\homestay.db`。存档点导出的对象 id 与系列名和你的任务书不同，栏 6 与参考 SQL 的段头、系列名、取数照 3.1 改。存档点是单元一结束时的一种参考实现，用来接着做，不是标准答案；复制到项目目录之外，不交给任何子 agent 读。
+建环境、装依赖和启动命令照存档点 `README.md` 第 2 节，缺省端口 8801，被占用就换空闲端口。存档点里的库是一份副本，库指纹要对这份副本另做一次（上面那条命令已做）；起服务后，让 `qa` 按 4.4 跑检查，把库路径换成 `dashboard_ckpt\data\homestay.db` 告诉它；自己跑的，回到含 `v2` 的那一层目录，照附录“想自己跑命令”，其中 `$db` 换成同一个路径。存档点导出的对象 id 与系列名和你的任务书不同，栏 6 与参考 SQL 的段头、系列名、取数照 3.1 改。存档点是单元一结束时的一种参考实现，用来接着做，不是标准答案；复制到项目目录之外，不交给任何子 agent 读。
 
 ## 本章小结
 
@@ -937,3 +952,47 @@ Set-Location dashboard_ckpt   # 数据库路径是相对路径，必须在存档
 ```
 
 **说明**：与基础版相同，固定三行汇报让你一眼扫完，A/B 让你只回字母。迭代记录留空，交付后按 4.6 追加。
+
+## 附录：想自己跑命令
+
+命令也可以交给 `qa` 跑，见 4.4；想自己跑的，照这里。下面的命令都用 Windows PowerShell，在含 `v2` 的那一层目录运行（只有起服务一步在项目目录里运行，下面会写明）；新开的 PowerShell 窗口要重新定义变量。路径和文件名与 4.4 里“交给 lead 的话”一致。
+
+### B.1 开工前的几件事
+
+通常由 lead 按栏 8 代做，你只核对三样：项目目录与 `mine` 在、指纹文件在、`.gitignore` 有 `.env`。自己做的，照下面的命令。指纹只在开工前存一次，重存就把改动后的库当成了基线。
+
+```powershell
+# unit1-board：lead 团队的项目目录（工作目录）；mine：只放开工前的库指纹，之后谁都不读不改
+New-Item -ItemType Directory -Force unit1-board, mine | Out-Null
+git -C unit1-board init   # 让 unit1-board 成为独立的 git 项目根：环 6 只 commit 它里面的文件，不带上 v2 和 mine
+python v2\lab\tools\db_fingerprint.py v2\kit\db\homestay.db > mine\开工前.txt   # 开工前的库指纹，检查命令用 --before 拿它比对
+```
+
+### B.2 起服务和查端口
+
+页面服务由 `qa` 起，谁起谁停。自己起的，起之前先查端口，被占用就换空闲端口，浏览器地址同步换：
+
+```powershell
+# 有输出说明 8801 被占用，换一个空闲端口，浏览器地址同步换
+Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyContinue
+# 停掉服务后再跑，应为 0；换了端口就用换后的端口
+(Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyContinue | Measure-Object).Count
+```
+
+### B.3 检查命令，同一条跑两次
+
+一条命令跑两次，在含 `v2` 的那一层目录运行。页面提供 `window.__chartExport()`：在页面控制台执行它，复制结果存成 `export.json`，下面命令里的 `<export.json 的路径>` 换成它的位置。
+
+```powershell
+$tools = "v2\lab\tools"; $db = "v2\kit\db\homestay.db"
+# 最新的运行目录；参考 SQL 在它的 ref\ 下，复制出来对账用，不改原件；$rec 是抽验记录的位置
+$run = (Get-ChildItem unit1-board\sprint-runs -Directory | Sort-Object Name | Select-Object -Last 1).FullName
+$rec = "$run\evidence\user-check.md"
+# 正向：开头有一行“开工前指纹：……”；每个对象一行 PASS，接着一行“[PASS] 业务库指纹：与基线一致……”
+# 汇总行含“业务库指纹 PASS”，写“全部通过（退出码 0）”
+python $tools\chart_check.py --db $db --ref $run\ref\ref.sql --export <export.json 的路径> --before mine\开工前.txt --record $rec
+# 负向自检：必须变红，图表那一行 FAIL，业务库指纹仍是 PASS；汇总行写“不通过（退出码 1）”，下一行写“装反后有 N 个对象转红，符合预期”
+python $tools\chart_check.py --db $db --ref $run\ref\ref.sql --export <export.json 的路径> --swap "本期,上年同期" --before mine\开工前.txt --record $rec
+```
+
+两次都带 `--before` 与 `--record`：`--before` 拿开工前存的指纹和现在的库比，作为对账之外的一项；`--record` 把命令行、这一屏输出和退出码追加写进 `evidence\user-check.md` 的第 1 节，文件和 `evidence` 目录第一次运行时由命令建好，每段带“不要手改”。最后一行“记录：已写进……”说明写成了，写“没写成”先看 `$rec` 的路径。输出怎么读，见 4.4。

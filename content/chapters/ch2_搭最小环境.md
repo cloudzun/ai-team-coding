@@ -211,7 +211,7 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 请帮我把课程材料下载并解压到当前工作目录。我不敲命令，由你来做。
 
 主地址，不许自行换：
-https://github.com/cloudzun/ai-team-coding/releases/download/v4/ai-team-coding-materials.zip
+https://github.com/cloudzun/ai-team-coding/releases/download/v5/ai-team-coding-materials.zip
 GitHub 直连慢或失败时，可以在这个地址前面加第三方加速前缀 https://ghfast.top/ 再下载，内容是同一个文件。别的来源先问我。
 
 做法：
@@ -349,7 +349,7 @@ Test-Path "C:\Program Files\Git\bin\bash.exe"
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\l1-course" | Out-Null
-curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v4/ai-team-coding-materials.zip
+curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v5/ai-team-coding-materials.zip
 Expand-Archive "$HOME\l1-course\materials.zip" "$HOME\l1-course" -Force
 Set-Location "$HOME\l1-course"
 Get-ChildItem v2 | Select-Object Name

@@ -1,4 +1,4 @@
-<!-- Chapter: 7  Author: AI 写稿  Version: V1.7  Updated: 2026-11-23 -->
+<!-- Chapter: 7  Author: AI 写稿  Version: V1.8  Updated: 2026-11-23 -->
 
 # 第 7 章 单元四：对话里查数的薄插件——逐栏写任务书
 
@@ -56,7 +56,7 @@
 
 五步和第 4 章相同：本章问题；逐栏写第 1–6 栏；成品任务书；交给 gstack 之后；对照试跑（第 5 节）。业务角色主笔栏 1、栏 2、栏 4，并想好栏 6 第 6 条人眼怎么问；技术角色主笔栏 3，起后端对着真接口抄白名单，备好检查命令（可交 `qa` 跑），G2 之前负责装插件；分析角色主笔栏 5、栏 6，回 A/B 时核口径；栏 7、8、9 三人分工照抄。
 
-会话就在课程工作区（含 `v2` 文件夹的那一层目录）里新开，不用自己敲建目录的命令：项目目录和 `mine` 文件夹由 lead 按栏 8 替你建。渔具包在 `v2\kit`，工具箱在 `v2\lab`。`mine` 里放开工前的基线，以及你导出的卡片文件 `card.json`，你和所有子 agent 都不读不改，只有检查命令用 `--before`、`--card` 取它们。你自己要敲命令的场合有两个：想自己跑检查命令，在含 `v2` 的那一层目录运行；起后端的那一步在项目目录里运行，见 4.4。都用 Windows PowerShell。本章在 DSH 里多一件事：装插件，需要能打开 DSH 的“插件”页面，第 2 章已经让你确认过 DSH 能正常使用。
+会话就在课程工作区（含 `v2` 文件夹的那一层目录）里新开，不用自己敲建目录的命令：项目目录和 `mine` 文件夹由 lead 按栏 8 替你建。渔具包在 `v2\kit`，工具箱在 `v2\lab`。`mine` 里放开工前的基线，以及你导出的卡片文件 `card.json`，你和所有子 agent 都不读不改，只有检查命令用 `--before`、`--card` 取它们。你自己要敲命令的场合有两个：想自己跑检查命令，在含 `v2` 的那一层目录运行；起后端的那一步在项目目录里运行，见本章附录“想自己跑命令”。都用 Windows PowerShell。本章在 DSH 里多一件事：装插件，需要能打开 DSH 的“插件”页面，第 2 章已经让你确认过 DSH 能正常使用。
 
 ## 2 逐栏写第 1–6 栏
 
@@ -146,7 +146,7 @@
 **为什么这样写**
 
 1. 白名单取自后端真实的接口和《交付约定_单元四》第 1 节：“只读”不是“不去调写接口”，而是“能调的写死”。只有写死的清单，qa 才能拿工具发出的请求去对。
-2. 字段清单对着真接口抄：技术角色先照 3.1 建好项目目录、按 4.4 一起好后端，浏览器打开 `http://127.0.0.1:8801/api/districts?start=2025-01-01&end=2025-03-31`，看返回里有什么。平均房价的同比字段没有，你会当场看到。工具不自己算，口径只留后端一份实现；缺字段，让后端加（P-07 讲的市场基准同样在后端）。
+2. 字段清单对着真接口抄：技术角色先照 3.1 建好项目目录、按附录“想自己跑命令”起好后端，浏览器打开 `http://127.0.0.1:8801/api/districts?start=2025-01-01&end=2025-03-31`，看返回里有什么。平均房价的同比字段没有，你会当场看到。工具不自己算，口径只留后端一份实现；缺字段，让后端加（P-07 讲的市场基准同样在后端）。
 3. 资料按层写，因为不同的人读不同的东西：builder 要接口和边界，planner、qa 要口径和契约，有些东西谁都不许读。DSH 插件的写法不用你教，写明去哪查（`dsh-doc` 技能）就行。
 4. 防抄句和例外一起写：参考实现不给读，是怕子 agent 抄答案；评审角色（含 Outside Voice）可以读检查命令来核对边界，只有 builder 禁读。项目目录里的后端是课程给的起点，读和改它不算抄；`stage4` 里有写好的插件，所以单独点名。
 
@@ -471,17 +471,9 @@ G2 是 commit 前看证据再放行。证据包有五样：演示脚本每一步
 1. `evidence/user-check.md` 存在，命令与输出、人眼三问三行、结论一行齐全，正向三项 PASS、坏夹具变红；结论下一行写着“亲手做过：做了”。
 2. `L1-QA.md` 和规格里所有标“待人眼”的判据都已有结论，没有停在“仍未给出结论”。
 
-lead 在问你 G2 之前应已核对这两条，你也可以自己核对，缺了就回“先补抽验”。这一节分两半。**装插件、说三句话出卡、导出卡片是硬线**：放行 G2 之前，你亲手在 DSH 里装上插件、在对话里说三句话出卡、导出卡片。这一步只点界面（DSH 的插件页面、对话和页面控制台），不交给 builder，不可交给任何人代做，`qa` 和 lead 都不行，你休息时授权别人代办也不包括这一项；没做，lead 不问 G2。**检查命令可以交给 `qa` 跑**，命令和输出由命令自己写进 `user-check.md`。命令跑完，你读输出，自己写人眼三问各一行和结论一行，这四行不许 lead 或 `qa` 代写。
+lead 在问你 G2 之前应已核对这两条，你也可以自己核对，缺了就回“先补抽验”。这一节分两半。**装插件、说三句话出卡、导出卡片是硬线**：放行 G2 之前，你亲手在 DSH 里装上插件、在对话里说三句话出卡、导出卡片。这一步只点界面（DSH 的插件页面、对话和页面控制台），不交给 builder，不可交给任何人代做，`qa` 和 lead 都不行，你休息时授权别人代办也不包括这一项；没做，lead 不问 G2。**检查命令交给 `qa` 跑**，命令和输出由命令自己写进 `user-check.md`；想自己跑的，命令在本章末尾的附录“想自己跑命令”。命令跑完，你读输出，自己写人眼三问各一行和结论一行，这四行不许 lead 或 `qa` 代写。
 
-**一、后端起来。** 后端由 `qa` 子 agent 起，地址和停止办法写在它的回报里；你自己起也行，谁起谁停。回报里写了启动命令的，照它；没有，就在项目目录里用下面两行，先查端口，没有输出才是空闲，有输出就换一个空闲端口，后面命令和插件里的端口同步换：
-
-```powershell
-# 在项目目录里运行：unit4-plugin，换了存档点就是 plugin_ckpt
-Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyContinue   # 没有输出：8801 空闲；有输出：被占用，换一个端口
-.venv\Scripts\python -m uvicorn app.main:app --host 127.0.0.1 --port 8801   # 起服务，这个窗口会一直占着；停止：在这个窗口按 Ctrl+C
-```
-
-起来以后浏览器打开 `http://127.0.0.1:8801/`，看板页能出来就行。这个窗口开着不要关；抽验期间不要在看板页上点巡检、提交、批准，它们会改运营库，检查命令会判红。
+**一、后端由 `qa` 起。** 后端由 `qa` 子 agent 起，地址和停止办法写在它的回报里，你不敲命令。端口被占用时，让它换一个空闲端口，后面检查命令和插件里的端口同步换。起来以后浏览器打开 `qa` 回报的地址（缺省是 `http://127.0.0.1:8801/`），看板页能出来就行。后端要一直开着，直到检查命令跑完；抽验期间不要在看板页上点巡检、提交、批准，它们会改运营库，检查命令会判红。想自己起后端的，命令见附录“想自己跑命令”。
 
 **二、装插件，说三句话，导出卡片。** 业务、分析角色做，技术角色在旁边看。
 
@@ -489,24 +481,26 @@ Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyContinue
 2. 把栏 1 的三句话依次说出来，每句等它出卡：第一句出一张对比卡；第二句出新卡、第一张还在；第三句换成平均房价。模型没有调工具时，补一句“请用 homestay_compare 工具查”。
 3. 先在 DSH 页面按 F12 打开控制台，输入 `typeof window.__cardExport`，返回 `"function"` 再导出；不是的话说明插件没装上，或装上的不是这一版，回第 6 节。导出最近一张卡片，也就是第三句那张：在同一个控制台执行 `copy(JSON.stringify(window.__cardExport(), null, 2))`，用记事本新建 `mine\card.json`，粘贴，另存为时编码选 UTF-8。返回 `null` 说明还没出卡，或最近一张是错误卡（只显示错误码和原文、导不出数的那种），回第 2 步重说一句。重说之后再导出一次，覆盖保存 `mine\card.json` 即可。
 
-**三、一条命令跑两次。** 命令要在二走完之后跑。交给 `qa` 时，把后端地址、`mine` 里开工前基线文件和 `card.json` 的位置、`$rec` 的位置告诉它；你自己跑，在另一个窗口进含 `v2` 的那一层目录运行。先定下几个路径：运行目录是项目目录的 `sprint-runs` 下最新的一个，抽验记录放在它的 `evidence` 子目录里；没有 `sprint-runs`（比如直接用第 6 节的存档点验收）时，放在项目目录下的 `evidence\`。用第 6 节的存档点时，下面代码里的项目目录名按第 6 节末段改。同一条命令，第一次正向，第二次把卡片换成课程的坏夹具；两次都带 `--record`：命令自己把命令行、输出和退出码写进这份记录的“命令与输出”一节，目录和文件不存在就新建，不用复制粘贴，也不要手改这一节。`--base` 的端口换成服务实际用的那个：
+**三、把检查交给 `qa`。** 命令要在二走完之后跑。同一条命令跑两次：第一次正向，第二次把卡片换成课程的坏夹具；两次都带 `--record`：命令自己把命令行、输出和退出码写进这份记录的“命令与输出”一节，目录和文件不存在就新建，不用复制粘贴，也不要手改这一节。抽验记录放在最新运行目录的 `evidence` 子目录里；没有 `sprint-runs`（比如直接用第 6 节的存档点验收）时，放在项目目录下的 `evidence\`。二走完之后，把下面这段话复制发给 lead，由它派 `qa` 去办；用第 6 节的存档点时，话里的项目目录名按第 6 节末段改：
 
-```powershell
-# 项目目录示例叫 unit4-plugin，你的名字不同就换掉；$run 是最新的运行目录，$rec 是抽验记录的位置，没有运行目录就落在项目目录的 evidence\
-$tools = "v2\lab\tools"; $db = "unit4-plugin\data\homestay.db"; $ops = "unit4-plugin\data\ops.db"
-$run = (Get-ChildItem unit4-plugin\sprint-runs -Directory -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1).FullName
-$rec = if ($run) { "$run\evidence\user-check.md" } else { "unit4-plugin\evidence\user-check.md" }
-# 正向：三行 [PASS]，末行“结论：三件事全部通过 -> 退出码 0”
-python $tools\u4_check.py --db $db --ops $ops --base http://127.0.0.1:8801 --before mine\u4_开工前.txt --card mine\card.json --record $rec
-# 坏夹具：卡片换成课程的坏夹具，“卡片数值”一行 [FAIL]，末行“结论：不通过（1 项不通过）-> 退出码 1”
-python $tools\u4_check.py --db $db --ops $ops --base http://127.0.0.1:8801 --before mine\u4_开工前.txt --card v2\lab\fixtures\u4\bad_card.json --record $rec
+```text
+我已亲手装好插件、在对话里说了三句话出卡，并把最近一张卡导出成了 mine\card.json，现在请你派 qa 子 agent 替我跑检查，命令由它敲，我不敲。
+命令在含 v2 的那一层目录（课程工作区根目录）执行；项目目录是 unit4-plugin。
+1. 起后端，回报服务地址和停止办法；抽验期间不要在看板页点巡检、提交、批准。
+2. 用 v2\lab\tools\u4_check.py 跑同一条命令两次，两次都带 --db unit4-plugin\data\homestay.db、--ops unit4-plugin\data\ops.db、--base http://127.0.0.1:8801（端口换了就同步换）、--before mine\u4_开工前.txt（开工前的基线文件）和 --record，记录写到最新运行目录的 evidence\user-check.md；没有运行目录，就写到 unit4-plugin\evidence\user-check.md。
+3. 第一次正向：--card mine\card.json。
+4. 第二次坏夹具：--card 换成 v2\lab\fixtures\u4\bad_card.json，其余参数不变。
+5. 跑完把两次输出的结论行和最后一行原文贴给我，不要改写。
+6. evidence\user-check.md 的第 2、3 节留空，由我自己写，不许代写。
 ```
+
+输出的读法：正向期望三行 `[PASS]`，结论行写“结论：三件事全部通过 -> 退出码 0”；坏夹具期望“卡片数值”一行 `[FAIL]`，结论行写“结论：不通过（1 项不通过）-> 退出码 1”。
 
 命令查三件事：业务库指纹与开工前一致，运营库 `price_change_requests` 行数没变；你导出的卡片，每一行按它自己记的参数向后端再取一次数，逐行对得上；向后端的对比接口发一个写方法请求，必须被拒，发完指纹仍不变。`--db`、`--before`、`--base`、`--card` 缺任何一个，对应一项写“未检查”，结论判不通过；`--ops` 不给，只是跳过运营库行数那一项：输出第一行会写“运营库未检查（没给 --ops）”，第三行也写“运营库未检查（没给 --ops）”，不表示查过运营库。
 
 某一行红，先看是哪一项：业务库与运营库红，指纹变了，或行数变了，退回施工；先想想是不是你自己在看板页点过提交。卡片数值红，输出里写第几行、卡片值与后端值，见 4.5。后端只读红：对比接口接受了写方法，退回施工；写“连不上”，后端没起或端口写错了。负向没变红，先核对 `--card` 指向的是坏夹具；路径没错还是绿，说明判据没读到卡片上的数，让 lead 回环 2。
 
-**四、停掉后端，说一句。** 命令跑完，回到起后端的窗口按 `Ctrl+C`，回 DSH 新会话再说一句“再看看第二季度的入住率”。卡片或回复里应该是 `E_HOMESTAY_DOWN` 和原文，不是数字，也不是空白卡。看完把后端重新起来，如果后面还要再跑命令。
+**四、停掉后端，说一句。** 命令跑完，请 `qa` 按它回报的停止办法停掉后端，回 DSH 新会话再说一句“再看看第二季度的入住率”。卡片或回复里应该是 `E_HOMESTAY_DOWN` 和原文，不是数字，也不是空白卡。看完请 `qa` 把后端重新起来，如果后面还要再跑命令。
 
 **五、读输出，写三问和结论。** 先读 `user-check.md` 第 1 节两次输出：正向三项 PASS、坏夹具那一行红，和预期一致吗？再对着人眼三问（全书统一措辞）写。业务、分析角色做，只看页面，不看代码、不翻接口：
 
@@ -647,7 +641,7 @@ Set-Location ..   # 回到含 v2 的那一层
 python v2\lab\tools\u4_check.py --db plugin_ckpt\data\homestay.db --ops plugin_ckpt\data\ops.db --before mine\u4_开工前.txt --save-before   # 用存档点时，开工前的基线对它的库另存一次
 ```
 
-起后端和装插件照 4.4：后端在 `plugin_ckpt` 里起，插件选 `plugin_ckpt\dsh-plugin\`，缺省端口 8801，被占用就换空闲端口。存档点没有运行目录，4.4 三里的 `unit4-plugin` 都换成 `plugin_ckpt`，`$db`、`$ops` 就是 `plugin_ckpt\data\homestay.db`、`plugin_ckpt\data\ops.db`；`$run` 那一行找不到 `sprint-runs`，`$rec` 落在 `plugin_ckpt\evidence\user-check.md`，4.4 五补人眼三问和结论也写这一份。存档点是单元四结束时的一种参考实现，工具比基础版多，用来接着验收，不是标准答案。
+起后端和装插件照 4.4：后端在 `plugin_ckpt` 里让 `qa` 起，插件选 `plugin_ckpt\dsh-plugin\`，缺省端口 8801，被占用就换空闲端口。存档点没有运行目录，交给 lead 的话里的 `unit4-plugin` 都换成 `plugin_ckpt`，业务库、运营库就是 `plugin_ckpt\data\homestay.db`、`plugin_ckpt\data\ops.db`，记录落在 `plugin_ckpt\evidence\user-check.md`，4.4 五补人眼三问和结论也写这一份。自己跑命令的，照附录“想自己跑命令”：其中 `unit4-plugin` 同样换成 `plugin_ckpt`，`$db`、`$ops` 取上面两个路径；`$run` 那一行找不到 `sprint-runs`，`$rec` 落在上面那份记录。存档点是单元四结束时的一种参考实现，工具比基础版多，用来接着验收，不是标准答案。
 
 ## 本章小结
 
@@ -686,3 +680,56 @@ python v2\lab\tools\u4_check.py --db plugin_ckpt\data\homestay.db --ops plugin_c
 - **栏 5**：统一规则不变；点名的歧义换成这一版新增的几处，例如排行里同比相同怎么排序、样本不足的小区怎么显示；只点名，不给答案。
 - **栏 6**：验收形态按你的选择写，选自动截图要同时写令牌怎么管；证据在基础版七条之上，增加“刷新后卡片原样重现”“模型相关判据只判结构”两类，由 `qa` 验；检查命令只覆盖区级对比卡与走势卡，其余卡片靠人眼和 `qa`。
 - **栏 7、8、9 与迭代记录**：与基础版相同，栏 8 的凭据再点名令牌与密钥；迭代记录留空，交付后按 4.6 追加。
+
+## 附录：想自己跑命令
+
+命令也可以交给 `qa` 跑，见 4.4；想自己跑的，照这里。下面的命令都用 Windows PowerShell，在含 `v2` 的那一层目录运行（只有起服务一步在项目目录里运行，下面会写明）；新开的 PowerShell 窗口要重新定义变量。路径和文件名与 4.4 里“交给 lead 的话”一致。
+
+### B.1 开工前的几件事
+
+通常由 lead 按栏 8 代做，你只核对三样：项目目录与 `mine` 在、基线文件在、`.gitignore` 有 `.env`。自己做的，照下面的命令。
+
+```powershell
+# unit4-plugin：lead 团队的项目目录，从阶段三存档点复制来，在它上面接着做；mine：你自己的文件，lead 不读
+Copy-Item -Recurse v2\checkpoints\stage3 unit4-plugin
+New-Item -ItemType Directory -Force unit4-plugin\data, mine | Out-Null
+Copy-Item v2\kit\db\homestay.db unit4-plugin\data\homestay.db   # 库复制成存档点要求的位置和文件名
+git -C unit4-plugin init   # 让 unit4-plugin 成为独立的 git 项目根：环 6 只 commit 它里面的文件，不带上 v2 和 mine
+Set-Location unit4-plugin   # 下面三行在项目目录里运行：建环境、装依赖、建一个空的运营库 data\ops.db（检查命令要读它）
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m app.ops_store --reset
+Set-Location ..   # 回到含 v2 的那一层
+# 开工前存一次基线（业务库指纹 + 运营库 price_change_requests 行数），G2 前拿它比对；有“基线已存”两行输出就对了
+python v2\lab\tools\u4_check.py --db unit4-plugin\data\homestay.db --ops unit4-plugin\data\ops.db --before mine\u4_开工前.txt --save-before
+Select-String -Path unit4-plugin\.gitignore -Pattern '^\.env$'   # 有一行输出，说明 .gitignore 里有 .env，它不会进提交
+```
+
+### B.2 起服务和查端口
+
+后端由 `qa` 起，谁起谁停。自己起的，在项目目录里运行下面两行，先查端口，没有输出才是空闲，有输出就换一个空闲端口，后面命令和插件里的端口同步换：
+
+```powershell
+# 在项目目录里运行：unit4-plugin，换了存档点就是 plugin_ckpt
+Get-NetTCPConnection -LocalPort 8801 -State Listen -ErrorAction SilentlyContinue   # 没有输出：8801 空闲；有输出：被占用，换一个端口
+.venv\Scripts\python -m uvicorn app.main:app --host 127.0.0.1 --port 8801   # 起服务，这个窗口会一直占着；停止：在这个窗口按 Ctrl+C
+```
+
+起来以后浏览器打开 `http://127.0.0.1:8801/`，看板页能出来就行。这个窗口开着不要关；抽验期间不要在看板页上点巡检、提交、批准，它们会改运营库，检查命令会判红。
+
+### B.3 检查命令，同一条跑两次
+
+命令要在 4.4 的装插件、说三句话、导出卡片之后跑。在另一个窗口进含 `v2` 的那一层目录运行。运行目录是项目目录的 `sprint-runs` 下最新的一个，抽验记录放在它的 `evidence` 子目录里；没有 `sprint-runs`（比如直接用第 6 节的存档点验收）时，放在项目目录下的 `evidence\`。用第 6 节的存档点时，下面代码里的项目目录名按第 6 节末段改。同一条命令，第一次正向，第二次把卡片换成课程的坏夹具；`--base` 的端口换成服务实际用的那个：
+
+```powershell
+# 项目目录示例叫 unit4-plugin，你的名字不同就换掉；$run 是最新的运行目录，$rec 是抽验记录的位置，没有运行目录就落在项目目录的 evidence\
+$tools = "v2\lab\tools"; $db = "unit4-plugin\data\homestay.db"; $ops = "unit4-plugin\data\ops.db"
+$run = (Get-ChildItem unit4-plugin\sprint-runs -Directory -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1).FullName
+$rec = if ($run) { "$run\evidence\user-check.md" } else { "unit4-plugin\evidence\user-check.md" }
+# 正向：三行 [PASS]，末行“结论：三件事全部通过 -> 退出码 0”
+python $tools\u4_check.py --db $db --ops $ops --base http://127.0.0.1:8801 --before mine\u4_开工前.txt --card mine\card.json --record $rec
+# 坏夹具：卡片换成课程的坏夹具，“卡片数值”一行 [FAIL]，末行“结论：不通过（1 项不通过）-> 退出码 1”
+python $tools\u4_check.py --db $db --ops $ops --base http://127.0.0.1:8801 --before mine\u4_开工前.txt --card v2\lab\fixtures\u4\bad_card.json --record $rec
+```
+
+输出怎么读、红了先看哪一项，见 4.4。
