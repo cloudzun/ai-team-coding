@@ -1,8 +1,8 @@
 {
-    "synced_at":  "2026-11-24T13:04:36+08:00",
+    "synced_at":  "2026-11-24T13:35:51+08:00",
     "source":  "l1-textbook/v2",
-    "source_commit":  "242db86e92da6669210104067cb98b8b87c18f80",
-    "source_dirty":  true,
+    "source_commit":  "27aa01fe791d6a3e5d4dca439f00d97221d014f2",
+    "source_dirty":  false,
     "file_count":  196,
     "files":  [
                   {
@@ -12,48 +12,48 @@
                   },
                   {
                       "path":  "chapters/ch1_任务书与流程.md",
-                      "sha256":  "f9d8444828093f2e21b6514d0944c2a6451a6a97adcaf17cc64fd060e00e1dbd",
-                      "bytes":  35585
+                      "sha256":  "0c897b8c8abcf7b564d1ba1ec01a979689397881122474c266e0441c4ce5cc38",
+                      "bytes":  34689
                   },
                   {
                       "path":  "chapters/ch2_搭最小环境.md",
-                      "sha256":  "cc2bc0f490f47addc230166087333d88bb30b9016b55312dd1db634ecb757f1f",
-                      "bytes":  79314
+                      "sha256":  "1f695bd529ec29b19844781a23bafaf1f98938f7a8d81022837a46aa6194da4f",
+                      "bytes":  78677
                   },
                   {
                       "path":  "chapters/ch2b_8环演示.md",
-                      "sha256":  "0999bf793be3d0376d67ff889c668ac6c3769759d61dd72db102be9d1235b647",
-                      "bytes":  10970
+                      "sha256":  "9c3c5e5fe4aaf2ccd2d731f2d0e2980279028eb8ad7a37b6ed7f5bb959ed9aa7",
+                      "bytes":  10769
                   },
                   {
                       "path":  "chapters/ch3_业务数据与需求.md",
-                      "sha256":  "7f5e7a61432abd717cdd9d19f6b2e7b90a4abbe8b5615a259c21fb65de1a4f05",
-                      "bytes":  33846
+                      "sha256":  "400d34aca83964a07838e6a02eb360a781a3a356fccbe0912bbefe66cc141ec6",
+                      "bytes":  33380
                   },
                   {
                       "path":  "chapters/ch4_单元一_看板任务书.md",
-                      "sha256":  "e3172d235f9236323c528482e4ae31017d4c862ff6f0ab0cef082d85bbece736",
-                      "bytes":  97794
+                      "sha256":  "8d99a9ec1e2cf2a2eae79886d47ad65a3c6b2460114403e67b0d29bb0c20df83",
+                      "bytes":  97338
                   },
                   {
                       "path":  "chapters/ch5_单元二_问数任务书.md",
-                      "sha256":  "772961d2c4464f56a94f5d8f992c82b6eeb6a2ff4b7a0739dcb535d0e3692b4a",
-                      "bytes":  86807
+                      "sha256":  "1a2f24578a40d6f8b25bd7b90908e1a727a65b37dec3a54dea3c043a9d55b530",
+                      "bytes":  86457
                   },
                   {
                       "path":  "chapters/ch6_单元三_巡检任务书.md",
-                      "sha256":  "d869d89d1f96b26c302f5265ce48021ba3f0d997b5948a8fb77842402dc210b1",
-                      "bytes":  82910
+                      "sha256":  "63cecde564e1a217b7771b77f5be78394da21ea5dcae85e5118e495e32872cf1",
+                      "bytes":  82551
                   },
                   {
                       "path":  "chapters/ch7_单元四_插件任务书.md",
-                      "sha256":  "a4b9607cbf49b931a1258f521d426586d6ca828484bfbd9fd3bb867e5adcfbdc",
-                      "bytes":  88980
+                      "sha256":  "45c2539a745c53fa6b1c6396d3b2e060857e124449adb0c6ddfa91c472df171e",
+                      "bytes":  88629
                   },
                   {
                       "path":  "chapters/ch8_复盘与展望.md",
-                      "sha256":  "59be6eabb0aa75c707ee2489729430f9e2640e7d1f5ea3080a93895926980493",
-                      "bytes":  45449
+                      "sha256":  "f8849f3c7612a83c926ed69d78d6bf7535731fc5cf74bb8d367aae2f0cb6eca6",
+                      "bytes":  45522
                   },
                   {
                       "path":  "chapters/img/ch0/four-layers.svg",
