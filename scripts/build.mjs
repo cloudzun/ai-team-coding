@@ -7,6 +7,7 @@ import zlib from 'node:zlib'
 import { fileURLToPath } from 'node:url'
 import { marked } from 'marked'
 import { load as yamlLoad } from 'js-yaml'
+import { mermaidKey, readCache, writeCache, renderMermaid, MERMAID_VERSION } from './mermaid.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const CONTENT = path.join(ROOT, 'content')
@@ -15,7 +16,7 @@ const RELEASE = path.join(ROOT, 'release')
 const BUILD_DIR = path.join(ROOT, '.build')
 const SITE_NAME = '带 AI 团队写代码：从任务书到交付'
 const SITE_SHORT = '带 AI 团队写代码'
-const EXPECTED_PAGES = 17
+const EXPECTED_PAGES = 18
 
 const errors = []
 const fail = (msg) => { errors.push(msg) }
@@ -91,7 +92,7 @@ const argv = process.argv.slice(2)
 const argOf = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined }
 const RELEASE_TAG = argOf('--release-assets') || process.env.RELEASE_ASSETS_TAG || ''
 const RELEASE_MODE = Boolean(RELEASE_TAG)
-const LOCAL_TAG = argOf('--tag') || 'v5'
+const LOCAL_TAG = argOf('--tag') || 'v6'
 const REPO_SLUG = process.env.RELEASE_REPO || 'cloudzun/ai-team-coding'
 const MATERIALS_FILE = 'ai-team-coding-materials.zip'
 const OFFLINE_FILE = 'ai-team-coding-offline.zip'
@@ -124,7 +125,7 @@ if (RELEASE_MODE) {
   const dbSource = argOf('--db-source') || process.env.HOMESTAY_DB
   if (!dbSource) {
     console.error('缺课程库：请用 --db-source <库文件路径> 或环境变量 HOMESTAY_DB 指定（由维护者提供，库不入库）。')
-    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v5')
+    console.error('例：npm run build -- --db-source <homestay.db 的路径>；CI 用：node scripts/build.mjs --release-assets v6')
     process.exit(1)
   }
   if (!fs.existsSync(dbSource)) { console.error('课程库文件不存在（--db-source / HOMESTAY_DB 指向的路径）'); process.exit(1) }
@@ -194,6 +195,16 @@ marked.use({
     },
     code(token) {
       const lang = (token.lang || '').split(/\s+/)[0]
+      if (lang === 'mermaid') {
+        // ```mermaid 不当代码块显示：换成构建时预渲染好的内嵌 SVG
+        const key = mermaidKey(token.text)
+        if (!MERMAID_SVGS.has(key)) {
+          fail(`mermaid 图表没有渲染结果（key ${key}）：先在本机构建一次，生成 site/mermaid/${key}.svg`)
+          return `<p class="mermaid-missing">mermaid 图表未渲染（key ${esc(key)}）</p>\n`
+        }
+        MERMAID_FIGS++
+        return mermaidFigure(key)
+      }
       return `<div class="code"><div class="code-bar"><span class="lang">${esc(lang || 'text')}</span><button class="copy" type="button" aria-label="复制代码">复制</button></div><pre><code>${highlightStates(esc(token.text))}</code></pre></div>\n`
     },
     link(token) {
@@ -216,8 +227,9 @@ function renderTokens(tokens) {
 }
 
 // ───────────────────────── 章节装载 ─────────────────────────
-// 顺序：1、2、8 环演示、3、4–8
+// 顺序：0、1、2、8 环演示、3、4–8
 const CHAPTER_DEFS = [
+  ['ch0', 'chapters/ch0_全景.md'],
   ['ch1', 'chapters/ch1_任务书与流程.md'],
   ['ch2', 'chapters/ch2_搭最小环境.md'],
   ['ch2b', 'chapters/ch2b_8环演示.md'],
@@ -250,6 +262,24 @@ const chapters = CHAPTER_DEFS.map(([id, rel]) => {
 })
 const chapterById = Object.fromEntries(chapters.map((c) => [c.id, c]))
 
+// ───────────────────────── 教材插图 ─────────────────────────
+// 章节 Markdown 里的相对图片按源文件所在目录（chapters/）解析，而章节页输出在 textbook/。
+// 约定：content/chapters/<rest> → dist/textbook/<rest>，src 改写成相对 textbook/ 的路径。
+// 这样 dist 与离线包（file:// 直接打开）都能显示，页面不依赖任何外链。
+const CHAPTER_ROOT = 'chapters/'
+const chapterImages = new Map() // 页面 -> [src]
+function rewriteChapterAssets(html, mdRel) {
+  return html.replace(/(<img\b[^>]*?\bsrc=")([^"]*)(")/g, (m, head, src, tail) => {
+    if (!src || /^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('/')) return m
+    const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(mdRel), src))
+    if (!resolved.startsWith(CHAPTER_ROOT)) { fail(`${mdRel}：图片 ${src} 不在 chapters/ 下，构建没有处理`); return m }
+    return head + path.posix.relative('textbook', 'textbook/' + resolved.slice(CHAPTER_ROOT.length)) + tail
+  })
+}
+function imagesOf(html) {
+  return [...html.matchAll(/<img\b[^>]*?\bsrc="([^"]*)"/g)].map((m) => m[1])
+}
+
 // 切片
 function findHeading(ch, text) {
   const hits = ch.headings.filter((h) => h.text === text)
@@ -263,11 +293,86 @@ function sectionTokens(ch, h) {
 }
 const sectionNo = (text) => { const m = text.match(/^(\d+(?:\.\d+)*)\s/); return m ? m[1] : null }
 
+// ───────────────────────── mermaid 预渲染 ─────────────────────────
+// 教材页与实验页实际渲染的每份 Markdown 先扫一遍 ```mermaid 代码块：
+//   site/mermaid/<hash>.svg 命中 -> 直接内嵌（不需要浏览器，CI 就这样构建）
+//   未命中 -> 用本机 Chrome/Edge 渲染一次，写进 site/mermaid/ 入库（渲染细节见 scripts/mermaid.mjs）
+const MERMAID_SVGS = new Map()
+let MERMAID_FIGS = 0
+function collectMermaid(tokens, acc) {
+  for (const t of tokens || []) {
+    if (!t) continue
+    if (t.type === 'code') { if (/^mermaid\b/i.test((t.lang || '').trim())) acc.push(t.text); continue }
+    if (Array.isArray(t.tokens)) collectMermaid(t.tokens, acc)
+    if (Array.isArray(t.items)) for (const it of t.items) collectMermaid(it.tokens, acc)
+  }
+}
+const labsCfg = yamlLoad(fs.readFileSync(path.join(ROOT, 'labs/labs.yml'), 'utf8'))
+const labs = labsCfg.labs
+{
+  const scanned = new Map()
+  for (const c of chapters) scanned.set(c.rel, c.tokens)
+  for (const lab of labs) for (const sl of lab.slices || []) {
+    if (!sl.file || scanned.has(sl.file)) continue
+    scanned.set(sl.file, marked.lexer(preprocess(readC(sl.file).toString('utf8'), sl.file)))
+  }
+  const seen = new Set()
+  const need = []
+  let blocks = 0
+  for (const toks of scanned.values()) {
+    const acc = []
+    collectMermaid(toks, acc)
+    for (const src of acc) {
+      blocks++
+      const key = mermaidKey(src)
+      if (seen.has(key)) continue
+      seen.add(key)
+      const cached = readCache(key)
+      if (cached) MERMAID_SVGS.set(key, cached)
+      else need.push({ key, src })
+    }
+  }
+  if (need.length) {
+    if (RELEASE_MODE) {
+      // 发布模式（CI）只认缓存：不在这里现渲染，否则 Linux 上渲出来的字形与本地不同，
+      // dist 就变成了「CI 和本地不一样」，缓存的 SVG 也就白入库了。
+      console.error(`mermaid：${need.length} 张图没有缓存，发布模式不现渲染（要保证 CI 产物与本地一致）：`)
+      for (const n of need) console.error(`  site/mermaid/${n.key}.svg`)
+      console.error('请在本机跑 npm run build -- --db-source <库文件> 生成缓存，把 site/mermaid/ 一起提交；CI 只需读缓存。')
+      process.exit(1)
+    }
+    console.log(`mermaid：${blocks} 个代码块 / ${seen.size} 张图，缓存命中 ${seen.size - need.length}，待渲染 ${need.length}`)
+    const t0 = Date.now()
+    let got
+    try {
+      got = await renderMermaid(need)
+    } catch (e) {
+      console.error('\nmermaid 渲染失败：' + ((e && e.message) || e) + '\n')
+      process.exit(1)
+    }
+    for (const [key, svg] of got) { writeCache(key, svg); MERMAID_SVGS.set(key, svg) }
+    console.log(`mermaid：已渲染 ${got.size} 张并写入 site/mermaid/（mermaid ${MERMAID_VERSION}，${Date.now() - t0} ms）`)
+  } else if (!seen.size) {
+    console.log('mermaid：教材里还没有 ```mermaid 代码块（缓存目录 site/mermaid/）')
+  } else {
+    console.log(`mermaid：${blocks} 个代码块 / ${seen.size} 张图，全部命中缓存 site/mermaid/`)
+  }
+}
+// SVG 一律去固定宽高、留 viewBox；自然宽度记在 --mmd-w 上，让图按原大小显示、窄屏再缩。
+function mermaidFigure(key) {
+  const svg = MERMAID_SVGS.get(key)
+  if (!svg) return ''
+  const vb = svg.match(/viewBox="[-\d.]+\s+[-\d.]+\s+([\d.]+)\s+([\d.]+)"/)
+  const w = vb ? Math.ceil(Number(vb[1])) : 0
+  const style = w > 0 ? ` style="--mmd-w:${w}px"` : ''
+  return `<figure class="mermaid-fig" data-mermaid="${key}"${style}>${svg}</figure>\n`
+}
+
 // ───────────────────────── 页面模板 ─────────────────────────
 const FAVICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0b1320"/><circle cx="16" cy="16" r="9" fill="none" stroke="#ffb23f" stroke-width="3" stroke-dasharray="5 2.2"/><circle cx="16" cy="7" r="2.6" fill="#ffb23f"/></svg>')}`
 const NAV = [
   { key: 'home', label: '首页', href: 'index.html' },
-  { key: 'textbook', label: '教材', href: 'textbook/ch1.html' },
+  { key: 'textbook', label: '教材', href: 'textbook/ch0.html' },
   { key: 'demo', label: '8 环演示', href: 'textbook/ch2b.html' },
   { key: 'labs', label: '实验', href: 'labs/u0.html' },
   { key: 'download', label: '下载', href: 'downloads.html' },
@@ -336,6 +441,9 @@ chapters.forEach((c, i) => {
   let bodyHtml = renderTokens(tokens)
   // 紧跟一级标题后面插入演示入口
   if (demoCall) bodyHtml = bodyHtml.replace(/(<\/h1>\n)/, `$1${demoCall}\n`)
+  // 教材图片：src 改写成相对 textbook/ 的路径（图片文件在下面“写出 dist”里拷进去）
+  bodyHtml = rewriteChapterAssets(bodyHtml, c.rel)
+  chapterImages.set(c.out, imagesOf(bodyHtml))
   const body = `<article class="doc">
 <p class="crumb"><a href="../index.html">首页</a> / 教材 / ${esc(c.num === 'ch' ? c.title : '第 ' + c.num + ' 章')}</p>
 ${bodyHtml}
@@ -352,9 +460,8 @@ ${next ? `<a class="next" href="../${next.out}"><small>下一页</small>${esc(ne
 })
 
 // ─── 实验页 ───
-const labsCfg = yamlLoad(fs.readFileSync(path.join(ROOT, 'labs/labs.yml'), 'utf8'))
+// labs.yml 与 labs 在上面的「mermaid 预渲染」里已装载（预扫需要知道实验切片引用了哪些文件）
 const reportLabs = []
-const labs = labsCfg.labs
 
 // 下载包定义（先于实验页，实验页要回链）
 const PACKS = [
@@ -508,14 +615,14 @@ ${nodes}</svg>`
     <p class="eyebrow">课件网站 · 教材 / 演示 / 实验 / 下载</p>
     <h1><span class="h1a">带 AI 团队写代码</span><span class="h1b">从任务书到交付</span></h1>
     <p class="hero-p">教材、8 环演示、实验手册与课程材料下载，在同一个站点里。</p>
-    <p class="cta"><a class="btn btn-a" href="textbook/ch1.html">从第 1 章开始读</a><a class="btn btn-d" href="textbook/ch2b.html">看 8 环演示</a></p>
+    <p class="cta"><a class="btn btn-a" href="textbook/ch0.html">从第 0 章开始读</a><a class="btn btn-d" href="textbook/ch2b.html">看 8 环演示</a></p>
   </div>
   <div class="hero-r">${ringSvg()}</div>
 </section>
 <section class="band">
   <h2 class="band-h"><span class="tick"></span>从这里进</h2>
   <div class="cards">
-    <a class="card" href="textbook/ch1.html"><span class="card-k">01</span><strong>教材</strong><span>第 1–8 章与 8 环演示，一章一页，左侧章目录，右侧本页目录。</span></a>
+    <a class="card" href="textbook/ch0.html"><span class="card-k">01</span><strong>教材</strong><span>第 0–8 章与 8 环演示，一章一页，左侧章目录，右侧本页目录。</span></a>
     <a class="card card-dark" href="textbook/ch2b.html"><span class="card-k">02</span><strong>8 环演示</strong><span>投屏页，深色，按原样收录；入口在第 2b 章。</span></a>
     <a class="card" href="labs/u0.html"><span class="card-k">03</span><strong>实验</strong><span>环境准备与单元一至四。按标题从章节里切片拼成，每段回链出处。</span></a>
     <a class="card" href="downloads.html"><span class="card-k">04</span><strong>下载</strong><span>渔具包、检查脚本、模板、夹具、样例页与四个存档点，列文件名、字节数与 SHA-256。</span></a>
@@ -559,6 +666,15 @@ function makeZip(entries) {
 }
 
 // 清空 dist 后重建
+function copyDir(from, to) {
+  fs.mkdirSync(to, { recursive: true })
+  for (const e of fs.readdirSync(from, { withFileTypes: true })) {
+    const src = path.join(from, e.name)
+    const dst = path.join(to, e.name)
+    if (e.isDirectory()) copyDir(src, dst)
+    else fs.copyFileSync(src, dst)
+  }
+}
 fs.rmSync(DIST, { recursive: true, force: true })
 fs.mkdirSync(path.join(DIST, 'downloads'), { recursive: true })
 const packReport = []
@@ -666,6 +782,8 @@ for (const p of pages) {
 // 演示页原样（字节级拷贝）
 fs.mkdirSync(path.join(DIST, 'demo'), { recursive: true })
 fs.copyFileSync(path.join(CONTENT, 'demo/8环演示.html'), path.join(DIST, 'demo/index.html'))
+// 教材插图：content/chapters/img/** → dist/textbook/img/**（章节页的 src 已按此改写）
+if (fs.existsSync(path.join(CONTENT, 'chapters/img'))) copyDir(path.join(CONTENT, 'chapters/img'), path.join(DIST, 'textbook/img'))
 
 // ───────────────────────── 自检 ─────────────────────────
 function textOf(html) {
@@ -673,6 +791,7 @@ function textOf(html) {
 }
 const htmlFiles = walk(DIST).filter((f) => f.endsWith('.html')).sort()
 if (htmlFiles.length !== EXPECTED_PAGES) fail(`页数 ${htmlFiles.length} ≠ ${EXPECTED_PAGES}：${htmlFiles.join(', ')}`)
+let mermaidFigsInDist = 0
 for (const f of htmlFiles) {
   if (f === 'demo/index.html') continue
   const html = fs.readFileSync(path.join(DIST, f), 'utf8')
@@ -685,6 +804,27 @@ for (const f of htmlFiles) {
   const extLinks = (html.match(/<a [^>]*href="https?:\/\/[^"]*"/g) || []).map((s) => s.replace(/^.*href="|"$/g, ''))
   const allowedExt = RELEASE_MODE ? new Set([releaseUrl(RELEASE_TAG, MATERIALS_FILE), releaseUrl(RELEASE_TAG, OFFLINE_FILE)]) : new Set()
   for (const u of extLinks) if (!allowedExt.has(u)) fail(`${f}：有外链 ${u}`)
+  // mermaid：不许残留代码块，每个图都要有内嵌 SVG（去固定宽高、留 viewBox）
+  if (html.includes('<span class="lang">mermaid</span>')) fail(`${f}：残留 mermaid 代码块`)
+  for (const m of html.matchAll(/<figure class="mermaid-fig" data-mermaid="([0-9a-f]+)"[^>]*>([\s\S]*?)<\/figure>/g)) {
+    mermaidFigsInDist++
+    const open = (m[2].match(/^\s*<svg\b[^>]*>/) || [])[0]
+    if (!open) { fail(`${f}：mermaid 图 ${m[1]} 没有内嵌 <svg>`); continue }
+    if (!/viewBox="/.test(open)) fail(`${f}：mermaid 图 ${m[1]} 的 <svg> 缺 viewBox`)
+    if (/\s(?:width|height)="/.test(open)) fail(`${f}：mermaid 图 ${m[1]} 的 <svg> 还带固定宽高`)
+    if (!MERMAID_SVGS.has(m[1])) fail(`${f}：mermaid 图 ${m[1]} 不在本次构建的图表清单里`)
+  }
+}
+if (mermaidFigsInDist !== MERMAID_FIGS) fail(`mermaid 图数：dist 里 ${mermaidFigsInDist} 个，渲染时 ${MERMAID_FIGS} 个`)
+// 教材插图：教材里引用的每个本地图片都必须在 dist 里存在（离线包用 file:// 直接打开也要显示）
+let docImages = 0
+for (const [outRel, srcs] of chapterImages) {
+  for (const src of srcs) {
+    if (!src || /^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('/')) continue
+    docImages++
+    const target = path.join(DIST, path.dirname(outRel), ...src.split('/'))
+    if (!fs.existsSync(target)) fail(`${outRel}：图片 ${src} 在 dist 里不存在`)
+  }
 }
 // 首页：不再出现“四个单元一张图”表（表只在第 1 章 1.3 节），保留“从这里进”四张卡
 {
@@ -707,6 +847,8 @@ fs.writeFileSync(path.join(BUILD_DIR, 'report.json'), JSON.stringify({
   release_urls: RELEASE_MODE ? { materials: releaseUrl(RELEASE_TAG, MATERIALS_FILE), offline: releaseUrl(RELEASE_TAG, OFFLINE_FILE) } : null,
   materials: { file: ALL.file, bytes: ALL.bytes, sha256: ALL.sha, count: ALL.entries.length, db_path: DB_ZIP_PATH, db_sha256: dbSha },
   chapters: chapters.map((c) => ({ id: c.id, rel: c.rel, sha256: c.sha, out: c.out })),
+  images: { count: docImages, by_page: Object.fromEntries(chapterImages) },
+  mermaid: { version: MERMAID_VERSION, figures: MERMAID_FIGS, keys: [...MERMAID_SVGS.keys()] },
 }, null, 2))
 
 if (errors.length) {
@@ -718,7 +860,7 @@ if (errors.length) {
 // ───────────────────────── 离线包与发布清单（仅本地带库模式） ─────────────────────────
 if (RELEASE_MODE) {
   console.log(`构建完成（发布模式 ${RELEASE_TAG}）：${htmlFiles.length} 页，${PACKS.length} 个下载包；总包与离线包不在 dist 里，下载按钮指向 GitHub Release`)
-  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 17 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 9 个分包齐全')
+  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 18 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 教材图片齐全 · 9 个分包齐全 · mermaid 无残留代码块、每图有内嵌 SVG')
 } else {
   fs.rmSync(RELEASE, { recursive: true, force: true })
   fs.mkdirSync(RELEASE, { recursive: true })
@@ -736,5 +878,5 @@ if (RELEASE_MODE) {
   }
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n')
   console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，总包 ${fmtBytes(ALL.bytes)} 字节，离线包 ${fmtBytes(offZip.length)} 字节；已写 release-manifest.json（tag=${LOCAL_TAG}）`)
-  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 17 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 下载包与总包齐全')
+  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 18 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 教材图片齐全 · 下载包与总包齐全 · mermaid 无残留代码块、每图有内嵌 SVG')
 }

@@ -2,7 +2,8 @@
 # 黑名单优先：命中 blacklist.txt 的文件一律不同步，即使在这里列了。
 # 每一行必须至少命中一个文件，否则同步失败（缺文件不静默）。
 
-# 教材：第 1–8 章 + 8 环演示
+# 教材：第 0–8 章 + 8 环演示
+chapters/ch0_全景.md
 chapters/ch1_任务书与流程.md
 chapters/ch2_搭最小环境.md
 chapters/ch2b_8环演示.md
@@ -12,6 +13,9 @@ chapters/ch5_单元二_问数任务书.md
 chapters/ch6_单元三_巡检任务书.md
 chapters/ch7_单元四_插件任务书.md
 chapters/ch8_复盘与展望.md
+
+# 教材插图（第 0 章的 img/ch0/*.svg，按目录整棵同步；构建时复制到 dist/textbook/img/）
+chapters/img/**
 
 # 8 环演示页（原样）
 demo/8环演示.html

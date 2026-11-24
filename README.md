@@ -1,6 +1,6 @@
 # 带 AI 团队写代码：从任务书到交付 —— 课件站
 
-纯静态课件站：教材（第 1–8 章 + 8 环演示）、演示页、实验手册（环境准备 + 单元一至四）、材料下载。共 17 页。
+纯静态课件站：教材（第 0–8 章 + 8 环演示）、演示页、实验手册（环境准备 + 单元一至四）、材料下载。共 18 页。
 上线后的地址：`https://www.cloudzun.com/ai-team-coding/`（账号 cloudzun 的用户站点绑定了自定义域名，`cloudzun.github.io/ai-team-coding` 会跳转过去）。站内链接全部相对路径，放根目录、子路径或本地直接打开都行。
 
 ## 目录
@@ -12,7 +12,8 @@
 | `release-manifest.json` | 总包与离线包的字节数、SHA-256、总包文件清单、`content/` 指纹；由本地带库构建生成，**入库**，CI 只读它 |
 | `labs/labs.yml` | 实验页配置：只写路由文字，事实按标题从章节切片 |
 | `site/` | 样式与脚本（`site.css`、`site.js`） |
-| `scripts/` | `sync-content.ps1`、`whitelist.txt`、`blacklist.txt`、`build.mjs`、`qa_pages.py`、`scan_sensitive.py`、`serve-dist.cjs`、`start.cmd`、`make-release.ps1` |
+| `site/mermaid/` | mermaid 预渲染缓存 `<hash>.svg`，**入库**；CI 靠它构建，不需要浏览器（见下节） |
+| `scripts/` | `sync-content.ps1`、`whitelist.txt`、`blacklist.txt`、`build.mjs`、`mermaid.mjs`、`qa_pages.py`、`scan_sensitive.py`、`serve-dist.cjs`、`start.cmd`、`make-release.ps1` |
 | `.github/workflows/pages.yml` | push 到 main 时构建、门禁、部署 Pages |
 | `dist/` | 构建产物（不入库） |
 | `release/` | 离线包 `ai-team-coding-offline.zip`（不入库） |
@@ -23,12 +24,30 @@
 npm install
 ```
 
+`mermaid` 与 `puppeteer-core` 是 devDependency：前者纯 JS，后者只是驱动本机已装的 Chrome / Edge，
+**安装时不下载浏览器**（CI 装快、装稳）。构建时只有 mermaid 缓存未命中才会真的去开浏览器。
+
+## mermaid 图：构建时预渲染成内嵌 SVG
+
+教材里的 ` ```mermaid ` 代码块不当代码块显示：`scripts/build.mjs` 在 marked 的 code 渲染里拦下来，
+换成构建时渲染好的内嵌 SVG（`<figure class="mermaid-fig">`，无固定宽高、有 viewBox），
+**页面不加载任何 mermaid 脚本，离线可用**。
+
+- 源码哈希做键（源码 + mermaid 版本 + 主题 + 字体族），缓存文件 `site/mermaid/<hash>.svg`，**入库**。
+- 命中缓存 → 直接内嵌，**不需要浏览器**；CI（ubuntu、没有 Chrome）就这样构建。
+- 未命中 → 用本机 Chrome / Edge 渲染一次并写缓存（`PUPPETEER_EXECUTABLE_PATH` 可指定浏览器）。
+  本机没有浏览器且缓存缺失时，构建失败并提示先在本机构建。
+- **发布模式（CI）只认缓存，不现渲染**：未命中就失败并列出缺哪几个文件 —— 否则 Linux 上渲出来的字形与本地不同，
+  CI 产物就和本地不一样了。
+- 所以：**教材里加了新图，就在本机构建一次，把新增的 `site/mermaid/<hash>.svg` 一起提交**。
+- 自检（`build.mjs` 与 `qa_pages.py` 各查一遍）：dist 里不许残留 mermaid 代码块，每个图都要有内嵌 SVG。
+
 ## 两种构建模式
 
 | 模式 | 命令 | 用在哪 | 行为 |
 |---|---|---|---|
 | 本地默认（带库） | `npm run build -- --db-source <课程库文件路径>` | 维护者本机 | 校验库后生成 9 个分包、总包、离线包，并写 `release-manifest.json` |
-| 发布模式 | `node scripts/build.mjs --release-assets v5` | CI | 不需要库；dist 里不生成总包与离线包；下载页“一次下载全部”按钮和“离线包”链接指向 Release 附件 `https://github.com/cloudzun/ai-team-coding/releases/download/v1/…`，字节数与 SHA-256 取自 `release-manifest.json`；9 个分包照常生成 |
+| 发布模式 | `node scripts/build.mjs --release-assets v6` | CI | 不需要库；dist 里不生成总包与离线包；下载页“一次下载全部”按钮和“离线包”链接指向 Release 附件 `https://github.com/cloudzun/ai-team-coding/releases/download/v1/…`，字节数与 SHA-256 取自 `release-manifest.json`；9 个分包照常生成 |
 
 发布模式会核对 `release-manifest.json` 的 tag 与 `content/` 指纹：`content/` 变了而 manifest 没重新生成，构建失败，提示回本地带库重建。
 
@@ -63,8 +82,8 @@ gh release create v2 dist\downloads\ai-team-coding-materials.zip release\ai-team
   --repo cloudzun/ai-team-coding --title "课程材料 v2" --notes "<说明与两个 SHA-256>"
 
 # 或：
-powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v5            # 构建 + 门禁，只打印 gh 命令
-powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v5 -Publish   # 真正创建 Release
+powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v6            # 构建 + 门禁，只打印 gh 命令
+powershell -File scripts/make-release.ps1 -DbSource <课程库文件路径> -Tag v6 -Publish   # 真正创建 Release
 ```
 
 3. 提交 `release-manifest.json` 等改动，push 到 main；`.github/workflows/pages.yml` 会：`npm ci` → 发布模式 build → `qa_pages.py local`（发布模式跳过总包内容检查，改查下载按钮链接格式与 manifest 数值）→ `scan_sensitive.py` → 上传并部署 Pages（Python 3.12、Node 22）。

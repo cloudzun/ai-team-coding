@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=17。
+"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=18。
 
 只读 dist/ 与 .build/report.json（build.mjs 写出）。任何异常 -> 退出码 1。
 """
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 REPORT = ROOT / ".build" / "report.json"
 CONTENT = ROOT / "content"
-EXPECTED_PAGES = 17
+EXPECTED_PAGES = 18
 
 problems = []
 checks = []
@@ -209,7 +209,7 @@ def main():
     if stale:
         bad("章节哈希", f"content/ 与构建时不一致：{stale}")
     else:
-        ok("章节哈希", "9 章与构建时一致")
+        ok("章节哈希", f"{len(report['chapters'])} 章与构建时一致")
 
     # 5 演示页原样
     if sha256(DIST / "demo" / "index.html") == sha256(CONTENT / "demo" / "8环演示.html"):
@@ -228,6 +228,39 @@ def main():
         if "<!--" in html:
             bad("残留注释", rel)
     ok("残留检查", "无 ** / HTML 注释") if not any(p.startswith(("残留")) for p in problems) else None
+
+    # 6b mermaid 预渲染：dist 里不许残留 mermaid 代码块，每个图都要有内嵌 SVG（构建期已渲染好，页面不跑脚本）
+    mm_info = report.get("mermaid") or {}
+    mm_keys = set(mm_info.get("keys") or [])
+    mm_figs = 0
+    mm_bad = []
+    for rel in htmls:
+        if rel == "demo/index.html":
+            continue
+        html = (DIST / rel).read_text(encoding="utf-8")
+        if '<span class="lang">mermaid</span>' in html:
+            mm_bad.append(f"{rel} 残留 mermaid 代码块")
+        for m in re.finditer(r'<figure class="mermaid-fig" data-mermaid="([0-9a-f]+)"[^>]*>([\s\S]*?)</figure>', html):
+            key, inner = m.group(1), m.group(2)
+            mm_figs += 1
+            root = re.match(r"\s*<svg\b[^>]*>", inner)
+            if not root:
+                mm_bad.append(f"{rel}: {key} 的 figure 里没有 <svg>")
+                continue
+            tag = root.group(0)
+            if 'viewBox="' not in tag:
+                mm_bad.append(f"{rel}: {key} 的 <svg> 缺 viewBox")
+            if re.search(r'\s(?:width|height)="', tag):
+                mm_bad.append(f"{rel}: {key} 的 <svg> 还带固定宽高")
+            if key not in mm_keys:
+                mm_bad.append(f"{rel}: {key} 不在 .build/report.json 的图表清单里")
+            if not (ROOT / "site" / "mermaid" / f"{key}.svg").exists():
+                mm_bad.append(f"{rel}: {key} 缺少缓存文件 site/mermaid/{key}.svg")
+    if not mm_bad and mm_figs == mm_info.get("figures", 0):
+        ok("mermaid 预渲染", f"{mm_figs} 个图内嵌 SVG（viewBox、无固定宽高），0 个残留代码块；缓存 site/mermaid/*.svg")
+    else:
+        for msg in mm_bad or [f"图数 {mm_figs} ≠ report.json 的 {mm_info.get('figures')}"]:
+            bad("mermaid 预渲染", msg)
 
     # 7 下载包
     dl = (DIST / "downloads.html").read_text(encoding="utf-8")

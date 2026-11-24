@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 472" font-family="Tahoma, 'Microsoft YaHei', sans-serif">
+  <defs>
+    <marker id="d1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0b1220"/>
+    </marker>
+    <marker id="d2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#b08a3a"/>
+    </marker>
+  </defs>
+  <style>
+    .box{fill:#ffffff;stroke:#e0c58a;stroke-width:1.8}
+    .nm{font-size:14px;font-weight:700;fill:#0b1220}
+    .rl{font-size:11.5px;fill:#4a5262}
+    .ar{font-size:10.5px;fill:#6b7385}
+    .ar2{font-size:10.5px;fill:#a07d33}
+  </style>
+
+  <!-- 你 -->
+  <rect x="305" y="14" width="150" height="44" rx="22" fill="#fff3d6" stroke="#f5a623" stroke-width="2.5"/>
+  <text x="380" y="43" font-size="19" font-weight="700" fill="#0b1220" text-anchor="middle">你</text>
+
+  <!-- 你交给 lead 的任务书 -->
+  <line x1="380" y1="58" x2="380" y2="94" stroke="#0b1220" stroke-width="1.8" marker-end="url(#d1)"/>
+  <text x="396" y="84" font-size="12" fill="#4a5262">任务书 · 回 A/B · G1/G2</text>
+
+  <!-- Coding Agent：宿主 -->
+  <rect x="60" y="100" width="640" height="230" rx="14" fill="#fdfaf2" stroke="#e0c58a" stroke-width="2"/>
+  <text x="380" y="126" font-size="17" font-weight="700" fill="#0b1220" text-anchor="middle">Coding Agent（本课：DSH）</text>
+
+  <!-- lead 主会话 -->
+  <rect x="78" y="140" width="604" height="40" rx="8" fill="#eef1f7" stroke="#0b1220" stroke-width="1.6"/>
+  <text x="380" y="165" font-size="14" fill="#0b1220" text-anchor="middle">lead · 主会话 · 按流水线编排</text>
+
+  <!-- 派活（实线向下）/ 回报（虚线向上）：planner -->
+  <line x1="127" y1="182" x2="127" y2="230" stroke="#0b1220" stroke-width="1.4" marker-end="url(#d1)"/>
+  <line x1="159" y1="232" x2="159" y2="186" stroke="#b08a3a" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#d2)"/>
+  <text class="ar" x="119" y="214" text-anchor="end">派活</text>
+  <text class="ar2" x="167" y="214" text-anchor="start">回报</text>
+  <rect class="box" x="78" y="236" width="130" height="56" rx="6"/>
+  <text class="nm" x="143" y="259" text-anchor="middle">planner</text>
+  <text class="rl" x="143" y="277" text-anchor="middle">写规格</text>
+
+  <!-- builder -->
+  <line x1="285" y1="182" x2="285" y2="230" stroke="#0b1220" stroke-width="1.4" marker-end="url(#d1)"/>
+  <line x1="317" y1="232" x2="317" y2="186" stroke="#b08a3a" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#d2)"/>
+  <text class="ar" x="277" y="214" text-anchor="end">派活</text>
+  <text class="ar2" x="325" y="214" text-anchor="start">回报</text>
+  <rect class="box" x="236" y="236" width="130" height="56" rx="6"/>
+  <text class="nm" x="301" y="259" text-anchor="middle">builder</text>
+  <text class="rl" x="301" y="277" text-anchor="middle">施工</text>
+
+  <!-- qa -->
+  <line x1="443" y1="182" x2="443" y2="230" stroke="#0b1220" stroke-width="1.4" marker-end="url(#d1)"/>
+  <line x1="475" y1="232" x2="475" y2="186" stroke="#b08a3a" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#d2)"/>
+  <text class="ar" x="435" y="214" text-anchor="end">派活</text>
+  <text class="ar2" x="483" y="214" text-anchor="start">回报</text>
+  <rect class="box" x="394" y="236" width="130" height="56" rx="6"/>
+  <text class="nm" x="459" y="259" text-anchor="middle">qa</text>
+  <text class="rl" x="459" y="277" text-anchor="middle">验收</text>
+
+  <!-- closer -->
+  <line x1="601" y1="182" x2="601" y2="230" stroke="#0b1220" stroke-width="1.4" marker-end="url(#d1)"/>
+  <line x1="633" y1="232" x2="633" y2="186" stroke="#b08a3a" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#d2)"/>
+  <text class="ar" x="593" y="214" text-anchor="end">派活</text>
+  <text class="ar2" x="641" y="214" text-anchor="start">回报</text>
+  <rect class="box" x="552" y="236" width="130" height="56" rx="6"/>
+  <text class="nm" x="617" y="259" text-anchor="middle">closer</text>
+  <text class="rl" x="617" y="277" text-anchor="middle">收尾</text>
+
+  <text x="684" y="312" font-size="11" fill="#8a8f99" text-anchor="end">子 agent 各用技能库里的技能</text>
+
+  <!-- 每一步都落在模型上 -->
+  <line x1="380" y1="330" x2="380" y2="360" stroke="#0b1220" stroke-width="1.8" marker-end="url(#d1)"/>
+  <text x="396" y="352" font-size="11.5" fill="#4a5262">每个动作的读写与推理</text>
+
+  <!-- 模型底座 -->
+  <rect x="0" y="364" width="760" height="64" rx="8" fill="#0b1220"/>
+  <text x="380" y="392" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">模型（可按角色选不同模型）</text>
+  <text x="380" y="412" font-size="12" fill="#c9cfdb" text-anchor="middle">读、想、写</text>
+
+  <text x="380" y="450" font-size="11" fill="#8a8f99" text-anchor="middle">实线 = lead 派活　虚线 = 子 agent 回报</text>
+</svg>

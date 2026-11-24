@@ -14,5 +14,9 @@
   "dependencies": {
     "js-yaml": "^5.5.0",
     "marked": "^18.2.1"
+  },
+  "devDependencies": {
+    "mermaid": "^11.17.2",
+    "puppeteer-core": "^24.43.1"
   }
 }

@@ -1,19 +1,24 @@
 {
-    "synced_at":  "2026-11-23T18:53:40+08:00",
+    "synced_at":  "2026-11-24T13:04:36+08:00",
     "source":  "l1-textbook/v2",
-    "source_commit":  "e7d89d1e52030919c1692e495c178026b17f970f",
-    "source_dirty":  false,
-    "file_count":  193,
+    "source_commit":  "242db86e92da6669210104067cb98b8b87c18f80",
+    "source_dirty":  true,
+    "file_count":  196,
     "files":  [
                   {
+                      "path":  "chapters/ch0_全景.md",
+                      "sha256":  "81eee2159e675aa04730b9c499bb87c954004bc1e7bfc15493c56dcc939dd084",
+                      "bytes":  119677
+                  },
+                  {
                       "path":  "chapters/ch1_任务书与流程.md",
-                      "sha256":  "b12b946fe73fa90e565c6170febad0c917ce1f857d6200bade2ba17ace57def8",
-                      "bytes":  35269
+                      "sha256":  "f9d8444828093f2e21b6514d0944c2a6451a6a97adcaf17cc64fd060e00e1dbd",
+                      "bytes":  35585
                   },
                   {
                       "path":  "chapters/ch2_搭最小环境.md",
-                      "sha256":  "ce56dfe661681c92620ecf755f69c12c42e709da0fb2a3d0235aa6db0e4e5440",
-                      "bytes":  70848
+                      "sha256":  "cc2bc0f490f47addc230166087333d88bb30b9016b55312dd1db634ecb757f1f",
+                      "bytes":  79314
                   },
                   {
                       "path":  "chapters/ch2b_8环演示.md",
@@ -49,6 +54,16 @@
                       "path":  "chapters/ch8_复盘与展望.md",
                       "sha256":  "59be6eabb0aa75c707ee2489729430f9e2640e7d1f5ea3080a93895926980493",
                       "bytes":  45449
+                  },
+                  {
+                      "path":  "chapters/img/ch0/four-layers.svg",
+                      "sha256":  "9935efcb6f233d113603076673f9a8315c0bb12c9526ecdcb0f29a6ff71eb26d",
+                      "bytes":  2530
+                  },
+                  {
+                      "path":  "chapters/img/ch0/roles.svg",
+                      "sha256":  "6d236a97c14e4f4ed7a3a2ed179a51f4563ee7f25b831bc3c461ebb570b4ac76",
+                      "bytes":  4979
                   },
                   {
                       "path":  "checkpoints/stage1/.gitignore",

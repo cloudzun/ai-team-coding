@@ -1,4 +1,4 @@
-<!-- Chapter: 2  Author: AI 写稿  Version: V3.2  Updated: 2026-11-23 -->
+<!-- Chapter: 2  Author: AI 写稿  Version: V3.7  Updated: 2026-11-24 -->
 
 # 第 2 章 搭最小环境与环境自检
 
@@ -32,7 +32,7 @@
 
 | 项 | 它在课程里干什么 | 怎么确认 |
 |---|---|---|
-| 1 DSH（宿主） | 全课统一的工作台：你和 gstack 的对话、技能加载、子任务派发都在 DSH 会话里发生 | 开一个会话，看到会话界面 |
+| 1 DSH（本课的 Coding Agent） | 全课统一的工作台：你和 gstack 的对话、技能加载、子任务派发都在 DSH 会话里发生 | 开一个会话，看到会话界面 |
 | 2 gstack（课堂上讲师预装；自学自己装） | 一套现成的工作方法：想清需求、写规格、评审、验收都有对应技能，你的任务书由它们加工 | gstack 自检三步 |
 | 3 课程版 gstack-sprint 技能（课堂上讲师预装；自学自己放） | 把一次交付拆成 8 环的流程表，第 4 章起每个单元都按它走 | DSH 里加载它，读出标题 |
 | 4 看板生成器 | 把记录进度的 `board.json` 变成 `BOARD.html` 与 `BOARD.md`；需要 Node.js | 跑演示，退出码 0 |
@@ -51,33 +51,39 @@
 - 阶段一至阶段四存档点（`v2/checkpoints/stage1` 至 `stage4`）
 - 模板与卡片（`v2/lab/templates/`）
 
-宿主（Harness）是承载对话与工具的软件，本课统一用 DSH。你在课程里的位置是“用户”：写任务书、对 lead 列出的选项回字母、发现跑偏时纠偏、在两道闸门拍板；具体代码由 gstack 流程里的 agent 去写。三个角色分工保留：业务核对数据，分析只读记账，技术确认渔具包可用。
+Coding Agent（也叫宿主、Harness）是承载对话与工具的软件，本课统一用 DSH。换用别的 Coding Agent 时，对照关系见第 0 章第 2 节。你在课程里的位置是“用户”：写任务书、对 lead 列出的选项回字母、发现跑偏时纠偏、在两道闸门拍板；具体代码由 gstack 流程里的 agent 去写。三个角色分工保留：业务核对数据，分析只读记账，技术确认渔具包可用。
 
 ### 2.2 四个新概念
 
-**gstack**
+先把这四样放回第 0 章 1.6 的四层图：模型 → Coding Agent（本课用 DSH）→ 技能库（本课用 gstack）→ 流水线（本课用 gstack-sprint）→ 你的任务书。gstack 是“技能库”那一层；技能是技能库里的一件件工具，也是 DSH 读取它们的单位；gstack-sprint 是“流水线”那一层；看板是流水线用来记录进度的东西，对你来说是“现在做到哪一环”的窗口。模型和 Coding Agent（DSH）不在这四个新概念里：DSH 是 2.1 表的第 1 项，模型在“环境准备”的手动二接上。下面每个概念最后一条写“装好后你多了什么、它什么时候登场”，装的步骤在后面的“环境准备”里。
+
+**技能库（本课用 gstack）**
 - 类比：一间配齐工具的木工房。锯、刨、尺都在架子上，你只要知道哪件活用哪件工具。
-- 定义：gstack 是一套装在宿主里的技能，每个技能是一种工作方法，覆盖想清需求、规格与计划评审、测试验收、发布等环节。
+- 定义：gstack 是一套装在 Coding Agent 里的技能，每个技能是一种工作方法，覆盖想清需求、规格与计划评审、测试验收、发布等环节。
 - 边界：它不是会自己写代码的 agent，套件里没有“写业务代码”的技能；它也不是 DSH 自带的，DSH 是把它装出来的技能目录当作技能来源读进来。
-- 在 DSH / gstack 里叫什么：**gstack**；课程所用版本含几十个技能，会话里按短名称加载，例如 `office-hours`、`spec`、`qa-only`。
+- 在 DSH / gstack 里叫什么：**gstack**；课程所用版本是 1.91.191.0，权威组件 56 个，加上根路由技能 `gstack` 共 57 个可加载技能；会话里按短名称加载，例如 `office-hours`、`spec`、`qa-only`。这里的 56 个，按 gstack 目录下一层含 `SKILL.md` 的目录来数，不含仓库里为其他 Coding Agent 渲染的同名副本；技能页里看到的条目数可能略多，因为路由和别名也各占一条。
+- 装好后你多了什么，什么时候登场：多了一整库现成的工作方法，想清需求、评审、验收都不用自己从头写提示词。课程里主要用到 `office-hours`（环 1 立项）、`spec`（环 2 规格）、四个计划评审（环 3）和 `qa-only`（环 5 独立验收），从第 4 章起由 gstack-sprint 按环调用；段 3 把它装到机器上，段 4 让 DSH 读到它。
 
 **技能**
 - 类比：一张写好的工序卡。先做什么、再做什么、做完交什么，写在纸上，谁拿到都能照办。
-- 定义：技能是一份带名字和适用场景描述的 Markdown 说明文件，宿主按名字加载它，agent 照里面的步骤做事。
+- 定义：技能是一份带名字和适用场景描述的 Markdown 说明文件，Coding Agent 按名字加载它，agent 照里面的步骤做事。
 - 边界：它不是程序，不会自己运行；加载了技能不等于做完了事，照它做出来的东西仍要你验。
 - 在 DSH / gstack 里叫什么：**技能（skill）**，文件名 `SKILL.md`；DSH 用 `skill` 工具按名字加载。
+- 装好后你多了什么，什么时候登场：DSH 多了“按名字加载一份做事说明”的能力，需要某种做法，就让它加载对应技能。你自己第一次用它，是实操步骤 4 的“DSH 四句话”：让 DSH 加载一个技能，读出它的标题。
 
-**gstack-sprint**
+**流水线（本课用 gstack-sprint）**
 - 类比：装修队的施工流程表。先量房、出图、审图、施工、验收、交钥匙，每步有人负责，关键几步要业主签字。
 - 定义：课程版 gstack-sprint 是一个技能，规定一次版本交付走 8 环（环 0 到环 7）：lead 编排并判每环的门禁，子 agent 执行各环，你在 G1、G2 两道闸门拍板。
-- 边界：它不是自动驾驶，你要写任务书、回字母、纠偏、过闸门；它也不在 gstack 自带的那几十个技能里，是课程发放的副本，放在另一个技能目录。lead 是你在 DSH 主会话里对话的 agent，子 agent 是 lead 派出去干具体活的 agent；8 环各是什么，第 1 章已讲。
+- 边界：它不是自动驾驶，你要写任务书、回字母、纠偏、过闸门；它也不在 gstack 自带的那 56 个组件里，是课程发放的副本，放在另一个技能目录。lead 是你在 DSH 主会话里对话的 agent，子 agent 是 lead 派出去干具体活的 agent；8 环各是什么，第 1 章已讲。
 - 在 DSH / gstack 里叫什么：**gstack-sprint**（课程版）。
+- 装好后你多了什么，什么时候登场：多了一张可照着走的 8 环流程表，以及 lead 编排、子 agent 执行的分工；它把 gstack 里的 `office-hours`、`spec`、各计划评审、`qa-only` 串在 8 环里，你只管写任务书、回字母、纠偏、过闸门。段 3 把它放进 `~/.agents/skills`，第 4 章起每个单元都按它走。
 
 **看板**
 - 类比：工地门口的进度牌。路过的人不用问，抬头就知道做到哪一步、哪件事在等业主。
 - 定义：看板是一份 `board.json`，记录当前环、各环状态和等你拍板的事；生成器把它渲染成给人看的 `BOARD.html` 和给 agent 查的 `BOARD.md`。
 - 边界：它不是项目管理软件，也不是 agent 的口头汇报；要改看板，改的是 `board.json`，两份生成物会被下一次生成覆盖。
 - 在 DSH / gstack 里叫什么：**board.json、BOARD.html、BOARD.md**；生成器是渔具包里的 `gen-board.mjs`。
+- 装好后你多了什么，什么时候登场：多了一个不用问人就能看进度的窗口：每环结束，lead 先更新 `board.json`，你打开 `BOARD.html` 就知道做到哪一环、有没有事在等你拍板。本章步骤 4 的看板演示先让你生成一次，从第 4 章起每个单元都看。
 
 ### 2.3 数据与纪律
 
@@ -110,11 +116,19 @@
 
 ### 手动一 装 DSH
 
+- 这一步做什么：把 DSH 装到你的电脑上。它是四层图里的“Coding Agent”，后面你和 gstack 的对话、技能加载、子任务派发，都在它的会话里发生。
+- 做完你多了什么：机器上多了一个 DSH 桌面程序；此时它还没有模型，也没有 gstack。
+- 你会在界面上看到什么：安装向导，Windows 可能提示“已保护你的电脑”；装完从开始菜单打开，看到 DSH 的主界面（第一次可能先出现欢迎页）。
+
 入口是 DeepSeek 官网下载页 https://www.deepseek.com/download/ ，下载 Windows 版，安装包约 300 MB。安装向导一路确认，安装位置保持默认；Windows 提示“已保护你的电脑”时，点“更多信息”再点“仍要运行”。装完，从开始菜单打开 DeepSeek Harness。课程编写时验证的 DSH 版本是 0.2.2-rc.5，这是预览版，界面可能随版本变化。
 
 - 成功：打开后看到 DSH 的主界面（第一次可能先出现欢迎页，按提示确认即可）。
 
 ### 手动二 给 DSH 配大模型
+
+- 这一步做什么：给 DSH 接一个大模型，也就是四层图里的“模型”那一层。DSH 是 Coding Agent，负责对话、加载技能、派任务，真正“思考”的是你接上的模型。
+- 做完你多了什么：DSH 有了可用的模型，后面所有会话都靠它回答；这个模型是 DSH 自己用的，和课程产品程序要调用的模型分开。
+- 你会在界面上看到什么：“设置 → 模型”页，顶部有“DeepSeek 账号”卡片，底部有“+ 添加模型提供商”；接好后，页里出现你登录的账号或接入的提供商，里面有可选的模型。
 
 DSH 自己不带模型，要先接上一个。两种方式，任选其一，具体怎么申请、怎么充值，各人的渠道不同，这里不写细步骤。系统语言是中文时 DSH 的界面是中文；是英文时是英文，“设置”叫 Settings，“模型”叫 Models。
 
@@ -135,20 +149,28 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 
 ### 手动三 选一个空文件夹当工作区
 
+- 这一步做什么：告诉 DSH 在哪个文件夹里干活。段 2 下载的课程材料会解压到这里，没选工作区时，输入框是灰的。
+- 做完你多了什么：一个能正常对话的会话，后面四段提示词都在这里发；发一句“你好”，同时验证模型接对了。
+- 你会在界面上看到什么：点“选择工作区”后，选中的文件夹出现在界面里，输入框变成可输入；发出“你好”后，会话里出现模型的回复文字。
+
 在文件管理器里新建一个空文件夹，名字用英文、不含空格，例如 `l1-course`，不要放进已有的项目文件夹里。在 DSH 里点“选择工作区”（Select workspace），添加并选中它（没选工作区时，输入框是灰的）。新开一个会话，在模型菜单里选一个你刚配好的模型，发一句“你好”。后面四段提示词都在这个会话里发。
 
 - 成功：会话里收到模型的回复文字。收到报错，回到手动二检查提供商、密钥有没有填错。
 
 ### 手动四 打开团队协作
 
+- 这一步做什么：让 DSH 能派出子 agent。第 4 章起，lead 要靠它分头干活，这是 DSH 作为 Coding Agent 的多智能体能力，要在设置和会话里各打开一处。
+- 做完你多了什么：lead 可以派子 agent，并且可以为子 agent 选模型；你勾选的模型，就是子 agent 能用的模型。
+- 你会在界面上看到什么：设置里“插件”页下的“子智能体”页，有“允许 Agent 为子智能体选择模型”的开关和“Agent 可选择的模型”列表；会话输入框右下角的模型菜单里，多出开着的“启用智能体团队协作”。
+
 第 4 章起，课程版 gstack-sprint 要让 lead 派出子 agent 分头干活。DSH 里要打开两处，才派得出去。
 
 第一处，在设置里让子智能体可以选模型：
 
-1. 打开“设置 → 内置插件”，在“内置插件配置”下找到“子智能体”（说明“设置子智能体的递归层级、数量和模型。”）。
+1. 打开“设置 → 插件 → 内置插件配置 → 子智能体”（说明“设置子智能体的递归层级、数量和模型。”）。
 2. 在“模型选择”一节，打开“允许 Agent 为子智能体选择模型”。界面说明是：开启后，Agent 可以从下方授权模型中，为每个子智能体选择提供方、模型和推理强度；仅影响新会话。
 3. 在“Agent 可选择的模型”列表里，勾选要给子智能体用的模型，点“保存”。同一页的“运行限制”里有“最大递归深度”和“子智能体并行数量上限”，保持默认即可。
-4. 因为“仅影响新会话”，改完要新开一个会话。
+4. 改完新开一个会话最稳。
 
 第二处，在会话里开启团队协作：点输入框右下角的模型名（例如“DeepSeek V4.1 Flash 1017 high”），弹出的菜单里有“模型”“推理等级”“启用智能体团队协作”三项，打开“启用智能体团队协作”开关。
 
@@ -166,6 +188,10 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 - 成功：新开的会话里，输入框右下角的模型菜单中“启用智能体团队协作”开关是开的；设置里“Agent 可选择的模型”列表中，你勾选的模型都在。
 
 ### 段 1 查工具，缺啥装啥
+
+- 这一步让 DSH 做什么：先查你机器上有没有 Git（含 Git Bash）、Python、Node.js、Bun，版本够的跳过，缺的才装。
+- 做完你多了什么：四样工具齐备，这是工具层，四层图运转时靠它做底座：gstack 的安装和体检脚本要在 Git Bash 里运行，`./setup` 要用 Bun 装依赖，Python 跑课程的检查脚本，Node.js 跑看板生成器。
+- 批准框里会看到什么：DSH 逐条请你批准命令。已有的工具只会看到查版本的命令；缺的才出现安装命令，来源应是 winget、官网安装包或提示词列的镜像。
 
 这一段让 DSH 先查你机器上已有的 Git（含 Git Bash）、Python、Node.js、Bun，达到最低版本的跳过，缺的才装。整段复制，发给 DSH：
 
@@ -205,13 +231,17 @@ DSH 自己不带模型，要先接上一个。两种方式，任选其一，具�
 
 ### 段 2 下载课程材料
 
+- 这一步让 DSH 做什么：先确认当前工作目录是你选的那个空文件夹，再把课程总包下载下来，用 `Expand-Archive` 解压进去，最后逐项检查文件在不在。
+- 做完你多了什么：工作区里多出一个 `v2` 文件夹，里面有课程数据库、学员资料、课程版 gstack-sprint 技能文件和看板演示数据，段 3 要复制的技能文件就在其中。
+- 批准框里会看到什么：先是列目录的命令；然后是一条下载命令，地址是那条 GitHub 地址，或前面加了 `https://ghfast.top/` 的同一条；最后是 `Expand-Archive` 解压和一串 `Test-Path` 检查。
+
 这一段让 DSH 把课程总包下载并解压到工作区。整段复制，发给 DSH：
 
 ```text
 请帮我把课程材料下载并解压到当前工作目录。我不敲命令，由你来做。
 
 主地址，不许自行换：
-https://github.com/cloudzun/ai-team-coding/releases/download/v5/ai-team-coding-materials.zip
+https://github.com/cloudzun/ai-team-coding/releases/download/v6/ai-team-coding-materials.zip
 GitHub 直连慢或失败时，可以在这个地址前面加第三方加速前缀 https://ghfast.top/ 再下载，内容是同一个文件。别的来源先问我。
 
 做法：
@@ -239,6 +269,10 @@ GitHub 直连慢或失败时，可以在这个地址前面加第三方加速前�
 - 批准框：下载地址应当是那条 GitHub 地址，或前面加了 `https://ghfast.top/` 的同一条地址；解压用的是 `Expand-Archive`。
 
 ### 段 3 用上 gstack，并放入课程版技能
+
+- 这一步让 DSH 做什么：先看机器上有没有 gstack，已有且版本够新就直接用，没有或太旧就按提交号装锁定版，并运行 `./setup` 生成技能；再把课程版 gstack-sprint 复制到 `~/.agents/skills`。
+- 做完你多了什么：机器上有了技能库 gstack（权威组件 56 个，加根路由技能共 57 个可加载技能）和流水线 gstack-sprint。DSH 自带读取 `~/.agents/skills`，所以 gstack-sprint 此时已在它的读取范围里；gstack 在 `~/.claude/skills`，要等段 4 才读得到。
+- 批准框里会看到什么：一串 `git`（查版本或按提交号取）、`./setup`、复制技能文件夹的命令，其中的 `./setup` 要跑很久，批准后屏幕停着不动是正常的，那是它在下载依赖、生成技能说明；地址只会是 gstack 的 GitHub 仓库。
 
 这一段让 DSH 先看你机器上有没有 gstack：已有且版本够新，直接用；没有或太旧，装课程锁定的版本。然后把课程版 gstack-sprint 放进 DSH 读取的另一个技能目录。整段复制，发给 DSH：
 
@@ -282,6 +316,10 @@ gstack 的来源，别的来源先问我：
 
 ### 段 4 装 Skills Manager
 
+- 这一步让 DSH 做什么：用自己的插件安装能力，给自己装社区插件 DSH Skills Manager，让它能读到 `~/.claude/skills` 里的 gstack。
+- 做完你多了什么：重启 DSH 后，设置里多出“技能”页；gstack 的技能和课程版 gstack-sprint，DSH 都能按名字加载了，前面装的东西到这里才真正连通。
+- 批准框里会看到什么：一次插件安装请求，包名是 `@michengai/dsh-skills-manager`，npm 源是官方源或 npmmirror。装完它会告诉你怎么让插件生效：由你自己把 DSH 完全退出（含托盘图标）再重开，DSH 不会替你重启。
+
 这一段让 DSH 给自己装社区插件 DSH Skills Manager。DSH 自带读取 `~/.agents/skills`，但不读 `~/.claude/skills`，gstack 要靠这个插件才读得到；它是社区维护的插件（Apache-2.0 许可），不是 DeepSeek 官方出品。整段复制，发给 DSH：
 
 ```text
@@ -311,6 +349,23 @@ DSH 回复三项都是“是”之后，自己把 DSH 完全退出（托盘里�
 
 - 成功：重开后，“设置”里出现“技能”页，“Claude Code”与“公共 Agent（英文界面为 Shared Agent）”两个来源都已开启；“Claude Code”下能看到 gstack 的技能（如 `office-hours`、`spec`、`qa-only`），“公共 Agent”下能看到 `gstack-sprint`。
 - 批准框：包名应当是 `@michengai/dsh-skills-manager`，源是 `https://registry.npmjs.org/` 或 `https://registry.npmmirror.com`。
+
+#### 回头看：你刚才装了什么
+
+四段加四件手动的事做完，装上的东西可以对到第 0 章 1.6 的四层图上：
+
+| 你装上的 | 对到四层图的哪一层 | 它让你多了什么 | 哪一步装的 |
+|---|---|---|---|
+| 大模型 | 模型 | DSH 有了可用的“大脑”，会话里能收到回复 | 手动二 |
+| DSH，加上团队协作开关 | Coding Agent | 一个承载对话、技能加载和子任务派发的工作台，lead 能派出子 agent | 手动一、手动三、手动四 |
+| Git、Python、Node.js、Bun | 工具层，四层图运转时靠的底座 | gstack 的脚本、课程的检查脚本、看板生成器都跑得起来 | 段 1 |
+| gstack | 技能库 | 56 个权威组件加根路由，共 57 个现成的工作方法 | 段 3 |
+| gstack-sprint | 流水线 | 一张 8 环流程表，把技能库里的技能串成一次交付 | 段 3 |
+| Skills Manager | 不是四层之一，是接线 | 让 DSH 读到 `~/.claude/skills` 里的 gstack | 段 4 |
+
+最上面的“你的任务书”，是你从第 4 章起自己写的东西，现在还没有。
+
+会话里的每一次动作都是一次工具调用，展开它，就能看到 DSH 正在跑哪条命令、读哪个文件。怎么观察、怎么看懂，第 0 章 3.2 讲了要看哪四样东西，完整的清单在第 0 章的附录 H。
 
 做到这里，回到“实操”，从步骤 1 开始；步骤 3 的 gstack 自检、步骤 4 的 DSH 四句话、同名冲突自检和看板演示，就是对这四段的验收。
 
@@ -349,7 +404,7 @@ Test-Path "C:\Program Files\Git\bin\bash.exe"
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\l1-course" | Out-Null
-curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v5/ai-team-coding-materials.zip
+curl.exe -L --fail -o "$HOME\l1-course\materials.zip" https://github.com/cloudzun/ai-team-coding/releases/download/v6/ai-team-coding-materials.zip
 Expand-Archive "$HOME\l1-course\materials.zip" "$HOME\l1-course" -Force
 Set-Location "$HOME\l1-course"
 Get-ChildItem v2 | Select-Object Name
@@ -494,7 +549,7 @@ echo "退出码 ${PIPESTATUS[0]}"   # 0 才对；技能说明里的链接断了�
 echo "退出码 ${PIPESTATUS[0]}"
 cat ~/.claude/skills/gstack/VERSION   # 版本号，记进记录
 ```
-`setup --status` 会列出好几个宿主的行，课程只看 `claude` 这一行，因为 DSH 读的是它所在的技能目录。体检里 `warn` 和 `not configured` 不是失败：`codex` 一行显示 not configured，只影响环 3 里“外部意见（Outside Voice）”那一步，第 1 章的 8 环表里已列。再看 DSH 有没有把这个目录读进来，第三步放到步骤 4。这一项在界面里看，要在段 4 做完、DSH 完全退出重开过一次之后才有：打开 DSH 的“设置”（英文界面叫 Settings）里的“技能”（Skills）页，看到“Claude Code”与“公共 Agent（英文界面为 Shared Agent）”两个来源都已开启，并且展开“Claude Code”能看到 gstack 的技能（如 `office-hours`、`spec`、`qa-only`）。技能页没有这两个来源，说明段 4 还没生效。
+`setup --status` 会列出好几个 Coding Agent 的行，课程只看 `claude` 这一行，因为 DSH 读的是它所在的技能目录。体检里 `warn` 和 `not configured` 不是失败：`codex` 一行显示 not configured，只影响环 3 里“外部意见（Outside Voice）”那一步，第 1 章的 8 环表里已列。再看 DSH 有没有把这个目录读进来，第三步放到步骤 4。这一项在界面里看，要在段 4 做完、DSH 完全退出重开过一次之后才有：打开 DSH 的“设置”（英文界面叫 Settings）里的“技能”（Skills）页，看到“Claude Code”与“公共 Agent（英文界面为 Shared Agent）”两个来源都已开启，并且展开“Claude Code”能看到 gstack 的技能（如 `office-hours`、`spec`、`qa-only`）。技能页没有这两个来源，说明段 4 还没生效。
 - 产物：`records/gstack_status.txt`、`records/gstack_doctor.txt`；版本号，以及技能页两个来源是否开启，写进 `records/tech_notes.md`。
 - 验收：两条命令退出码都是 0；`claude` 一行结果列为 `current`；体检末行含 `0 fail`；技能页里“Claude Code”与“公共 Agent”两个来源都已开启，“Claude Code”下能看到 gstack 的技能。
 
@@ -593,7 +648,8 @@ python v2/lab/tools/db_fingerprint.py v2/kit/db/homestay.db records/fp_before.tx
 | `[黄] 没找到 DSH，请人工确认` | 不是红项；确认 DSH 能启动、能开会话，装在别处就在问题清单里写明位置 |
 | `setup --status` 退出码为 1，或 `section links` 不是 all resolve；`gstack-doctor` 末行 `fail` 不是 0 | gstack 本身有问题；课堂机上不要自己重装：整段输出贴进 `issues.md`，请讲师处理。自己的机器：回到“环境准备”段 3，先请 DSH 把 `~/.claude/skills/gstack` 整个移到技能目录之外（不删除），再发一遍段 3 的提示词 |
 | 找不到 `~/.claude/skills/gstack`，或 DSH 里 `gstack`、`gstack-sprint` 不在技能列表 | 没装到这台机器，或技能页里的来源被关：看步骤 3 的技能页，“Claude Code”与“公共 Agent（英文界面为 Shared Agent）”都要开启。自己的机器回到“环境准备”段 3、段 4 补装；课堂机仍不对就换用已通过自检的机器，并记入 `issues.md` |
-| 设置里已勾选子智能体模型，会话里派子 agent 时仍报 `not allowed` | 设置里“允许 Agent 为子智能体选择模型”写明仅影响新会话：新开一个会话再试 |
+| 设置里已勾选子智能体模型，会话里派子 agent 时仍报 `not allowed` | 改完设置新开一个会话最稳：新开一个会话再试 |
+| 屏幕久久不动，想确认 DSH 是否还在跑（尤其段 3） | 展开会话里正在进行的那条工具调用，看它正在跑哪条命令。段 3 的 `./setup` 要跑很久，命令还在跑就等它报完。怎么观察见第 0 章 3.2，完整清单见第 0 章的附录 H |
 
 文件级 SHA-256 与登记值不同而内容校验和一致，不是红项：数据相同、文件字节不同，脚本会在“数据内容校验和一致”下面注明。判断不了的红项，把脚本整段输出（含末行结论）贴出来，比描述“打不开数据库”更有用。
 

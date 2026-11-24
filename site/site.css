@@ -103,6 +103,7 @@ a:hover { background: var(--amber-wash); }
 .doc ul li::marker { color: var(--amber); }
 .doc ol li::marker { color: var(--amber-ink); font-weight: 700; }
 .doc hr { border: 0; border-top: 1px solid var(--line2); margin: 2em 0; }
+.doc img { max-width: 100%; height: auto; display: block; margin: 1em auto; }
 .doc strong { font-weight: 700; background: linear-gradient(transparent 62%, rgba(255,178,63,.30) 62%); }
 .doc blockquote { margin: 1.1em 0; padding: .5em 1.1em; background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--amber); border-radius: 0 4px 4px 0; color: var(--ink2); }
 .doc blockquote p { margin: .5em 0; }
@@ -112,6 +113,13 @@ a:hover { background: var(--amber-wash); }
 code { font-family: var(--mono); font-size: .9em; background: var(--paper2); border: 1px solid var(--line); border-radius: 3px; padding: .05em .35em; color: #5a3400; overflow-wrap: anywhere; }
 .tablewrap { overflow-x: auto; margin: 1.1em 0; border: 1px solid var(--line2); border-radius: 4px; background: var(--card); -webkit-overflow-scrolling: touch; }
 table { border-collapse: collapse; width: 100%; font-size: 14.5px; line-height: 1.65; }
+/* 宽表自动换行：表格按栏宽排版（auto），长单元格与行内 code 都在单元格内折行，不撑出横向滚动；
+   .tablewrap 的横向滚动只作兜底（内容真的排不开时才出现）。代码块 pre 不受影响（下面单独管）。 */
+.doc table { table-layout: auto; width: 100%; }
+.doc th, .doc td { overflow-wrap: break-word; }
+.doc th:first-child, .doc td:first-child { min-width: 5.5em; }
+.doc td a { overflow-wrap: anywhere; }
+.doc td code { white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
 th, td { padding: 8px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: left; vertical-align: top; }
 th:last-child, td:last-child { border-right: 0; }
 tbody tr:last-child td { border-bottom: 0; }
@@ -133,6 +141,13 @@ td code, th code { white-space: nowrap; }
 .code .st-pass { color: var(--green); }
 .code .st-fail { color: var(--red); }
 .code .st-infer { color: var(--violet); }
+
+/* 图：教材里的 ```mermaid 在构建时已渲染成内嵌 SVG（页面不加载任何脚本）。
+   SVG 本身没有固定宽高，只有 viewBox；--mmd-w 是它按原尺寸显示时的宽度上限，
+   窄屏上按 max-width:100% 等比缩小，不会被拉大。 */
+.mermaid-fig { margin: 1.4em 0; padding: 14px 16px 12px; background: var(--card); border: 1px solid var(--line2); border-radius: 5px; overflow-x: auto; }
+.mermaid-fig .mermaid-svg { display: block; margin: 0 auto; width: 100%; height: auto; max-width: min(100%, var(--mmd-w, 100%)); font-family: var(--sans); }
+.mermaid-missing { padding: 10px 14px; border-left: 5px solid var(--red); background: var(--paper2); color: var(--red-ink); font-size: 14px; }
 
 /* 8 环演示入口 */
 .demo-call { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 16px; align-items: center; margin: 1.4em 0 1.8em; padding: 16px 20px; text-decoration: none; color: #f6f1e4; background: var(--navy); border-left: 8px solid var(--amber); border-radius: 4px; box-shadow: 0 10px 24px -14px rgba(11,19,32,.7); }
