@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=18。
+"""qa_pages.py local —— 静态门禁：路由自动发现、每页无死链、实验切片命中、页数=18+已上线交付附件数。
+死链与孤页检查覆盖 dist/ 下全部 html，含 labs/appendix/ 下的交付附件页。
 
 只读 dist/ 与 .build/report.json（build.mjs 写出）。任何异常 -> 退出码 1。
 """
@@ -16,9 +17,78 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 REPORT = ROOT / ".build" / "report.json"
 CONTENT = ROOT / "content"
-EXPECTED_PAGES = 18
+EXPECTED_PAGES = 18  # 基础页数；实际门禁 = 18 + appendix/appendix.yml 里 published: true 的条数
+APPENDIX_YML = ROOT / "appendix" / "appendix.yml"
 
 problems = []
+
+
+def parse_appendix_yml(text):
+    """极简行解析 appendix.yml（CI 没装 PyYAML，不引新依赖）。
+
+    只认本仓的写法：顶层 `appendices:`，每条以 `  - id: xxx` 开头，条目里有 `published: true|false`、
+    `attach: [u0, u1]`。返回 [{id, published, attach}]。读不懂（缺 published、值不是 true/false、
+    条目外出现字段）就抛 ValueError，不静默当 0。
+    """
+    items = []
+    in_list = False
+    cur = None
+    for ln, raw in enumerate(text.splitlines(), 1):
+        line = raw.split(" #")[0].rstrip() if not raw.lstrip().startswith("#") else ""
+        if not line.strip():
+            continue
+        if re.match(r"^appendices:\s*(\[\s*\])?$", line):
+            in_list = True
+            continue
+        if not in_list:
+            raise ValueError(f"第 {ln} 行：appendices: 之前不应有其他字段：{raw!r}")
+        m = re.match(r"^\s*-\s+id:\s*(\S+)\s*$", line)
+        if m:
+            cur = {"id": m.group(1).strip("'\""), "published": None, "attach": [], "_ln": ln}
+            items.append(cur)
+            continue
+        m = re.match(r"^\s+(\w+):\s*(.*)$", line)
+        if not m or cur is None:
+            raise ValueError(f"第 {ln} 行读不懂：{raw!r}")
+        key, val = m.group(1), m.group(2).strip()
+        if key == "published":
+            if val not in ("true", "false"):
+                raise ValueError(f"第 {ln} 行：published 只能是 true / false，实际 {val!r}")
+            cur["published"] = val == "true"
+        elif key == "attach":
+            mm = re.fullmatch(r"\[(.*)\]", val)
+            if not mm:
+                raise ValueError(f"第 {ln} 行：attach 要写成 [u0, u1] 这种行内列表")
+            cur["attach"] = [s.strip().strip("'\"") for s in mm.group(1).split(",") if s.strip()]
+    for it in items:
+        if it["published"] is None:
+            raise ValueError(f"第 {it['_ln']} 行起的条目 {it['id']} 缺 published")
+    return items
+
+
+def _selftest_parse():
+    """自测：按 appendix.yml 的实际写法解析，published 数必须对；读不懂必须报错。"""
+    sample = (
+        "# 注释\n"
+        "appendices:\n"
+        "  - id: a1\n    title: 甲 # 行尾注释\n    file: a1/appendix.md\n    baseline: abc\n"
+        "    published: true\n    attach: [u0, u1, u2, u3, u4]\n"
+        "  - id: a2\n    title: 乙\n    file: a2/appendix.md\n    baseline: abc\n"
+        "    published: false\n    attach: [u4]\n"
+        "  - id: a3\n    title: 丙\n    file: a3/appendix.md\n    baseline: abc\n"
+        "    published: true\n    attach: []\n"
+    )
+    got = parse_appendix_yml(sample)
+    assert [i["id"] for i in got if i["published"]] == ["a1", "a3"], got
+    assert got[0]["attach"] == ["u0", "u1", "u2", "u3", "u4"] and got[2]["attach"] == [], got
+    for broken in ("appendices:\n  - id: x\n    published: yes\n",
+                   "appendices:\n  - id: x\n    title: t\n",
+                   "appendices:\n  - {id: x, published: true}\n"):
+        try:
+            parse_appendix_yml(broken)
+        except ValueError:
+            continue
+        raise AssertionError(f"应报错却没报：{broken!r}")
 checks = []
 
 
@@ -95,12 +165,43 @@ def main():
     release_urls = set((report.get("release_urls") or {}).values())
     print(f"构建模式：{mode}" + (f"（tag {report['tag']}）" if mode == "release" else ""))
 
+    # 0 交付附件配置：自测解析器，再读 appendix.yml（读不懂直接失败，不当 0）
+    try:
+        _selftest_parse()
+    except AssertionError as e:
+        print(f"appendix.yml 解析器自测失败：{e}")
+        return 1
+    appx = []
+    if APPENDIX_YML.exists():
+        try:
+            appx = parse_appendix_yml(APPENDIX_YML.read_text(encoding="utf-8"))
+        except ValueError as e:
+            print(f"appendix/appendix.yml 解析失败：{e}")
+            return 1
+    appx_on = [a for a in appx if a["published"]]
+    ok("交付附件配置", f"appendix.yml {len(appx)} 条，published=true {len(appx_on)} 条（解析器自测通过）")
+    expected = EXPECTED_PAGES + len(appx_on)
+
     # 1 路由自动发现
     htmls = sorted(p.relative_to(DIST).as_posix() for p in DIST.rglob("*.html"))
-    if len(htmls) == EXPECTED_PAGES:
-        ok("页数", f"{len(htmls)} = {EXPECTED_PAGES}")
+    if len(htmls) == expected:
+        ok("页数", f"{len(htmls)} = {EXPECTED_PAGES} + 附件 {len(appx_on)}")
     else:
-        bad("页数", f"发现 {len(htmls)} 页，应为 {EXPECTED_PAGES}：{htmls}")
+        bad("页数", f"发现 {len(htmls)} 页，应为 {expected}（{EXPECTED_PAGES} + 附件 {len(appx_on)}）：{htmls}")
+    # 1b 交付附件页：已上线的必须存在、下线的不许出现；attach 的实验页正文要链到附件
+    appx_pages = {f"labs/appendix/{a['id']}.html" for a in appx_on}
+    stray = [h for h in htmls if h.startswith("labs/appendix/") and h not in appx_pages]
+    miss = sorted(p for p in appx_pages if p not in htmls)
+    no_link = []
+    for a in appx_on:
+        for lid in a["attach"]:
+            lp = DIST / "labs" / f"{lid}.html"
+            if not lp.exists() or f'href="appendix/{a["id"]}.html"' not in lp.read_text(encoding="utf-8"):
+                no_link.append(f"labs/{lid}.html -> {a['id']}")
+    if stray or miss or no_link:
+        bad("交付附件页", f"缺页 {miss}；不该有的页 {stray}；实验页没链到附件 {no_link}")
+    else:
+        ok("交付附件页", f"{len(appx_on)} 页齐全，attach 的实验页都有入链；下线条目不出页")
     if sorted(report["pages"]) == htmls:
         ok("路由清单与构建报告一致")
     else:

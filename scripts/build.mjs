@@ -309,6 +309,54 @@ function collectMermaid(tokens, acc) {
 }
 const labsCfg = yamlLoad(fs.readFileSync(path.join(ROOT, 'labs/labs.yml'), 'utf8'))
 const labs = labsCfg.labs
+
+// ─── 交付附件区（appendix/appendix.yml） ───
+// 基准教材冻结后，每次客户交付只写一份增量附录，作为实验环节的附件挂在网站上。
+// 附件不在 content/ 里：不走白名单/黑名单校验，不进 content 指纹，不进下载包与总包；附件页随 dist 进离线包。
+// 只处理 published: true 的条目；附件 Markdown 不存在则构建直接失败并报路径。
+const APPENDIX_DIR = path.join(ROOT, 'appendix')
+const APPENDIX_CFG = path.join(APPENDIX_DIR, 'appendix.yml')
+const appendices = []
+if (fs.existsSync(APPENDIX_CFG)) {
+  const acfg = yamlLoad(fs.readFileSync(APPENDIX_CFG, 'utf8')) || {}
+  if (acfg.appendices != null && !Array.isArray(acfg.appendices)) { console.error('appendix/appendix.yml：appendices 必须是列表'); process.exit(1) }
+  const labIds = new Set(labs.map((l) => l.id))
+  const seenIds = new Set()
+  for (const a of acfg.appendices || []) {
+    if (typeof a.published !== 'boolean') { console.error(`appendix/appendix.yml：条目 ${a.id} 的 published 必须写 true 或 false`); process.exit(1) }
+    if (a.published !== true) continue
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(String(a.id || ''))) { console.error(`appendix/appendix.yml：id “${a.id}” 只能用小写字母、数字、连字符`); process.exit(1) }
+    if (seenIds.has(a.id)) { console.error(`appendix/appendix.yml：id ${a.id} 重复`); process.exit(1) }
+    seenIds.add(a.id)
+    if (!a.title || !a.file || !a.baseline) { console.error(`appendix/appendix.yml：条目 ${a.id} 缺 title / file / baseline`); process.exit(1) }
+    const attach = a.attach || []
+    for (const lid of attach) if (!labIds.has(lid)) { console.error(`appendix/appendix.yml：条目 ${a.id} 的 attach 里有未知实验页 ${lid}（labs/labs.yml 里没有）`); process.exit(1) }
+    const relFile = 'appendix/' + String(a.file).replace(/\\/g, '/')
+    const full = path.join(ROOT, ...relFile.split('/'))
+    if (!fs.existsSync(full) || !fs.statSync(full).isFile()) {
+      console.error(`附件 ${a.id} 的 Markdown 不存在：${relFile}（完整路径 ${full}）`)
+      process.exit(1)
+    }
+    const raw = fs.readFileSync(full, 'utf8')
+    const tokens = marked.lexer(preprocess(raw, relFile))
+    // 去掉文件首个一级标题（页面 h1 用 yml 的 title）；其余一级标题不允许（每页只能一个 h1）
+    while (tokens.length && tokens[0].type === 'space') tokens.shift()
+    if (tokens.length && tokens[0].type === 'heading' && tokens[0].depth === 1) tokens.shift()
+    const used = new Map()
+    const headings = []
+    for (const t of tokens) {
+      if (t.type !== 'heading') continue
+      if (t.depth === 1) fail(`${relFile}：除首行标题外不能再有一级标题（“${t.text}”）`)
+      let id0 = slug(t.text)
+      const n = (used.get(id0) || 0) + 1
+      used.set(id0, n)
+      if (n > 1) id0 = `${id0}-${n}`
+      t.id = id0
+      headings.push(t)
+    }
+    appendices.push({ id: a.id, title: String(a.title), rel: relFile, baseline: String(a.baseline), attach, tokens, headings, sha: sha256(Buffer.from(raw)), out: `labs/appendix/${a.id}.html` })
+  }
+}
 {
   const scanned = new Map()
   for (const c of chapters) scanned.set(c.rel, c.tokens)
@@ -316,6 +364,8 @@ const labs = labsCfg.labs
     if (!sl.file || scanned.has(sl.file)) continue
     scanned.set(sl.file, marked.lexer(preprocess(readC(sl.file).toString('utf8'), sl.file)))
   }
+  // 交付附件里的 mermaid 也走同一套预渲染缓存（发布模式同样只认缓存）
+  for (const a of appendices) scanned.set(a.rel, a.tokens)
   const seen = new Set()
   const need = []
   let blocks = 0
@@ -573,10 +623,10 @@ ${s.html}
 <p class="lead">${esc(lab.intro)}</p>
 <div class="labtabs" role="tablist">${tabs}</div>
 ${bodySections}
-<details class="srcmeta-d"><summary>本页源文件与 SHA-256（页面不另写事实，全部切自下列文件）</summary><ul class="srcs">${srcList}</ul></details>
+${appendixAttachBlock(lab.id)}<details class="srcmeta-d"><summary>本页源文件与 SHA-256（页面不另写事实，全部切自下列文件）</summary><ul class="srcs">${srcList}</ul></details>
 </article>`
   const sidebar = `<nav class="chapnav" aria-label="实验">` + labs.map((l) =>
-    `<a href="${l.id}.html"${l.id === lab.id ? ' class="on" aria-current="page"' : ''}><span class="cn">${esc(l.title.split('\u3000')[0])}</span><span class="ct">${esc(l.title.split('\u3000')[1] || '')}</span></a>`).join('') + `</nav>`
+    `<a href="${l.id}.html"${l.id === lab.id ? ' class="on" aria-current="page"' : ''}><span class="cn">${esc(l.title.split('\u3000')[0])}</span><span class="ct">${esc(l.title.split('\u3000')[1] || '')}</span></a>`).join('') + `</nav>` + appendixNav(null, 'appendix/')
   reportLabs.push({ id: lab.id, page: `labs/${lab.id}.html`, slices: reportSlices, sources: Object.fromEntries(sourcesMeta) })
   addPage(page({
     out: `labs/${lab.id}.html`, title: `${lab.title.replace(/\u3000/g, ' ')} 实验手册`, section: 'labs', body, sidebar,
@@ -584,6 +634,39 @@ ${bodySections}
   }))
 }
 labs.forEach(labPage)
+
+// ─── 交付附件页（labs/appendix/<id>.html） ───
+// 侧栏“交付附件”分组：u0–u4 之后列出已上线附件。prefix = 从当前页到 labs/appendix/ 的相对前缀
+function appendixNav(curId, prefix) {
+  if (!appendices.length) return ''
+  return `<p class="toc-h" style="margin-top:18px">交付附件</p><nav class="chapnav" aria-label="交付附件">` + appendices.map((a) =>
+    `<a href="${prefix}${a.id}.html"${a.id === curId ? ' class="on" aria-current="page"' : ''}><span class="cn">附件 ${esc(a.id)}</span><span class="ct">${esc(a.title)}</span></a>`).join('') + `</nav>`
+}
+// 实验页正文末尾（srcmeta-d 之前）的“本次交付附件”小块
+function appendixAttachBlock(labId) {
+  const list = appendices.filter((a) => a.attach.includes(labId))
+  if (!list.length) return ''
+  return `<aside class="appx-attach" aria-label="本次交付附件"><p class="toc-h">本次交付附件</p><ul>` + list.map((a) =>
+    `<li><a href="appendix/${a.id}.html">${esc(a.title)}</a>（基于基准教材 <code>${esc(a.baseline.slice(0, 12))}</code> 的增量说明）</li>`).join('') + `</ul></aside>\n`
+}
+const appendixPages = []
+for (const a of appendices) {
+  let bodyHtml = renderTokens(a.tokens)
+  // 附件不带本地图片（没有图片管线）；有就失败，免得线上出现破图
+  for (const src of imagesOf(bodyHtml)) if (src && !/^[a-z][a-z0-9+.-]*:/i.test(src)) fail(`${a.rel}：附件暂不支持本地图片 ${src}`)
+  const attachLinks = a.attach.map((lid) => { const l = labs.find((x) => x.id === lid); return `<a href="../${lid}.html">${esc(l.title.replace(/\u3000/g, ' '))}</a>` }).join('、')
+  const body = `<article class="doc labdoc appxdoc">
+<p class="crumb"><a href="../../index.html">首页</a> / <a href="../u0.html">实验</a> / 交付附件 / ${esc(a.title)}</p>
+<h1>${esc(a.title)}<small>交付附件</small></h1>
+<p class="lead">本附件基于基准教材 <code>l1-textbook@${esc(a.baseline)}</code>。本附件是基准教材之上的增量说明；与基准不一致的地方，按本附件操作。</p>
+${attachLinks ? `<p class="origin">挂在实验页：${attachLinks}</p>\n` : ''}${bodyHtml}
+<details class="srcmeta-d"><summary>本页源文件与 SHA-256（附件不进下载包与总包）</summary><ul class="srcs"><li><code>${esc(a.rel)}</code> <span>${a.sha}</span></li></ul></details>
+</article>`
+  const sidebar = `<nav class="chapnav" aria-label="实验">` + labs.map((l) =>
+    `<a href="../${l.id}.html"><span class="cn">${esc(l.title.split('\u3000')[0])}</span><span class="ct">${esc(l.title.split('\u3000')[1] || '')}</span></a>`).join('') + `</nav>` + appendixNav(a.id, '')
+  appendixPages.push({ id: a.id, page: a.out, source: a.rel, sha256: a.sha, baseline: a.baseline, attach: a.attach })
+  addPage(page({ out: a.out, title: `${a.title} 交付附件`, section: 'labs', body, sidebar, toc: tocFrom(a.headings) }))
+}
 
 // ─── 首页 ───
 function ringSvg() {
@@ -790,7 +873,9 @@ function textOf(html) {
   return html.replace(/<pre[\s\S]*?<\/pre>/g, ' ').replace(/<code[\s\S]*?<\/code>/g, ' ').replace(/<[^>]+>/g, ' ')
 }
 const htmlFiles = walk(DIST).filter((f) => f.endsWith('.html')).sort()
-if (htmlFiles.length !== EXPECTED_PAGES) fail(`页数 ${htmlFiles.length} ≠ ${EXPECTED_PAGES}：${htmlFiles.join(', ')}`)
+// 页数 = 18 + 已上线的交付附件数
+const EXPECTED_TOTAL = EXPECTED_PAGES + appendices.length
+if (htmlFiles.length !== EXPECTED_TOTAL) fail(`页数 ${htmlFiles.length} ≠ ${EXPECTED_TOTAL}（基础 ${EXPECTED_PAGES} + 附件 ${appendices.length}）：${htmlFiles.join(', ')}`)
 let mermaidFigsInDist = 0
 for (const f of htmlFiles) {
   if (f === 'demo/index.html') continue
@@ -839,6 +924,11 @@ if (sha256(demoSrc) !== sha256(fs.readFileSync(path.join(DIST, 'demo/index.html'
 for (const p of RELEASE_MODE ? PACKS : [...PACKS, ALL]) if (!fs.existsSync(path.join(DIST, 'downloads', p.file))) fail(`缺下载包 ${p.file}`)
 if (RELEASE_MODE && fs.existsSync(path.join(DIST, 'downloads', MATERIALS_FILE))) fail('发布模式下 dist 里不应有总包')
 for (const lab of reportLabs) for (const s of lab.slices) if (s.hits !== 1) fail(`实验 ${lab.id} 切片 ${s.label} 命中 ${s.hits}`)
+// 交付附件：每个 attach 的实验页都要链到附件页
+for (const a of appendices) for (const lid of a.attach) {
+  const lh = fs.readFileSync(path.join(DIST, 'labs', `${lid}.html`), 'utf8')
+  if (!lh.includes(`href="appendix/${a.id}.html"`)) fail(`labs/${lid}.html：没有链到交付附件 ${a.id}`)
+}
 
 fs.mkdirSync(BUILD_DIR, { recursive: true })
 fs.writeFileSync(path.join(BUILD_DIR, 'report.json'), JSON.stringify({
@@ -849,6 +939,7 @@ fs.writeFileSync(path.join(BUILD_DIR, 'report.json'), JSON.stringify({
   chapters: chapters.map((c) => ({ id: c.id, rel: c.rel, sha256: c.sha, out: c.out })),
   images: { count: docImages, by_page: Object.fromEntries(chapterImages) },
   mermaid: { version: MERMAID_VERSION, figures: MERMAID_FIGS, keys: [...MERMAID_SVGS.keys()] },
+  appendices: appendixPages,
 }, null, 2))
 
 if (errors.length) {
@@ -860,7 +951,7 @@ if (errors.length) {
 // ───────────────────────── 离线包与发布清单（仅本地带库模式） ─────────────────────────
 if (RELEASE_MODE) {
   console.log(`构建完成（发布模式 ${RELEASE_TAG}）：${htmlFiles.length} 页，${PACKS.length} 个下载包；总包与离线包不在 dist 里，下载按钮指向 GitHub Release`)
-  console.log('自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 18 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 教材图片齐全 · 9 个分包齐全 · mermaid 无残留代码块、每图有内嵌 SVG')
+  console.log(`自检 PASS：manifest 内容指纹 · 白名单/黑名单 · 切片命中 · 页数 ${EXPECTED_TOTAL}（含交付附件 ${appendices.length}） · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 · 仅两个 Release 外链 · 演示页字节一致 · 教材图片齐全 · 9 个分包齐全 · mermaid 无残留代码块、每图有内嵌 SVG`)
 } else {
   fs.rmSync(RELEASE, { recursive: true, force: true })
   fs.mkdirSync(RELEASE, { recursive: true })
@@ -878,5 +969,5 @@ if (RELEASE_MODE) {
   }
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n')
   console.log(`构建完成：${htmlFiles.length} 页，${PACKS.length} 个下载包，总包 ${fmtBytes(ALL.bytes)} 字节，离线包 ${fmtBytes(offZip.length)} 字节；已写 release-manifest.json（tag=${LOCAL_TAG}）`)
-  console.log('自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 18 · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 教材图片齐全 · 下载包与总包齐全 · mermaid 无残留代码块、每图有内嵌 SVG')
+  console.log(`自检 PASS：课程库校验 · 白名单/黑名单 · 切片命中 · 页数 ${EXPECTED_TOTAL}（含交付附件 ${appendices.length}） · 首页无 1.3 表、含从这里进四张卡 · 无残留 ** / 注释 / 外链 · 演示页字节一致 · 教材图片齐全 · 下载包与总包齐全 · mermaid 无残留代码块、每图有内嵌 SVG`)
 }

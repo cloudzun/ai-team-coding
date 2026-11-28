@@ -1,0 +1,18 @@
+# 交付附件区配置：基准教材冻结后，每次客户交付只写一份增量附录，作为实验环节的附件挂在网站上。
+# 附件不进 content/、不走白名单/黑名单、不进 content 指纹，不进下载包与总包；附件页随 dist 进离线包。
+# 字段：
+#   id          附件编号，生成 dist/labs/appendix/<id>.html；只用小写字母、数字、连字符
+#   title       附件标题（页面 h1、侧栏“交付附件”分组里的文字）
+#   file        附件 Markdown，路径相对本目录 appendix/；文件不存在时构建失败
+#   baseline    基准教材：教材仓 l1-textbook 的提交号（取 SYNC.json 的 source_commit），页首写明
+#   published   true = 上线（生成页面、进侧栏、挂到实验页）；false = 下线（不生成页面、不出现在任何地方）
+#   attach      挂到哪些实验页（labs/labs.yml 里的 id）；这些页正文末尾出现“本次交付附件”小块
+# 加一份附件：在 appendix/<id>/appendix.md 写正文，在下面加一条，本地构建 + 两道门禁。
+# 下线：把 published 改成 false（文件保留）。qa_pages.py 的页数门禁 = 18 + published=true 的条数。
+appendices:
+  - id: wb-202611
+    title: WorkBuddy 适配与交付增量
+    file: wb-202611/appendix.md
+    baseline: 27aa01fe791d6a3e5d4dca439f00d97221d014f2
+    published: true
+    attach: [u0, u1, u2, u3, u4]

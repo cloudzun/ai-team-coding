@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""scan_sensitive.py —— 扫 content/ 与 dist/ 里不该出现的东西。0 命中才算过。
+"""scan_sensitive.py —— 扫 content/、dist/ 与 appendix/（交付附件源稿）里不该出现的东西。0 命中才算过。
 
 类别：盘符与用户目录、sk- 类密钥、邮箱、圈数字、/verify、“待确认 / 以…为准”、分钟、试走/样板。
 本课为自编通用课程，没有客户敏感词表。
@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-TARGETS = [ROOT / "content", ROOT / "dist"]
+TARGETS = [ROOT / "content", ROOT / "dist", ROOT / "appendix"]  # appendix/：交付附件源稿
 
 RULES = [
     ("盘符/用户目录", re.compile(r"(?<![A-Za-z0-9_])[A-Za-z]:[\\/]|[\\/]Users[\\/][^\\/\s\"']+|/home/[a-z][\w.-]*")),
@@ -86,7 +86,7 @@ def main():
                             extra.append(rec)
                         else:
                             hits.append(rec)
-    print(f"== scan_sensitive.py：扫描 {scanned} 个文本文件（content/ + dist/）==")
+    print(f"== scan_sensitive.py：扫描 {scanned} 个文本文件（content/ + dist/ + appendix/）==")
     print(f"允许名单放行：{len(allowed)} 处")
     for cat, rel, ln, sn in allowed:
         print(f"  allow [{cat}] {rel}:{ln}  {sn}")

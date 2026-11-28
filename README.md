@@ -1,6 +1,6 @@
 # 带 AI 团队写代码：从任务书到交付 —— 课件站
 
-纯静态课件站：教材（第 0–8 章 + 8 环演示）、演示页、实验手册（环境准备 + 单元一至四）、材料下载。共 18 页。
+纯静态课件站：教材（第 0–8 章 + 8 环演示）、演示页、实验手册（环境准备 + 单元一至四）、材料下载。基础 18 页 + 已上线交付附件。
 上线后的地址：`https://www.cloudzun.com/ai-team-coding/`（账号 cloudzun 的用户站点绑定了自定义域名，`cloudzun.github.io/ai-team-coding` 会跳转过去）。站内链接全部相对路径，放根目录、子路径或本地直接打开都行。
 
 ## 目录
@@ -11,6 +11,7 @@
 | `SYNC.json` | 每个同步文件的 SHA-256、字节数、源仓库提交号 |
 | `release-manifest.json` | 总包与离线包的字节数、SHA-256、总包文件清单、`content/` 指纹；由本地带库构建生成，**入库**，CI 只读它 |
 | `labs/labs.yml` | 实验页配置：只写路由文字，事实按标题从章节切片 |
+| `appendix/` | 交付附件区：`appendix.yml`（附件清单）+ `<id>/appendix.md`（每次客户交付的增量附录）；不进下载包与总包，附件页随 dist 进离线包，见“交付附件区”一节 |
 | `site/` | 样式与脚本（`site.css`、`site.js`） |
 | `site/mermaid/` | mermaid 预渲染缓存 `<hash>.svg`，**入库**；CI 靠它构建，不需要浏览器（见下节） |
 | `scripts/` | `sync-content.ps1`、`whitelist.txt`、`blacklist.txt`、`build.mjs`、`mermaid.mjs`、`qa_pages.py`、`scan_sensitive.py`、`serve-dist.cjs`、`start.cmd`、`make-release.ps1` |
@@ -65,6 +66,15 @@ python scripts/scan_sensitive.py         # 0 命中
 node scripts/serve-dist.cjs 4380         # 起前先查端口：Get-NetTCPConnection -LocalPort 4380 -State Listen；被占换 4381–4389；用完停掉
 # 5 截图与结论交用户 —— 用户确认无误后，才 git add / commit / push
 ```
+
+### 交付附件区
+
+基准教材冻结：每次客户交付不改 `content/`，只写一份增量附录，作为实验环节的附件挂在网站上。
+
+- **加一份附件**：写 `appendix/<id>/appendix.md`（首行一级标题会被去掉，页面标题取配置里的 `title`；只用二级及以下标题）；在 `appendix/appendix.yml` 加一条（`id`、`title`、`file`、`baseline` 填 `SYNC.json` 的 `source_commit`、`published: true`、`attach: [u0, …]`）；然后按上面第 2–4 步本地构建、两道门禁、预览。
+- 构建生成 `dist/labs/appendix/<id>.html`（带本页目录，页首写明基于哪个基准提交）；实验区侧栏在 u0–u4 之后多一组“交付附件”；`attach` 里的实验页正文末尾多一个“本次交付附件”小块。页数门禁 = 18 + `published: true` 的条数。
+- **下线**：把该条 `published` 改成 `false`（文件保留），重建即可：不生成页面、不进侧栏、实验页不再挂链接。
+- 附件不走 `content/` 白名单/黑名单，不进 `content/` 指纹，不进下载包与总包；`scan_sensitive.py` 会扫 `appendix/`。附件 md 不存在时构建失败并报路径；附件里的 mermaid 走同一套预渲染缓存（新图同样要先本机构建、提交 `site/mermaid/`）；附件暂不支持本地图片。
 
 上线后多一步：**线上复核**。用真浏览器打开 `https://www.cloudzun.com/ai-team-coding/?cb=<随机数>`（每次换一个随机数，绕过缓存），逐页看；用 `gh run list` 看 Actions 是否成功。不拿线上缓存页当验收依据。
 
